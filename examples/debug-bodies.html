@@ -47,17 +47,8 @@
             }
           })
 
-          const box = this.third.physics.add.box({
-            x: -1.5,
-            y: 2,
-            collisionFlag: 2
-          })
-          const sphere = this.third.physics.add.sphere({
-            x: 1.5,
-            y: 2,
-            radius: 0.5,
-            collisionFlag: 2
-          })
+          const box = this.third.physics.add.box({ x: -1.5, y: 2, collisionFlag: 2 })
+          const sphere = this.third.physics.add.sphere({ x: 1.5, y: 2, radius: 0.5, collisionFlag: 2 })
 
           this.objects = [box, sphere]
         }
