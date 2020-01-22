@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Constructive Solid Geometry (with Physics and Breakable)</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          this.third.camera.position.set(0, 5, 10)
+          this.third.camera.lookAt(0, 2, 0)
+
+          const box = this.third.make.box({ x: 0.75, y: 1.75, z: -0.25 })
+          const sphere = this.third.make.sphere({ radius: 0.5, x: 1, y: 2 })
+
+          const int = this.third.mesh.intersect(box, sphere)
+          const sub = this.third.mesh.subtract(box, sphere)
+          const uni = this.third.mesh.union(box, sphere)
+
+          const mat = this.third.new.defaultMaterial()
+
+          const geometries = [int, sub, uni]
+          geometries.forEach((geo, i) => {
+            geo.position.setX((i - 1) * 2)
+            geo.position.setY(5)
+            geo.rotateX(10)
+            geo.material = mat
+            geo.castShadow = geo.receiveShadow = true
+            // Make them breakable
+            geo.breakable = true
+            // Can be 'convex' or 'concave' (concave shapes are always static)
+            geo.shape = 'convex'
+            this.third.physics.add.existing(geo)
+          })
+
+          this.objects = [int, sub, uni]
+        }
+
+        update() {
+          this.objects.forEach(obj => {
+            obj.rotation.x += 0.01
+            obj.rotation.y += 0.01
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

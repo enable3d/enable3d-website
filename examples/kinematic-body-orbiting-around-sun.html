@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Kinematic Body Orbiting around Sun</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">The Sun and the Earth are Kinematic Objects.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+          this.third.camera.position.set(10, 10, 20)
+
+          // this.third.physics.debug.enable()
+
+          // add 20 boxes
+          for (let i = 0; i < 20; i++) {
+            const x = Math.random() * 8 - 4
+            const z = Math.random() * 8 - 4
+            const size = Math.random() * 3 + 2
+            this.third.physics.add.box({
+              x,
+              y: 30 + i * 5,
+              z,
+              width: size,
+              height: size,
+              depth: size
+            })
+          }
+
+          this.sun = this.third.physics.add.sphere({ x: 2, y: 2, z: 1, radius: 1 }, { basic: { color: 0xffff00 } })
+          this.earth = this.third.physics.add.sphere({ y: 2, radius: 0.25 }, { basic: { color: 0x0080ff } })
+
+          // both are kinematic objects
+          this.sun.body.setCollisionFlags(2)
+          this.earth.body.setCollisionFlags(2)
+
+          this.third.camera.lookAt(this.earth.position.clone())
+        }
+        update(time) {
+          /*
+          You can't change the position of a physical body using three's methods.
+          You have to update the physical body via ammo.
+          (I will implement a simpler api to use the code below, since it looks very complex)
+
+          // set position in three (does not work)
+          this.earth.position.set(
+            Math.cos(date) * orbitRadius + this.sun.position.x,
+            this.earth.position.y,
+            Math.sin(date) * orbitRadius + this.sun.position.z
+          )
+
+          // set rotation in three (does not work)
+          this.earth.rotation.set(0, angle, 0)
+         */
+
+          // make object orbit around a center
+          // https://stackoverflow.com/questions/42418958/rotate-an-object-around-an-orbit
+          const orbitRadius = 5
+          const date = time * 0.0025
+
+          const b = this.earth.body.ammo
+          const t = this.third.physics.tmpTrans
+          b.getMotionState().getWorldTransform(t)
+          const origin = t.getOrigin() // origin is the position in ammo
+
+          //https://stackoverflow.com/questions/21483999/using-atan2-to-find-angle-between-two-vectors/21486462
+          const angle = Math.atan2(this.sun.position.x - origin.x(), this.sun.position.z - origin.z())
+          const e = this.third.new.euler(0, angle, 0)
+          const q = this.third.new.quaternion()
+          q.setFromEuler(e)
+
+          // set position
+          origin.setX(Math.cos(date) * orbitRadius + this.sun.position.x)
+          origin.setZ(Math.sin(date) * orbitRadius + this.sun.position.z)
+
+          // set rotation
+          const ammoQuat = new Ammo.btQuaternion(0, 0, 0, 1)
+          ammoQuat.setValue(q.x, q.y, q.z, q.w)
+          t.setRotation(ammoQuat)
+
+          // update the body
+          b.getMotionState().setWorldTransform(t)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

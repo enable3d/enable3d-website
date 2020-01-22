@@ -1,0 +1,29 @@
+{
+  "name": "enable3d-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "live-server",
+    "format": "prettier --write examples/**/*.html index.html examples.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yandeu/enable3d-website.git"
+  },
+  "author": "Yannick Deubel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yandeu/enable3d-website/issues"
+  },
+  "homepage": "https://github.com/yandeu/enable3d-website#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "live-server": "^1.2.1",
+    "prettier": "^1.19.1"
+  }
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Collision Detection</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Open your console to see the collision logs.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          const redBox = this.third.physics.add.box({ name: 'redBox', y: 10, width: 2, height: 2 }, { lambert: { color: 0xff0000 } })
+          const blueBox = this.third.physics.add.box({ name: 'blueBox', x: 0.5, y: 15, z: 1, depth: 3 }, { lambert: { color: 0x0000ff } })
+          const greenBox = this.third.physics.add.box({ name: 'greenBox', x: 1, y: 20, depth: 2, height: 2 }, { lambert: { color: 0x00ff00 } })
+
+          this.third.physics.add.collider(redBox, greenBox, event => {
+            console.log(`redBox and greenBox: ${event}`)
+          })
+
+          blueBox.body.on.collision((otherObject, event) => {
+            if (otherObject.name !== 'ground') console.log(`blueBox and ${otherObject.name}: ${event}`)
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

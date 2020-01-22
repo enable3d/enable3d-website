@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Use "native" three.js code</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+    <script src="/lib/three.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Import three.min.js to use "native" three.js code</div>
+    <script>
+      console.log('th', THREE)
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          this.third.physics.debug.enable()
+
+          // Some "native" three.js code
+          const geometry = new THREE.BoxGeometry(1, 1, 1)
+          const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 })
+          const cube = new THREE.Mesh(geometry, material)
+          cube.position.set(0, 5, 0)
+
+          // We set shape manually to 'box' that enable3d is aware of the shape
+          cube.shape = 'box'
+
+          // Add cube to the scene
+          this.third.add.existing(cube)
+
+          // Add physics to the cube
+          this.third.physics.add.existing(cube)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Virtual Reality</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      Get your Phone, click Enter VR, tab on the screen and look around.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          // TODO enable to use negative string e.g. '-ground' remove ground from the features
+          this.accessThirdDimension({ enableXR: true })
+          this.third.warpSpeed('grid', 'ground', 'light', 'sky')
+
+          const ctrl0 = this.third.xr.getController(0)
+          ctrl0.addEventListener('selectstart', event => (this.move = true))
+          ctrl0.addEventListener('selectend', event => (this.move = false))
+
+          this.cube = this.third.add.box({ y: 2, z: -10 })
+        }
+
+        // In XR mode, use updateXR instead of the normal update method
+        updateXR(time, delta) {
+          if (this.move) {
+            const cam = this.third.xr.camera
+            const v3 = this.third.new.vector3()
+            const distance = 0.5
+            cam.getWorldDirection(v3)
+            cam.position.add(v3.multiplyScalar(distance))
+          }
+
+          // this is how you would move the camera manually
+          // const cam = this.third.xr.camera
+          // cam.position.setY(Math.sin(time / 1000) * 10 + 12)
+          // cam.position.setX(Math.cos(time / 1000) * 10)
+
+          const rot = time * 0.001
+          this.cube.rotation.x = rot
+          this.cube.rotation.y = rot
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas({ antialias: false })
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Convex Objects Breaking</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+          this.third.camera.position.set(15, 15, 30)
+
+          // this.third.physics.debug.enable()
+
+          this.addHouse()
+
+          this.third.physics.add.box({ y: 1, x: 6, z: 8, breakable: true })
+          this.third.physics.add.box({ y: 2, x: 6, z: 8, breakable: true })
+          this.third.physics.add.box({ y: 3, x: 6, z: 8, breakable: true })
+          this.third.physics.add.box({ y: 4, x: 6, z: 8, breakable: true })
+          this.third.physics.add.box({ y: 5, x: 6, z: 8, breakable: true })
+          this.third.physics.add.box({ y: 6, x: 6, z: 8, breakable: true })
+
+          this.third.physics.add.box({
+            y: 1,
+            x: -8,
+            z: 8,
+            width: 2,
+            height: 2,
+            depth: 2,
+            breakable: true
+          })
+
+          this.third.physics.add.cylinder({
+            y: 1,
+            x: 4,
+            z: -5,
+            height: 5,
+            breakable: true
+          })
+          this.third.physics.add.cylinder({
+            y: 1,
+            x: 6.5,
+            z: -5,
+            height: 5,
+            breakable: true
+          })
+          this.third.physics.add.cylinder({
+            y: 1,
+            x: 9,
+            z: -5,
+            height: 5,
+            breakable: true
+          })
+
+          const raycaster = this.third.new.raycaster()
+          const force = 30
+
+          this.input.on('pointerdown', pointer => {
+            // calculate mouse position in normalized device coordinates
+            // (-1 to +1) for both components
+            const x = (pointer.x / this.cameras.main.width) * 2 - 1
+            const y = -(pointer.y / this.cameras.main.height) * 2 + 1
+            raycaster.setFromCamera({ x, y }, this.third.camera)
+
+            const pos = this.third.new.vector3()
+
+            pos.copy(raycaster.ray.direction)
+            pos.add(raycaster.ray.origin)
+
+            const sphere = this.third.physics.add.sphere(
+              {
+                radius: 0.15,
+                x: pos.x,
+                y: pos.y,
+                z: pos.z,
+                mass: 20,
+                bufferGeometry: true
+              },
+              { phong: { color: 0x202020 } }
+            )
+            sphere.body.setBounciness(0.2)
+
+            pos.copy(raycaster.ray.direction)
+            pos.multiplyScalar(24)
+
+            sphere.body.applyForce(pos.x * force, pos.y * force, pos.z * force)
+          })
+        }
+
+        addHouse() {
+          const commonSetting = {
+            depth: 0.4,
+            breakable: true,
+            collisionFlag: 3
+          }
+
+          // front
+          this.third.physics.add.box({
+            y: 3,
+            x: 2,
+            z: 4,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 1,
+            x: 2,
+            z: 4,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 1,
+            x: -2,
+            z: 4,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 3,
+            x: -2,
+            z: 4,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+
+          // back
+          this.third.physics.add.box({
+            y: 1,
+            x: -2,
+            z: 0,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 3,
+            x: -2,
+            z: 0,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 1,
+            x: 2,
+            z: 0,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+          this.third.physics.add.box({
+            y: 3,
+            x: 2,
+            z: 0,
+            width: 4,
+            height: 2,
+            ...commonSetting
+          })
+
+          // left and right
+          this.third.physics.add.box({
+            ...commonSetting,
+            y: 2,
+            x: -4,
+            z: 2,
+            depth: 4,
+            height: 4,
+            width: 1
+          })
+          this.third.physics.add.box({
+            ...commonSetting,
+            y: 2,
+            x: 4,
+            z: 2,
+            depth: 4,
+            height: 4,
+            width: 1
+          })
+
+          // roof
+          let r1 = this.third.add.box({
+            y: 4.75,
+            x: 0,
+            z: 0.5,
+            width: 8,
+            height: 4,
+            ...commonSetting
+          })
+          let r2 = this.third.add.box({
+            y: 4.75,
+            x: 0,
+            z: 3.5,
+            width: 8,
+            height: 4,
+            ...commonSetting
+          })
+          r1.rotateX(Math.PI / 4)
+          r2.rotateX(-Math.PI / 4)
+          r1.shape = r2.shape = 'box'
+          this.third.physics.add.existing(r1, { collisionFlag: 3 })
+          this.third.physics.add.existing(r2, { collisionFlag: 3 })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

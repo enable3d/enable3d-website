@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Debug Bodies</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">DebugMode: 1</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          this.third.camera.position.set(0, 5, 10)
+          this.third.camera.lookAt(0, 2, 0)
+
+          this.third.physics.debug.enable()
+
+          let i = 0
+          this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () => {
+              i++
+              const mode = (i % 3) + 1
+              this.third.physics.debug.mode(mode)
+              const infoText = document.getElementById('info-text')
+              infoText.innerText = `DebugMode: ${mode}`
+            }
+          })
+
+          const box = this.third.physics.add.box({
+            x: -1.5,
+            y: 2,
+            collisionFlag: 2
+          })
+          const sphere = this.third.physics.add.sphere({
+            x: 1.5,
+            y: 2,
+            radius: 0.5,
+            collisionFlag: 2
+          })
+
+          this.objects = [box, sphere]
+        }
+
+        update(time) {
+          this.objects.forEach(obj => {
+            // Don't worry, you do not need to know what the code below does,
+            // I will simplify it in a future release of enable3d.
+
+            const e = this.third.new.euler(time * 0.001, time * 0.001, 0)
+            const q = this.third.new.quaternion()
+            const t = this.third.physics.tmpTrans
+            const b = obj.body.ammo
+
+            q.setFromEuler(e)
+            b.getMotionState().getWorldTransform(t)
+
+            const ammoQuat = new Ammo.btQuaternion(0, 0, 0, 1)
+            ammoQuat.setValue(q.x, q.y, q.z, q.w)
+            t.setRotation(ammoQuat)
+
+            b.getMotionState().setWorldTransform(t)
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

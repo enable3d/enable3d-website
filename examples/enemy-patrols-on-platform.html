@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Enemy Patrols on Platform</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          // These assets are from mixamo.com
+          // The the Idle.fbx contains the skin and the idle animation.
+
+          // this.third.physics.debug.enable()
+
+          this.third.camera.position.set(10, 10, 20)
+
+          this.robot = this.third.new.extendedObject3D()
+          const pos = { x: 3, y: 2, z: -7 }
+
+          const sensor = this.third.physics.add.box(
+            {
+              x: pos.x - 4,
+              y: pos.y - 0.5,
+              z: pos.z - 2,
+              width: 0.5,
+              height: 3,
+              depth: 0.5,
+              // set the flag to static
+              collisionFlag: 1,
+              mass: 0.001
+            },
+            { lambert: { color: 0xff00ff, transparent: true, opacity: 0.2 } }
+          )
+          sensor.castShadow = sensor.receiveShadow = false
+
+          this.third.load.fbx('/assets/fbx/Idle.fbx', object => {
+            // set the flag to ghost
+            sensor.body.setCollisionFlags(4)
+
+            this.robot.add(object)
+
+            this.robot.mixer = this.third.new.animationMixer(this.robot)
+
+            this.robot.anims['Idle'] = object.animations[0]
+            this.robot.action = this.robot.mixer.clipAction(object.animations[0])
+            this.robot.action.play()
+
+            this.robot.traverse(child => {
+              if (child.isMesh) child.castShadow = child.receiveShadow = true
+            })
+
+            this.robot.scale.set(0.02, 0.02, 0.02)
+            this.robot.position.set(pos.x, pos.y, pos.z)
+            this.robot.rotation.set(0, -Math.PI / 2, 0)
+
+            this.third.add.existing(this.robot)
+            this.third.physics.add.existing(this.robot, { width: 1, depth: 1 })
+
+            this.third.physics.add.constraints.lock(this.robot.body, sensor.body)
+            this.third.physics.add.collider(sensor, this.third.ground, event => {
+              if (event === 'end') this.robot.body.setAngularVelocityY(5)
+              else this.robot.body.setAngularVelocityY(0)
+            })
+
+            // load Walking animations
+            this.third.load.fbx(`/assets/fbx/Walking.fbx`, object => {
+              console.log('loaded')
+              this.robot.anims['Walking'] = object.animations[0]
+              this.robot.setAction('Walking')
+            })
+          })
+        }
+
+        update() {
+          if (this.robot && this.robot.body) {
+            const speed = 4
+            const rotation = this.robot.getWorldDirection(this.robot.rotation.toVector3())
+            const theta = Math.atan2(rotation.x, rotation.z)
+
+            const x = Math.sin(theta) * speed,
+              y = this.robot.body.velocity.y,
+              z = Math.cos(theta) * speed
+
+            this.robot.body.setVelocity(x, y, z)
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

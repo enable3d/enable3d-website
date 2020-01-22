@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Camera Lerping and Player Controls</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      Use WASD to move the player, change the camera with SPACE.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        camerasArr
+        cameraIndex
+        canCameraMove
+        keys
+        player
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+          this.camerasArr = []
+          this.cameraIndex = 0
+          this.canCameraMove = true
+          delete this.keys
+          delete this.player
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed('camera', 'ground', 'grid', 'light', 'sky')
+          this.third.camera.position.set(10, 10, 20)
+
+          // this.third.physics.debug.enable()
+
+          // add player
+          // @ts-ignore
+          this.player = this.third.new.group()
+          this.player.position.setY(2)
+          const body = this.third.add.box({ height: 0.8, y: 1, width: 0.4, depth: 0.4 }, { lambert: { color: 0xffff00 } })
+          const head = this.third.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
+          this.player.add(body, head)
+          this.third.add.existing(this.player)
+          // @ts-ignore
+          this.third.physics.add.existing(this.player, {
+            width: 0.4,
+            depth: 0.4,
+            height: 1,
+            offset: { y: -1.1 }
+          })
+          this.player.body.setAngularFactor(0, 0, 0)
+          this.player.body.ammo.setFriction(0.8)
+
+          // default camera
+          const followCam = this.third.new.object3D()
+          // copies the position of the default camera
+          followCam.position.copy(this.third.camera.position)
+          this.player.add(followCam)
+          this.camerasArr.push(followCam)
+
+          // back camera
+          const frontCam = this.third.new.object3D()
+          frontCam.position.copy(this.third.new.vector3(0, 3, -5))
+          this.player.add(frontCam)
+          this.camerasArr.push(frontCam)
+
+          // overhead camera
+          const overheadCam = this.third.new.object3D()
+          overheadCam.position.copy(this.third.new.vector3(0, 20, 0))
+          // this.player.add(overheadCam) // uncomment this line if you want the overheadCam follow the player
+          this.camerasArr.push(overheadCam)
+
+          // add keys
+          this.keys = {
+            a: this.input.keyboard.addKey('a'),
+            w: this.input.keyboard.addKey('w'),
+            d: this.input.keyboard.addKey('d'),
+            s: this.input.keyboard.addKey('s'),
+            space: this.input.keyboard.addKey(32)
+          }
+        }
+
+        update(time, delta) {
+          this.third.camera.position.lerp(this.camerasArr[this.cameraIndex % 3].getWorldPosition(this.third.new.vector3()), 0.05)
+          const pos = this.player.position.clone()
+          this.third.camera.lookAt(pos.x, pos.y + 3, pos.z)
+
+          if (pos.y < -20) this.scene.restart()
+
+          if (this.keys.space.isDown) {
+            if (this.canCameraMove) {
+              this.canCameraMove = false
+              this.time.addEvent({
+                delay: 250,
+                callback: () => (this.canCameraMove = true)
+              })
+              this.cameraIndex++
+            }
+          }
+          if (this.keys.w.isDown) {
+            const speed = 4
+            const rotation = this.player.getWorldDirection(this.player.rotation.toVector3())
+            const theta = Math.atan2(rotation.x, rotation.z)
+
+            const x = Math.sin(theta) * speed,
+              y = this.player.body.velocity.y,
+              z = Math.cos(theta) * speed
+
+            this.player.body.setVelocity(x, y, z)
+          }
+
+          if (this.keys.a.isDown) this.player.body.setAngularVelocityY(3)
+          else if (this.keys.d.isDown) this.player.body.setAngularVelocityY(-3)
+          else this.player.body.setAngularVelocityY(0)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

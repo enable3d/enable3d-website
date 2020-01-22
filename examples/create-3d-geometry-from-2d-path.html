@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Create 3D Geometry from 2D Path</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+          this.third.camera.position.set(15, 15, 30)
+
+          // this.third.physics.debug.enable()
+
+          // curve
+          const curve = this.third.new.shape()
+          curve.arc(0, 0, 4, 0, Math.PI, false)
+          curve.arc(4, 0, 3, Math.PI, 2 * Math.PI, true)
+          this.third.physics.add.extrude({
+            y: 10,
+            shape: curve,
+            curveSegments: 10,
+            depth: 1,
+            bevelEnabled: false
+          })
+
+          // speechBalloon
+          const speechBalloon = this.third.new.shape()
+          speechBalloon.moveTo(3, 1)
+          speechBalloon.quadraticCurveTo(1, 1, 1, 2.5)
+          speechBalloon.quadraticCurveTo(1, 4, 2, 4)
+          speechBalloon.quadraticCurveTo(2, 4.8, 1.2, 5)
+          speechBalloon.quadraticCurveTo(2.4, 4.8, 2.6, 4)
+          speechBalloon.quadraticCurveTo(5, 4, 5, 2.5)
+          speechBalloon.quadraticCurveTo(5, 1, 3, 1)
+          this.third.physics.add.extrude({
+            x: 5,
+            y: 10,
+            z: 5,
+            shape: speechBalloon,
+            curveSegments: 10,
+            depth: 2,
+            bevelEnabled: true,
+            bevelSize: 0.4,
+            bevelThickness: 0.4
+          })
+
+          // heart
+          const heart = this.third.new.shape()
+          heart.moveTo(3, 1.6)
+          heart.bezierCurveTo(3, 1.48, 2.8, 1, 2, 1)
+          heart.bezierCurveTo(0.8, 1, 0.8, 2.5, 0.8, 2.5)
+          heart.bezierCurveTo(0.8, 3.2, 1.6, 4.08, 3, 4.8)
+          heart.bezierCurveTo(4.4, 4.08, 5.2, 3.2, 5.2, 2.5)
+          heart.bezierCurveTo(5.2, 2.5, 5.2, 1, 4, 1)
+          heart.bezierCurveTo(3.4, 1, 3, 1.48, 3, 1.6)
+          this.third.physics.add.extrude({
+            x: -5,
+            y: 10,
+            z: 5,
+            shape: heart,
+            curveSegments: 12,
+            depth: 1,
+            bevelEnabled: true,
+            bevelSize: 1,
+            bevelThickness: 1
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>
