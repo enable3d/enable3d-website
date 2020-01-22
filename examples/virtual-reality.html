@@ -69,7 +69,7 @@
           height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
         },
         scene: [MainScene],
-        ...Canvas({ antialias: false })
+        ...Canvas({ antialias: true })
       }
 
       window.addEventListener('load', () => {
