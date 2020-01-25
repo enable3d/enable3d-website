@@ -85,7 +85,12 @@
             this.man.position.setY(2)
             // add shadow
             this.man.traverse(child => {
-              if (child.isMesh) child.castShadow = child.receiveShadow = true
+              if (child.isMesh) {
+                child.castShadow = child.receiveShadow = true
+                // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
+                child.material.roughness = 1
+                child.material.metalness = 0
+              }
             })
 
             /**
