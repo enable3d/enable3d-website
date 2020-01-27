@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>3rd Person Camera</title>
+    <title>Medieval Fantasy Book</title>
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
@@ -69,6 +69,16 @@
             book.add(scene)
             this.third.add.existing(book)
 
+            // add animations
+            // sadly only the flags animations works
+            object.animations.forEach((anim, i) => {
+              book.mixer = this.third.new.animationMixer(book)
+              // overwrite the action to be an array of actions
+              book.action = []
+              book.action[i] = book.mixer.clipAction(anim)
+              book.action[i].play()
+            })
+
             book.traverse(child => {
               if (child.isMesh) {
                 child.castShadow = child.receiveShadow = true
@@ -77,6 +87,7 @@
 
                 if (/mesh/i.test(child.name)) {
                   child.shape = 'concave'
+                  // I do not know why the physics has an offset but I just fixed it manually
                   child.position.set(-18.8, 4.35, -15.55)
                   this.third.physics.add.existing(child, {
                     autoCenter: false,
