@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>First Person Shooter</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.12-alpha.1.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      Use WASD to move, Q and E to tilt, right mouse button to aim and left mouse button to shoot.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+          this.move = { x: 0, y: 0, z: 0 }
+        }
+
+        preload() {
+          /**
+           * hashtag3d (https://www.cgtrader.com/hashtag3d)
+           * https://www.cgtrader.com/free-3d-models/military/armor/m4a1-carbine-e81d81d5-cfdb-4c57-be71-5c1b8092f4ea
+           * Editorial License (https://www.cgtrader.com/pages/terms-and-conditions#general-terms-of-licensing)
+           */
+          this.load.binary('rifle', '/assets/glb/M4A1.glb')
+        }
+
+        create() {
+          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
+          this.third.warpSpeed('-orbitControls')
+          this.third.haveSomeFun(50)
+
+          // add rifle
+          this.third.load.gltf('rifle', object => {
+            const rifle = object.scene
+
+            this.rifle = this.third.new.extendedObject3D()
+            this.rifle.name = 'rifle'
+            this.rifle.add(rifle)
+
+            this.third.add.existing(this.rifle)
+
+            this.rifle.traverse(child => {
+              if (child.isMesh) {
+                child.castShadow = child.receiveShadow = true
+                if (child.material) child.material.metalness = 0
+              }
+            })
+          })
+
+          // add red dot
+          this.redDot = this.add.circle(this.cameras.main.width / 2, this.cameras.main.height / 2, 4, 0xff0000)
+          this.redDot.depth = 1
+
+          // add player
+          this.player = this.third.new.extendedObject3D()
+          this.player.position.setY(1)
+
+          // add first person controls
+          this.firstPersonControls = this.third.controls.add.firstPerson(this.player, {})
+
+          // add keys
+          this.keys = {
+            w: this.input.keyboard.addKey('w'),
+            a: this.input.keyboard.addKey('a'),
+            s: this.input.keyboard.addKey('s'),
+            d: this.input.keyboard.addKey('d'),
+            q: this.input.keyboard.addKey('q'),
+            e: this.input.keyboard.addKey('e')
+          }
+        }
+
+        update(time, delta) {
+          if (this.rifle && this.rifle) {
+            // some variables
+            const zoom = this.input.mousePointer.rightButtonDown()
+            const speed = 0.1
+            const direction = this.third.new.vector3()
+            const rotation = this.third.camera.getWorldDirection(direction)
+            const theta = Math.atan2(rotation.x, rotation.z)
+
+            // reset red dot
+            this.redDot.alpha = 1
+
+            // the rifle movement
+            if (zoom) {
+              this.redDot.alpha = 0
+              this.move.x = this.third.new.lerp(this.move.x, 0.6, 0.2)
+              this.move.y = this.third.new.lerp(this.move.y, -0.8 + 1.8, 0.2)
+              this.move.z = this.third.new.lerp(this.move.z, -0.45, 0.2)
+            } else if (this.keys.w.isDown) {
+              this.move.x = Math.sin(time * -0.015) * 0.075
+              this.move.y = Math.sin(time * 0.015) * 0.075
+              this.move.z = Math.sin(time * 0.015) * 0.075
+            } else {
+              this.move.x = Math.sin(time * -0.003) * 0.01
+              this.move.y = Math.sin(time * 0.003) * 0.01
+              this.move.z = Math.sin(time * 0.003) * 0.01
+            }
+
+            // tilt
+            if (this.keys.q.isDown) {
+              this.third.camera.rotateZ(0.2)
+              this.firstPersonControls.offset = this.third.new.vector3(Math.sin(theta + Math.PI * 0.5) * 0.4, 0, Math.cos(theta + Math.PI * 0.5) * 0.4)
+            } else if (this.keys.e.isDown) {
+              this.third.camera.rotateZ(-0.2)
+              this.firstPersonControls.offset = this.third.new.vector3(Math.sin(theta - Math.PI * 0.5) * 0.4, 0, Math.cos(theta - Math.PI * 0.5) * 0.4)
+            } else {
+              this.third.camera.rotateZ(0)
+              this.firstPersonControls.offset = this.third.new.vector3(0, 0, 0)
+            }
+
+            // adjust the position of the rifle to the camera
+            const raycaster = this.third.new.raycaster()
+            // x and y are normalized device coordinates from -1 to +1
+            raycaster.setFromCamera({ x: 0.6 - this.move.x, y: -0.8 - this.move.y }, this.third.camera)
+            const pos = this.third.new.vector3()
+            pos.copy(raycaster.ray.direction)
+            pos.multiplyScalar(0.8 + this.move.z)
+            pos.add(raycaster.ray.origin)
+
+            this.rifle.position.copy(pos)
+            this.rifle.rotation.copy(this.third.camera.rotation)
+
+            // move forwards and backwards
+            if (this.keys.w.isDown) {
+              this.player.position.x += Math.sin(theta) * speed
+              this.player.position.z += Math.cos(theta) * speed
+            } else if (this.keys.s.isDown) {
+              this.player.position.x -= Math.sin(theta) * speed
+              this.player.position.z -= Math.cos(theta) * speed
+            }
+
+            // move sideways
+            if (this.keys.a.isDown) {
+              this.player.position.x += Math.sin(theta + Math.PI * 0.5) * speed
+              this.player.position.z += Math.cos(theta + Math.PI * 0.5) * speed
+            } else if (this.keys.d.isDown) {
+              this.player.position.x += Math.sin(theta - Math.PI * 0.5) * speed
+              this.player.position.z += Math.cos(theta - Math.PI * 0.5) * speed
+            }
+
+            // shoot
+            if (this.input.mousePointer.leftButtonDown()) {
+              const x = 0
+              const y = 0
+              const force = 5
+              const pos = this.third.new.vector3()
+
+              raycaster.setFromCamera({ x, y }, this.third.camera)
+
+              pos.copy(raycaster.ray.direction)
+              pos.add(raycaster.ray.origin)
+
+              const sphere = this.third.physics.add.sphere(
+                { radius: 0.05, x: pos.x, y: pos.y, z: pos.z, mass: 5, bufferGeometry: true },
+                { phong: { color: 0x202020 } }
+              )
+
+              pos.copy(raycaster.ray.direction)
+              pos.multiplyScalar(24)
+
+              sphere.body.applyForce(pos.x * force, pos.y * force, pos.z * force)
+            }
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth,
+          height: window.innerHeight
+        },
+        scene: [MainScene],
+        ...Canvas({ antialias: true })
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>
