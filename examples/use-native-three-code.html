@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.11.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.12-alpha.1.main.min.js"></script>
     <script src="/lib/three.min.js"></script>
   </head>
 
@@ -34,8 +34,8 @@
           this.third.physics.debug.enable()
 
           // Some "native" three.js code
-          const geometry = new THREE.BoxGeometry(1, 1, 1)
-          const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 })
+          const geometry = new THREE.BoxBufferGeometry(1, 1, 1)
+          const material = new THREE.MeshLambertMaterial({ color: 0x2194ce })
           const cube = new THREE.Mesh(geometry, material)
           cube.position.set(0, 5, 0)
 
