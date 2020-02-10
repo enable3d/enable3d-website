@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Debug Bodies</title>
+    <title>Wrecking Ball with Metal Chain</title>
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
@@ -12,7 +12,6 @@
   </head>
 
   <body>
-    <div id="info-text">DebugMode: 1</div>
     <script>
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
@@ -26,39 +25,38 @@
         }
 
         create() {
-          this.accessThirdDimension()
+          this.accessThirdDimension({ gravity: { x: 0, y: -30, z: 0 } })
           this.third.warpSpeed()
+          this.third.camera.position.set(0, 10, 50)
+          this.third.camera.lookAt(0, 8, 0)
 
-          this.third.camera.position.set(0, 5, 10)
-          this.third.camera.lookAt(0, 2, 0)
+          for (let i = 2; i <= 12; i++) {
+            // chain
+            let t2 = this.third.add.torus(
+              { x: i * 1.3 - 20, y: 22, tubularSegments: 12, tube: 0.2 },
+              { standard: { emissive: 0x888888, roughness: 0.4, metalness: 1 } }
+            )
+            if (i % 2 == 0) t2.rotateX(Math.PI / 2)
+            this.third.physics.add.existing(t2, { mass: i === 12 ? 0 : 1 })
 
-          this.third.physics.debug.enable()
-
-          let i = 0
-          this.time.addEvent({
-            delay: 2000,
-            loop: true,
-            callback: () => {
-              i++
-              const mode = (i % 3) + 1
-              this.third.physics.debug.mode(mode)
-              const infoText = document.getElementById('info-text')
-              infoText.innerText = `DebugMode: ${mode}`
+            // ball
+            if (i === 2) {
+              let ball = this.third.physics.add.sphere(
+                { mass: 2, radius: 2, x: -20.8, y: 22 },
+                { standard: { emissive: 0x222222, roughness: 0.4, metalness: 1 } }
+              )
+              this.third.physics.add.constraints.lock(t2.body, ball.body)
             }
-          })
+          }
 
-          const box = this.third.physics.add.box({ x: -1.5, y: 2, collisionFlag: 2 })
-          const sphere = this.third.physics.add.sphere({ x: 1.5, y: 2, radius: 0.5, collisionFlag: 2 })
-
-          this.objects = [box, sphere]
-        }
-
-        update(time) {
-          this.objects.forEach(obj => {
-            obj.body.transform()
-            obj.body.setRotation(time * 0.001, time * 0.001, 0)
-            obj.body.refresh()
-          })
+          // wall
+          for (let y = 0; y <= 6; y += 2) {
+            for (let z = -4; z <= 2; z += 2) {
+              for (let x = 0; x <= 2; x += 2) {
+                this.third.physics.add.box({ x, y, z, width: 1.95, height: 1.95, depth: 1.95, mass: 0.4 })
+              }
+            }
+          }
         }
       }
 

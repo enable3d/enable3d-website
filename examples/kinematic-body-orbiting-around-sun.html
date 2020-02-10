@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -60,7 +60,6 @@
           /*
           You can't change the position of a physical body using three's methods.
           You have to update the physical body via ammo.
-          (I will implement a simpler api to use the code below, since it looks very complex)
 
           // set position in three (does not work)
           this.earth.position.set(
@@ -73,33 +72,22 @@
           this.earth.rotation.set(0, angle, 0)
          */
 
-          // make object orbit around a center
-          // https://stackoverflow.com/questions/42418958/rotate-an-object-around-an-orbit
           const orbitRadius = 5
           const date = time * 0.0025
 
-          const b = this.earth.body.ammo
-          const t = this.third.physics.tmpTrans
-          b.getMotionState().getWorldTransform(t)
-          const origin = t.getOrigin() // origin is the position in ammo
+          this.earth.body.transform()
+
+          const { x, y, z } = this.earth.body.getPosition()
+
+          // make object orbit around a center
+          // https://stackoverflow.com/questions/42418958/rotate-an-object-around-an-orbit
+          this.earth.body.setPosition(Math.cos(date) * orbitRadius + this.sun.position.x, y, Math.sin(date) * orbitRadius + this.sun.position.z)
 
           //https://stackoverflow.com/questions/21483999/using-atan2-to-find-angle-between-two-vectors/21486462
-          const angle = Math.atan2(this.sun.position.x - origin.x(), this.sun.position.z - origin.z())
-          const e = this.third.new.euler(0, angle, 0)
-          const q = this.third.new.quaternion()
-          q.setFromEuler(e)
+          const angle = Math.atan2(this.sun.position.x - x, this.sun.position.z - z)
+          this.earth.body.setRotation(0, angle, 0)
 
-          // set position
-          origin.setX(Math.cos(date) * orbitRadius + this.sun.position.x)
-          origin.setZ(Math.sin(date) * orbitRadius + this.sun.position.z)
-
-          // set rotation
-          const ammoQuat = new Ammo.btQuaternion(0, 0, 0, 1)
-          ammoQuat.setValue(q.x, q.y, q.z, q.w)
-          t.setRotation(ammoQuat)
-
-          // update the body
-          b.getMotionState().setWorldTransform(t)
+          this.earth.body.refresh()
         }
       }
 

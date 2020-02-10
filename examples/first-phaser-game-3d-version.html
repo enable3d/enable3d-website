@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.13-alpha.0.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -43,6 +43,9 @@
         create() {
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
           this.third.warpSpeed('-ground', '-sky', '-orbitControls')
+
+          // adjust gamma factor
+          this.third.renderer.gammaFactor = 1.2
 
           // adjust the camera
           this.third.camera.position.set(0, 5, 20)
@@ -183,19 +186,10 @@
           // rotate the starts
           // (this looks strange I know, I will try to improve this in a future update)
           this.stars.forEach(star => {
-            const b = star.body.ammo
-            const t = this.third.physics.tmpTrans
-            b.getMotionState().getWorldTransform(t)
-
-            const e = this.third.new.euler(0, (time / 1000) * 2, 0)
-            const q = this.third.new.quaternion()
-            q.setFromEuler(e)
-
-            const ammoQuat = new Ammo.btQuaternion(0, 0, 0, 1)
-            ammoQuat.setValue(q.x, q.y, q.z, q.w)
-            t.setRotation(ammoQuat)
-
-            b.getMotionState().setWorldTransform(t)
+            star.body.transform()
+            const y = star.body.getRotation().y
+            star.body.setRotation(0, y + 0.03, 0)
+            star.body.refresh()
           })
 
           if (this.robot && this.robot.body) {
@@ -203,9 +197,7 @@
             this.third.camera.position.copy(this.robot.position).add(this.third.new.vector3(0, 5, 16))
 
             // get rotation of robot
-            let direction = this.third.new.vector3()
-            this.robot.getWorldDirection(direction)
-            const theta = Math.atan2(direction.x, direction.z)
+            const theta = this.robot.world.theta
             this.robot.body.setAngularVelocityY(0)
 
             // set the speed variable

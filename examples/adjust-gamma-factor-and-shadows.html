@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Debug Bodies</title>
+    <title>Adjust GammaFactor and Shadows at Runtime</title>
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <div id="info-text">DebugMode: 1</div>
+    <div id="info-text">Adjusts randomly the gammaFactor and disables the shadows.</div>
     <script>
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
@@ -29,35 +29,35 @@
           this.accessThirdDimension()
           this.third.warpSpeed()
 
-          this.third.camera.position.set(0, 5, 10)
-          this.third.camera.lookAt(0, 2, 0)
+          this.third.add.box({ x: -4, y: 2, height: 4 }, { lambert: { color: 0xff0000 } })
+          this.third.add.box({ x: 0, y: 2, height: 4 }, { lambert: { color: 0x00ff00 } })
+          this.third.add.box({ x: 4, y: 2, height: 4 }, { lambert: { color: 0x0000ff } })
 
-          this.third.physics.debug.enable()
-
-          let i = 0
+          // update gamma factor
           this.time.addEvent({
             delay: 2000,
             loop: true,
             callback: () => {
-              i++
-              const mode = (i % 3) + 1
-              this.third.physics.debug.mode(mode)
-              const infoText = document.getElementById('info-text')
-              infoText.innerText = `DebugMode: ${mode}`
+              this.third.renderer.gammaFactor = Math.random() * 2
+              this.third.scene.traverse(child => {
+                if (child.material) {
+                  child.material.needsUpdate = true
+                }
+              })
             }
           })
 
-          const box = this.third.physics.add.box({ x: -1.5, y: 2, collisionFlag: 2 })
-          const sphere = this.third.physics.add.sphere({ x: 1.5, y: 2, radius: 0.5, collisionFlag: 2 })
-
-          this.objects = [box, sphere]
-        }
-
-        update(time) {
-          this.objects.forEach(obj => {
-            obj.body.transform()
-            obj.body.setRotation(time * 0.001, time * 0.001, 0)
-            obj.body.refresh()
+          // update shadows
+          let enabled = true
+          this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () => {
+              enabled = !enabled
+              this.third.renderer.shadowMap.enabled = enabled
+              this.third.renderer.shadowMap.autoUpdate = enabled
+              this.third.directionalLight.castShadow = enabled
+            }
           })
         }
       }

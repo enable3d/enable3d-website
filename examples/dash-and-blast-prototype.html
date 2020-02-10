@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -83,8 +83,8 @@
           scene.third.physics.add.existing(this.object, { autoCenter: false })
 
           this.object.body.setAngularFactor(0, 1, 0)
-          this.object.body.ammo.setLinearFactor(new Ammo.btVector3(0, 0, 0))
-          this.object.body.ammo.setFriction(0)
+          this.object.body.setLinearFactor(0, 0, 0)
+          this.object.body.setFriction(0)
           this.object.body.setCollisionFlags(1)
 
           if (this.index === 0 || this.index === 1) this.activate()
@@ -163,17 +163,14 @@
             this.player.object.body.setVelocity(0, 0, 0)
             this.player.object.body.ammo.setMassProps(100, new Ammo.btVector3(1, 1, 1))
 
-            // set the player at the center of the goal
-            // (this looks a bit hackie, I will try to integrated
-            // it better into enable3d in future releases)
             this.player.object.body.setCollisionFlags(2)
-            const t = this.third.physics.tmpTrans
-            const b = this.player.object.body.ammo
-            b.getMotionState().getWorldTransform(t)
-            t.getOrigin().setX(this.goals[this.goalIndex].centerX)
-            t.getOrigin().setZ(this.goals[this.goalIndex].centerZ)
-            b.getMotionState().setWorldTransform(t)
-            // this.third.physics.physicsWorld.updateSingleAabb(b)
+
+            // set the player at the center of the goal
+            this.player.object.body.transform()
+            const y = this.player.object.body.getPosition().y
+            this.player.object.body.setPosition(this.goals[this.goalIndex].centerX, y, this.goals[this.goalIndex].centerZ)
+            this.player.object.body.refresh()
+
             this.time.addEvent({
               delay: 50,
               callback: () => this.player.object.body.setCollisionFlags(0)
