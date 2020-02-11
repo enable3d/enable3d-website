@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -27,13 +27,14 @@
         create() {
           this.accessThirdDimension()
           this.third.warpSpeed()
+          this.third.camera.position.set(20, 20, 40)
 
           // These assets are from mixamo.com
           // The the Idle.fbx contains the skin and the idle animation.
 
           const robot = this.third.new.extendedObject3D()
           const animations = ['Jumping', 'LookingAround', 'Running', 'BodyJabCross', 'HipHopDancing']
-          const pos = { x: 0, y: 10, z: 0 }
+          const pos = { x: 0, y: 5, z: 0 }
 
           this.third.load.fbx('/assets/fbx/Idle.fbx', object => {
             robot.add(object)
@@ -52,7 +53,7 @@
             robot.position.set(pos.x, pos.y, pos.z)
 
             this.third.add.existing(robot)
-            this.third.physics.add.existing(robot)
+            this.third.physics.add.existing(robot, { offset: { y: -0.5 } })
 
             // load more animations
             animations.forEach(key => {

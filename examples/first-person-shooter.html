@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -37,6 +37,7 @@
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
           this.third.warpSpeed('-orbitControls')
           this.third.haveSomeFun(50)
+          this.third.renderer.gammaFactor = 1.5
 
           // add rifle
           this.third.load.gltf('rifle', object => {

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -45,7 +45,7 @@
             this.third.haveSomeFun(1)
           })
 
-          const heightmap = this.third.getTexture('heightmap-island')
+          const heightmap = this.third.texture.get('heightmap-island')
 
           // Powered by Chroma.js (https://github.com/gka/chroma.js/)
           const colorScale = this.third.chroma

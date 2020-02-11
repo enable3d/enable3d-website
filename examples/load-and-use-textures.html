@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -31,9 +31,10 @@
         create() {
           this.accessThirdDimension()
           this.third.warpSpeed('light', 'camera', 'sky', 'orbitControls')
+          this.third.camera.position.set(20, 20, 40)
 
           // get the texture and add the ground
-          const grass = this.third.getTexture('grass')
+          const grass = this.third.texture.get('grass')
           grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
           grass.offset.set(0, 0)
           grass.repeat.set(2, 2)

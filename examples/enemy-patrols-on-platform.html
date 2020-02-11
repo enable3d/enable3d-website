@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.12.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
   </head>
 
   <body>
@@ -75,7 +75,7 @@
             this.robot.rotation.set(0, -Math.PI / 2, 0)
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { width: 1, depth: 1 })
+            this.third.physics.add.existing(this.robot, { width: 1, depth: 1, offset: { y: -0.5 } })
 
             this.third.physics.add.constraints.lock(this.robot.body, sensor.body)
             this.third.physics.add.collider(sensor, this.third.ground, event => {
