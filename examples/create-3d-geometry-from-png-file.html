@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13.main.min.js"></script>
   </head>
 
   <body>
@@ -34,8 +34,9 @@
         }
 
         create() {
-          this.accessThirdDimension()
+          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
           this.third.warpSpeed('-ground')
+          this.third.camera.position.set(20, 20, 40)
 
           this.input.on('pointerdown', () => {
             this.third.haveSomeFun(1)
@@ -49,7 +50,6 @@
             mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
             // we position, scale, rotate etc. the mesh before adding physics to it
             mesh.scale.set(2, 2, 2)
-            mesh.position.setY(-1)
             this.third.physics.add.existing(mesh, { mass: 0 })
           }
         }

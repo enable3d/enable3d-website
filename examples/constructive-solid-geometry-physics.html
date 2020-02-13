@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13.main.min.js"></script>
   </head>
 
   <body>
@@ -48,7 +48,7 @@
             geo.material = mat
             geo.castShadow = geo.receiveShadow = true
             // Can be 'convex' or 'concave' (concave shapes are always static)
-            geo.shape = 'convex'
+            geo.shape = 'mesh'
             this.third.physics.add.existing(geo)
           })
 

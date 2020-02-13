@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.0.0.13-alpha.1.main.min.js"></script>
+    <script src="/lib/enable3d.0.0.13.main.min.js"></script>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
       class Player {
         object
         constructor(scene) {
-          this.object = scene.third.physics.add.cylinder({ z: 10, radiusSegments: 32, collisionFlag: 16 }, { lambert: { color: 0xffffff } })
+          this.object = scene.third.physics.add.cylinder({ z: 10, y: 1, radiusSegments: 16, radiusTop: 1, radiusBottom: 1, collisionFlag: 0 })
           this.object.body.setAngularFactor(0, 0, 0)
         }
       }
@@ -79,13 +79,13 @@
           this.object = scene.third.mesh.subtract(cylBig, cylSmall)
           this.object.material = scene.third.new.defaultMaterial({ side: 2 })
           this.object.castShadow = this.object.receiveShadow = false
-          this.object.shape = 'concave'
+          this.object.shape = 'concaveMesh'
           scene.third.physics.add.existing(this.object, { autoCenter: false })
 
           this.object.body.setAngularFactor(0, 1, 0)
           this.object.body.setLinearFactor(0, 0, 0)
           this.object.body.setFriction(0)
-          this.object.body.setCollisionFlags(1)
+          this.object.body.setCollisionFlags(2)
 
           if (this.index === 0 || this.index === 1) this.activate()
 
@@ -95,6 +95,8 @@
             x: centerX,
             y: -0.2,
             z: centerZ,
+            radiusTop: 1,
+            radiusBottom: 1,
             collisionFlag: 4,
             radiusSegments: 32
           })
@@ -119,10 +121,10 @@
         }
 
         create() {
-          this.accessThirdDimension()
-          this.third.warpSpeed('camera', 'sky', 'light', 'lookAtCenter', 'orbitControls')
+          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
+          this.third.warpSpeed('camera', 'sky', 'light', 'lookAtCenter')
 
-          this.third.physics.add.ground({ width: 35, height: 220, y: -1, z: -95 }, { phong: { color: 0x95a7ef } })
+          this.third.physics.add.ground({ width: 35, height: 220, y: -1, z: -95 }, { lambert: { color: 0x95a7ef } })
 
           for (let i = 0; i < 10; i++) {
             this.goals.push(new Goal(this, Phaser.Math.RND.integerInRange(-6, 6), i * -20, i))
@@ -145,7 +147,7 @@
               y = this.player.object.body.velocity.y,
               z = Math.cos(angle) * speed
 
-            this.player.object.body.applyForce(x, y, z)
+            this.player.object.body.setVelocity(x, y, z)
           })
           this.ready = true
         }
