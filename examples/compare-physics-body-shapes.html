@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Compare Physics Body Shapes</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.0.0.13.main.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">From left to right:<br />box, compound, hull, hacd, convexMesh, concaveMesh</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        preload() {
+          this.load.binary('suzanne', '/assets/glb/suzanne.glb')
+        }
+
+        init() {
+          this.requestThirdDimension()
+        }
+
+        create() {
+          this.accessThirdDimension()
+          this.third.warpSpeed()
+
+          this.third.physics.debug.enable()
+
+          // add suzanne (the monkey's name is suzanne)
+          this.third.load.gltf('suzanne', gltf => {
+            // If you can, always use simple shapes like BOX, SPHERE, CONE etc.
+            // The second most efficient shape is a COMPOUND, which merges multiple simple shapes.
+            // Prefer HULL over CONVEX MESH.
+            // HACD is the most expensive but also the most accurate.
+            // If you need a concave shape, for a static or kinematic body, use CONCAVE MESH.
+
+            // (mesh and convex are aliases for convexMesh)
+            // (concave is an alias for concaveMesh)
+            // (heightMap uses concaveMesh by default)
+            // (extrude uses hacd by default)
+
+            const suzanne = gltf.scene.children[0]
+
+            const shapes = ['box', 'compound', 'hull', 'hacd', 'convexMesh', 'concaveMesh']
+
+            const material = this.third.add.material({ standard: { color: 0xc4c4c4, transparent: true, opacity: 0.5 } })
+            const boxShape = { shape: 'box', width: 2, height: 1.5, depth: 1.25 }
+
+            // compound multiple simple shape together
+            const compoundShape = {
+              shapes: [
+                // nose
+                { shape: 'box', width: 0.5, height: 1, depth: 0.4, y: -0.5, z: 0.5 },
+                // ears
+                { shape: 'box', width: 2.4, height: 0.6, depth: 0.4, z: -0.4, y: 0.2 },
+                // head back
+                { shape: 'sphere', radius: 0.65, z: -0.25, y: 0.35 },
+                // head front
+                { shape: 'box', width: 1.5, height: 0.8, depth: 1, y: 0.2, z: 0.2 }
+              ]
+            }
+
+            suzanne.traverse(child => {
+              if (child.isMesh && child.material.isMaterial) {
+                child.material = material
+              }
+            })
+
+            shapes.forEach((shape, i) => {
+              const object = this.third.new.extendedObject3D()
+
+              object.add(suzanne.clone())
+              object.position.set(i * 3 - 7.5, 1.2, 0)
+              object.shape = shape
+
+              let options = {}
+              if (shape === 'box') options = boxShape
+              else if (shape === 'compound') options = compoundShape
+
+              this.third.add.existing(object)
+              this.third.physics.add.existing(object, options)
+            })
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>
