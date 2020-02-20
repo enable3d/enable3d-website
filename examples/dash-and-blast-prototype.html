@@ -16,24 +16,16 @@
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
       class Player {
-        object
         constructor(scene) {
           this.object = scene.third.physics.add.cylinder({ z: 10, y: 1, radiusSegments: 16, radiusTop: 1, radiusBottom: 1, collisionFlag: 0 })
           this.object.body.setAngularFactor(0, 0, 0)
+          // https://docs.panda3d.org/1.10/python/programming/physics/bullet/ccd
+          this.object.body.ammo.setCcdMotionThreshold(1e-7)
+          this.object.body.ammo.setCcdSweptSphereRadius(1)
         }
       }
 
       class Goal {
-        object
-        start
-        length
-        radius
-        speed
-        centerX
-        centerZ
-        index
-        active
-
         activate() {
           this.active = true
           this.object.body.setCollisionFlags(0)
@@ -56,58 +48,67 @@
           this.radius = Math.random() * 3 + 4
           this.speed = Math.random() * 2 + 2
 
-          const cylSmall = scene.third.make.cylinder({
-            x: centerX,
-            z: centerZ,
-            y: 0.1,
-            radiusTop: this.radius - 1,
-            radiusBottom: this.radius - 1,
-            radiusSegments: 8,
-            thetaStart: this.start,
-            thetaLength: this.length
-          })
-          const cylBig = scene.third.make.cylinder({
-            x: centerX,
-            z: centerZ,
-            y: 0.1,
-            radiusTop: this.radius,
-            radiusBottom: this.radius,
-            radiusSegments: 12,
-            thetaStart: this.start,
-            thetaLength: this.length
-          })
-          this.object = scene.third.mesh.subtract(cylBig, cylSmall)
-          this.object.material = scene.third.new.defaultMaterial({ side: 2 })
-          this.object.castShadow = this.object.receiveShadow = false
-          this.object.shape = 'concaveMesh'
-          scene.third.physics.add.existing(this.object, { autoCenter: false })
+          const addCurve = (x = 0, z = 0, speed = 1, length = 3.16, radius = 4, width = 1, depth = 1) => {
+            const curve = scene.third.new.shape()
+            curve.arc(0, 0, radius, 0, length, false)
+            let currentPoint = curve.getPoint(1)
+            curve.arc(-currentPoint.x, -currentPoint.y, radius - width, length, 2 * Math.PI, true)
 
-          this.object.body.setAngularFactor(0, 1, 0)
-          this.object.body.setLinearFactor(0, 0, 0)
-          this.object.body.setFriction(0)
-          this.object.body.setCollisionFlags(2)
+            let object = scene.third.add.extrude(
+              {
+                y: 1,
+                shape: curve,
+                curveSegments: 10,
+                depth: depth,
+                bevelEnabled: false
+              },
+              { lambert: { color: 0xcccccc } }
+            )
+
+            // offset the center of mass (before adding a physical body)
+            // add center to one corner (the corner where the circle starts)
+            object.geometry.computeBoundingBox()
+            object.geometry.translate(-object.geometry.boundingBox.max.x, object.geometry.boundingBox.max.y, 0)
+            // offset the center by the radius
+            object.geometry.translate(radius, 0, 0)
+
+            object.rotateX(Math.PI / 2)
+            object.position.set(x, 0, z)
+
+            object.shape = 'concave'
+            scene.third.physics.add.existing(object, { autoCenter: false })
+
+            object.body.setAngularVelocityY(speed)
+            object.body.setLinearFactor(0, 0, 0)
+            object.body.setAngularFactor(0, 1, 0)
+            object.body.setFriction(0)
+            object.body.setCollisionFlags(2)
+
+            return object
+          }
+
+          this.object = addCurve(this.centerX, this.centerZ, this.speed, this.length, this.radius)
 
           if (this.index === 0 || this.index === 1) this.activate()
 
           // the cylinder in the middle
-          scene.third.add.cylinder({
-            height: 0.2,
-            x: centerX,
-            y: -0.2,
-            z: centerZ,
-            radiusTop: 1,
-            radiusBottom: 1,
-            collisionFlag: 4,
-            radiusSegments: 32
-          })
+          scene.third.add.cylinder(
+            {
+              height: 0.2,
+              x: centerX,
+              y: -0.2,
+              z: centerZ,
+              radiusTop: 0.95,
+              radiusBottom: 0.95,
+              collisionFlag: 4,
+              radiusSegments: 32
+            },
+            { lambert: { color: 0xcccccc } }
+          )
         }
       }
 
       class DashAndBlast extends Scene3D {
-        goals
-        player
-        goalIndex
-        ready
         constructor() {
           super({ key: 'DashAndBlast' })
         }
@@ -124,13 +125,13 @@
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
           this.third.warpSpeed('camera', 'sky', 'light', 'lookAtCenter')
 
-          this.third.physics.add.ground({ width: 35, height: 220, y: -1, z: -95 }, { lambert: { color: 0x95a7ef } })
-
           for (let i = 0; i < 10; i++) {
             this.goals.push(new Goal(this, Phaser.Math.RND.integerInRange(-6, 6), i * -20, i))
           }
 
           this.player = new Player(this)
+
+          this.third.physics.add.ground({ width: 35, height: 220, y: -1, z: -95 }, { lambert: { color: 0x95a7ef } })
 
           this.input.on('pointerdown', pointer => {
             const { x: vx, y: vy, z: vz } = this.player.object.body.velocity
@@ -154,6 +155,7 @@
 
         update(time, delta) {
           if (!this.ready) return
+
           // camera follow
           const pos = this.player.object.position.clone()
           this.third.camera.position.set(pos.x, pos.y + 20, pos.z + 20)
