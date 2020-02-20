@@ -58,7 +58,7 @@
               {
                 y: 1,
                 shape: curve,
-                curveSegments: 10,
+                curveSegments: Math.round(length * 3),
                 depth: depth,
                 bevelEnabled: false
               },
@@ -124,6 +124,8 @@
         create() {
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
           this.third.warpSpeed('camera', 'sky', 'light', 'lookAtCenter')
+
+          // this.third.physics.debug.enable()
 
           for (let i = 0; i < 10; i++) {
             this.goals.push(new Goal(this, Phaser.Math.RND.integerInRange(-6, 6), i * -20, i))
