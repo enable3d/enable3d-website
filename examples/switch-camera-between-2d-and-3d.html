@@ -41,8 +41,11 @@
         }
 
         create() {
+          const zoom = 70
+          const w = this.cameras.main.width / zoom
+          const h = this.cameras.main.height / zoom
           this.cams = {
-            ortho: Cameras.OrthographicCamera(this),
+            ortho: Cameras.OrthographicCamera(this, { left: w / -2, right: w / 2, top: h / 2, bottom: h / -2 }),
             perspective: Cameras.PerspectiveCamera(this),
             active: 'perspective',
             inTransition: false,
@@ -56,17 +59,27 @@
 
           let ortho = Cameras.OrthographicCamera(this)
 
+          const flash = delay => {
+            this.time.addEvent({
+              delay: delay,
+              callback: () => {
+                this.cameras.main.flash(250, 0, 0, 0, true)
+              }
+            })
+          }
+
           this.input.keyboard.on('keydown-F', () => {
             if (this.cams.active === 'perspective') {
               this.cams.inTransition = true
               this.time.addEvent({
-                delay: 400,
+                delay: 300,
                 callback: () => {
                   this.third.camera = this.cams.ortho
                   this.cams.inTransition = false
                 }
               })
               this.cams.active = 'ortho'
+              flash(250)
               // restrict linear factor on z-axis
               this.robot.body.setLinearFactor(1, 1, 0)
               // set zero velocity on x-axis
@@ -74,6 +87,7 @@
             } else {
               this.third.camera = this.cams.perspective
               this.cams.active = 'perspective'
+              flash(10)
               this.robot.body.setLinearFactor(1, 1, 0)
             }
           })
@@ -235,15 +249,15 @@
 
             const cameraOffset = {
               x: withPerspective ? -16 : 0,
-              y: withPerspective ? 4 : 1,
+              y: withPerspective ? 4 : 2,
               z: withPerspective ? 0 : 16
             }
 
-            this.cams.offset.lerp(cameraOffset, 0.1)
+            this.cams.offset.lerp(cameraOffset, 0.2)
 
             this.third.camera.position.copy(this.robot.position).add(this.third.new.vector3(this.cams.offset.x, this.cams.offset.y, this.cams.offset.z))
 
-            if (withPerspective || inTransition) this.third.camera.lookAt(this.robot.position)
+            if (withPerspective || inTransition) this.third.camera.lookAt(this.robot.position.clone().add(this.third.new.vector3(0, 2, 0)))
             else this.third.camera.lookAt(this.third.camera.position.clone())
 
             // get rotation of robot
