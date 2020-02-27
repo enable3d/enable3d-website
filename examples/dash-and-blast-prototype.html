@@ -19,9 +19,11 @@
         constructor(scene) {
           this.object = scene.third.physics.add.cylinder({ z: 10, y: 1, radiusSegments: 16, radiusTop: 1, radiusBottom: 1, collisionFlag: 0 })
           this.object.body.setAngularFactor(0, 0, 0)
+          this.object.body.setRestitution(0.25)
           // https://docs.panda3d.org/1.10/python/programming/physics/bullet/ccd
-          this.object.body.ammo.setCcdMotionThreshold(1e-7)
-          this.object.body.ammo.setCcdSweptSphereRadius(1)
+          // https://github.com/chandlerprall/Physijs/wiki/Collisions#motion-clamping
+          this.object.body.ammo.setCcdMotionThreshold(1e-2)
+          this.object.body.ammo.setCcdSweptSphereRadius(0.8)
         }
       }
 
@@ -83,6 +85,7 @@
             object.body.setAngularFactor(0, 1, 0)
             object.body.setFriction(0)
             object.body.setCollisionFlags(2)
+            object.body.setRestitution(1)
 
             return object
           }
@@ -140,7 +143,7 @@
             if (Math.abs(vx) > 1 || Math.abs(vy) > 1 || Math.abs(vz) > 1) return
 
             this.player.object.body.ammo.setMassProps(1, new Ammo.btVector3(1, 1, 1))
-            const speed = 50
+            const speed = 75
             // apply force in direction of the next goal
             const pos = this.player.object.position
             const goal = this.goals[this.goalIndex]

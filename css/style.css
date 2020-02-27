@@ -28,6 +28,11 @@ footer {
   text-align: center;
 }
 
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
 #logo img {
   max-width: 250px;
 }
@@ -39,7 +44,8 @@ h4,
 p,
 ol,
 ul {
-  margin-bottom: 1em;
+  margin-top: 0.8em;
+  margin-bottom: 1.2em;
 }
 
 a {
@@ -48,6 +54,16 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.content {
+  line-height: 1.4;
+}
+
+.content p,
+.content li {
+  font-size: 18px;
+}
+
 .content a:before {
   content: '\1F517';
 }
@@ -58,4 +74,11 @@ ul {
 
 li {
   line-height: 2.5;
+}
+
+@media only screen and (max-width: 768px) {
+  section,
+  footer {
+    padding: 2em 1em;
+  }
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Standalone Mode with custom Scene</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/enable3d.threeGraphics@0.0.15-alpha.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Using enable3d in Standalone Mode (custom scene)</div>
+    <script>
+      const { ThreeGraphics, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends ThreeGraphics {
+        constructor(config = {}) {
+          super(config)
+          this.create()
+        }
+
+        create() {
+          this.warpSpeed()
+
+          this.physics.debug.enable()
+
+          this.renderer.setSize(window.innerWidth, window.innerHeight)
+          document.body.appendChild(this.renderer.domElement)
+
+          this.box1 = this.add.box({ y: 5 }, { lambert: { color: 'deepskyblue' } })
+          this.box2 = this.physics.add.box({ y: 10 }, { lambert: { color: 'hotpink' } })
+
+          // green sphere
+          const geometry = new THREE.SphereBufferGeometry()
+          const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+          const cube = new THREE.Mesh(geometry, material)
+          cube.position.set(0.1, 5, 0)
+          this.scene.add(cube)
+          this.physics.add.existing(cube)
+
+          this.clock = new THREE.Clock()
+
+          this.update()
+        }
+
+        update() {
+          this.box1.rotation.x += 0.01
+          this.box1.rotation.y += 0.01
+
+          this.physics.update(this.clock.getDelta() * 1000)
+          this.renderer.render(this.scene, this.camera)
+
+          requestAnimationFrame(this.update.bind(this))
+        }
+      }
+      PhysicsLoader('/lib', () => new MainScene())
+    </script>
+  </body>
+</html>

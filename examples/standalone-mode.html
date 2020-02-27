@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Standalone Modes</title>
+    <link rel="stylesheet" href="/css/examples.css" />
+    <script src="/js/examples.js"></script>
+    <script src="/lib/enable3d.threeGraphics@0.0.15-alpha.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Using enable3d in Standalone Mode</div>
+    <script>
+      const { ThreeScene, PhysicsLoader, THREE } = ENABLE3D
+
+      // ThreeScene extends from ThreeGraphics
+      class MainScene extends ThreeScene {
+        init() {
+          console.log('init')
+        }
+
+        preload() {
+          console.log('preload')
+        }
+
+        create() {
+          console.log('create')
+
+          // set up scene (light, ground, grid, sky, orbitControls)
+          this.warpSpeed()
+
+          // enable physics debug
+          this.physics.debug.enable()
+
+          // position camera
+          this.camera.position.set(10, 10, 20)
+
+          // blue box
+          this.box = this.add.box({ y: 2 }, { lambert: { color: 'deepskyblue' } })
+
+          // pink box
+          this.physics.add.box({ y: 10 }, { lambert: { color: 'hotpink' } })
+
+          // green sphere
+          const geometry = new THREE.SphereGeometry(0.8, 16, 16)
+          const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+          const cube = new THREE.Mesh(geometry, material)
+          cube.position.set(0.2, 3, 0)
+          this.scene.add(cube)
+          // add physics to an existing object
+          this.physics.add.existing(cube)
+        }
+
+        update() {
+          this.box.rotation.x += 0.01
+          this.box.rotation.y += 0.01
+        }
+      }
+      PhysicsLoader('/lib', () => new MainScene())
+    </script>
+  </body>
+</html>
