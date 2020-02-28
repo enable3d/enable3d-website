@@ -7,29 +7,33 @@
     <title>Native three.js with Physics</title>
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
-    <script src="/lib/enable3d.ammoPhysics@0.0.15-alpha.0.min.js"></script>
-    <script>
-      const { AmmoPhysics, PhysicsLoader, THREE } = ENABLE3D
-    </script>
+    <script src="/lib/three.min.js"></script>
+    <script src="/lib/enable3d.ammoPhysics@0.0.15-alpha.1.min.js"></script>
     <script src="/lib/OrbitControls.js"></script>
   </head>
 
   <body>
     <div id="info-text">Using enable3d as Physics Plugin for three.js</div>
     <script>
+      const { AmmoPhysics, PhysicsLoader } = ENABLE3D
+
       const MainScene = () => {
         // scene
         const scene = new THREE.Scene()
         scene.background = new THREE.Color(0xf0f0f0)
 
         // camera
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-        camera.position.set(5, 5, 10)
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
+        camera.position.set(10, 10, 20)
 
         // renderer
         const renderer = new THREE.WebGLRenderer()
         renderer.setSize(window.innerWidth, window.innerHeight)
         document.body.appendChild(renderer.domElement)
+
+        // dpr
+        const DPR = window.devicePixelRatio
+        renderer.setPixelRatio(Math.min(2, DPR))
 
         // orbit controls
         const controls = new THREE.OrbitControls(camera, renderer.domElement)
@@ -43,6 +47,7 @@
 
         // physics
         const physics = new AmmoPhysics(scene)
+        physics.debug.enable(true)
 
         // blue box
         physics.add.box({ x: 0.05, y: 10 }, { lambert: { color: 0x2194ce } })
@@ -51,14 +56,33 @@
         physics.add.ground({ width: 20, height: 20 })
 
         // green sphere
-        const geometry = new THREE.SphereGeometry()
+        const geometry = new THREE.BoxBufferGeometry()
         const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
         const cube = new THREE.Mesh(geometry, material)
         cube.position.set(0, 5, 0)
         scene.add(cube)
         physics.add.existing(cube)
+        cube.body.setCollisionFlags(2) // make it kinematic
 
-        physics.debug.enable(true)
+        // merge children to compound shape
+        const exclamationMark = () => {
+          const material = new THREE.MeshLambertMaterial({ color: 0xffff00 })
+
+          const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.25), material)
+          sphere.position.set(0, -0.8, 0)
+          scene.add(sphere)
+
+          const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.4, 0.8, 0.4), material)
+          cube.position.set(5, 2, 5)
+          scene.add(cube)
+
+          cube.add(sphere)
+
+          cube.position.set(5, 5, 5)
+          cube.rotation.set(0, 0.4, 0.2)
+          physics.add.existing(cube)
+        }
+        exclamationMark()
 
         // clock
         const clock = new THREE.Clock()
@@ -67,6 +91,7 @@
         const animate = () => {
           cube.rotation.x += 0.01
           cube.rotation.y += 0.01
+          cube.body.needUpdate = true // this is how you update kinematic bodies
 
           physics.update(clock.getDelta() * 1000)
           physics.updateDebugger()
