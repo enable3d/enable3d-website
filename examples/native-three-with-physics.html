@@ -49,11 +49,24 @@
         const physics = new AmmoPhysics(scene)
         physics.debug.enable(true)
 
+        // extract the object factory from physics
+        // the factory will make/add object without physics
+        const { factory } = physics
+
         // blue box
         physics.add.box({ x: 0.05, y: 10 }, { lambert: { color: 0x2194ce } })
 
         // static ground
         physics.add.ground({ width: 20, height: 20 })
+
+        // add a normal sphere using the object factory
+        // (NOTE: This will be factory.add.sphere() in the future)
+        // first parameter is the config for the geometry
+        // second parameter is for the material
+        // you could also add a custom material like so { custom: new THREE.MeshLambertMaterial({ color: 0x00ff00 }) }
+        let greenSphere = factory.addSphere({ y: 2, z: 5 }, { lambert: { color: 0x00ff00 } })
+        // once the object is created, you can add physics to it
+        physics.add.existing(greenSphere)
 
         // green sphere
         const geometry = new THREE.BoxBufferGeometry()
