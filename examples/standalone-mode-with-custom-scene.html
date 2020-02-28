@@ -27,6 +27,7 @@
           this.physics.debug.enable()
 
           this.renderer.setSize(window.innerWidth, window.innerHeight)
+          this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
           document.body.appendChild(this.renderer.domElement)
 
           this.box1 = this.add.box({ y: 5 }, { lambert: { color: 'deepskyblue' } })

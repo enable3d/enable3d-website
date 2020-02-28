@@ -19,6 +19,10 @@
       class MainScene extends ThreeScene {
         init() {
           console.log('init')
+
+          // setPixelRatio
+          const DPR = window.devicePixelRatio
+          this.renderer.setPixelRatio(Math.min(2, DPR))
         }
 
         preload() {
