@@ -1,4 +1,7 @@
-* {
+html,
+body,
+footer,
+a {
   margin: 0;
   padding: 0;
   font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Helvetica, Arial,
@@ -48,11 +51,25 @@ ul {
   margin-bottom: 1.2em;
 }
 
+code {
+  background-color: #f0f0f0;
+  font-size: 16px;
+  padding: 2px 4px;
+}
+
 a {
   text-decoration: none;
+  color: #0366d6;
 }
 a:hover {
   text-decoration: underline;
+}
+footer a {
+  color: unset;
+}
+
+li p {
+  margin: 0;
 }
 
 .content {
@@ -68,12 +85,17 @@ a:hover {
   content: '\1F517';
 }
 
-ul {
+ul.examples-list {
   list-style-type: none;
+  padding-left: 4px;
 }
 
-li {
+ul.examples-list li {
   line-height: 2.5;
+}
+
+ul.examples-list li a {
+  color: unset;
 }
 
 @media only screen and (max-width: 768px) {

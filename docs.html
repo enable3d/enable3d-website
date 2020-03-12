@@ -4,12 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>enable3d • 3D extension for Phaser 3</title>
+    <title>enable3d • documentation</title>
     <meta name="description" content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3." />
     <link rel="stylesheet" href="/css/style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/github.min.css" />
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
   </head>
 
   <body>
+    <style>
+      .hljs-comment {
+        color: gray !important;
+      }
+    </style>
     <header>
       <div class="container">
         <a href="/">
@@ -19,25 +29,47 @@
     </header>
     <section class="content">
       <div class="container">
-        <h2>About</h2>
-        <p>
-          Enable3d is written in TypeScript, and wraps three.js and ammo.js.
-        </p>
-        <p>
-          Enable3d is designed in a modular way. Means, you can benefit from enable3d in 3 different ways. As a <b>physics extension for three.js</b>, in
-          <b>Standalone Mode</b> or as <b>3D Extension for Phaser</b>.
-        </p>
-        <p>
-          There are like 3 levels of wrapping where @enable/ammoPhysics is the lowest level, then @enable3d/threeGraphic and finally @enable3d/phaser on top.
-        </p>
-        <h2>Documentation</h2>
-        <p><a href="docs.html">Go to the documentation</a></p>
-        <h2>Examples</h2>
-        <p><a href="examples.html">Go to the examples</a></p>
-        <h2>Get Started</h2>
-        <p>Simply clone the <a href="https://github.com/yandeu/enable3d-project-template">enable3d-project-template</a>.</p>
+        <h1>Documentation</h1>
+        <div id="loading">loading...</div>
+        <div id="marked"></div>
       </div>
     </section>
+    <script>
+      const docs = [
+        'Basic-Setup',
+        'Standalone-Mode',
+        'Phaser-Extension',
+        'Basic-Shapes',
+        'Collisions',
+        'Compound-Shapes',
+        'Physics-Body',
+        'Factory',
+        'Constraints',
+        'Object-scaling',
+        'Physics-Configuration'
+      ]
+
+      Promise.all(docs.map(doc => fetch(`/docs/${doc}.md`)))
+        .then(responses => {
+          document.getElementById('loading').remove()
+
+          responses.forEach(res => {
+            if (res.status === 200) {
+              res.text().then(function(data) {
+                const node = document.createElement('div')
+                node.innerHTML = marked(data)
+                document.getElementById('marked').appendChild(node)
+                document.querySelectorAll('pre code').forEach(block => {
+                  hljs.highlightBlock(block)
+                })
+              })
+            }
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    </script>
     <footer>
       <a href="https://github.com/yandeu/enable3d#readme">
         github.com/yandeu/enable3d

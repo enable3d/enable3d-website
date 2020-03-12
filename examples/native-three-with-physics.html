@@ -83,16 +83,16 @@
 
           const sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.25), material)
           sphere.position.set(0, -0.8, 0)
-          scene.add(sphere)
 
           const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.4, 0.8, 0.4), material)
           cube.position.set(5, 2, 5)
-          scene.add(cube)
 
           cube.add(sphere)
+          scene.add(cube)
 
           cube.position.set(5, 5, 5)
           cube.rotation.set(0, 0.4, 0.2)
+
           physics.add.existing(cube)
         }
         exclamationMark()
