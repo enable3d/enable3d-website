@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d@0.0.14.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.0.15.min.js"></script>
   </head>
 
   <body>
@@ -47,17 +47,17 @@
             }
           })
 
-          const box = this.third.physics.add.box({ x: -1.5, y: 2, collisionFlag: 2 })
-          const sphere = this.third.physics.add.sphere({ x: 1.5, y: 2, radius: 0.5, collisionFlag: 2 })
+          const box = this.third.physics.add.box({ x: -1.5, y: 2, collisionFlags: 2 })
+          const sphere = this.third.physics.add.sphere({ x: 1.5, y: 2, radius: 0.5, collisionFlags: 2 })
 
           this.objects = [box, sphere]
         }
 
-        update(time) {
+        update(time, delta) {
           this.objects.forEach(obj => {
-            obj.body.transform()
-            obj.body.setRotation(time * 0.001, time * 0.001, 0)
-            obj.body.refresh()
+            obj.rotation.x += 0.01
+            obj.rotation.y += 0.01
+            obj.body.needUpdate = true
           })
         }
       }

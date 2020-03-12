@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d@0.0.14.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.0.15.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +35,10 @@
           this.third.warpSpeed('-ground')
 
           // create the texture cube
-          const textureCube = this.third.texture.cube(['side', 'side', 'top', 'bottom', 'side', 'side'])
+          const side = this.third.load.cache.texture('side')
+          const top = this.third.load.cache.texture('top')
+          const bottom = this.third.load.cache.texture('bottom')
+          const textureCube = this.third.texture.cube([side, side, top, bottom, side, side])
           textureCube.texture.front.repeat.set(4, 1)
           textureCube.texture.back.repeat.set(4, 1)
 

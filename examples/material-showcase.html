@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d@0.0.14.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.0.15.min.js"></script>
   </head>
 
   <body>
@@ -26,7 +26,7 @@
 
         create() {
           this.accessThirdDimension({
-            camera: Cameras.PerspectiveCamera(this, { y: 10, z: 25 })
+            camera: Cameras.PerspectiveCamera({ y: 10, z: 25 })
           })
           this.third.warpSpeed('light', 'orbitControls', 'sky')
 
