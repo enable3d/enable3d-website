@@ -7,6 +7,9 @@
     <title>enable3d • 3D extension for Phaser 3</title>
     <meta name="description" content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3." />
     <link rel="stylesheet" href="/css/style.css" />
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/github.min.css" />
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
   </head>
 
   <body>
@@ -19,20 +22,60 @@
     </header>
     <section class="content">
       <div class="container">
+        <h1 align="center">Physics for three.js / 3D extension for Phaser 3 / Standalone 3D Framework</h1>
+        <p align="center">
+          Written in TypeScript, uses three.js and ammo.js, brings physics to your three.js project and the third dimension to your Phaser 3 game.
+        </p>
+        <p align="center">
+          <a href="https://www.npmjs.com/search?q=%40enable3d"
+            ><img src="https://img.shields.io/npm/v/@enable3d/phaser-extension?style=flat-square" alt="NPM version"
+          /></a>
+          <a href="https://github.com/yandeu/enable3d/commits/master"
+            ><img src="https://img.shields.io/github/last-commit/yandeu/enable3d.svg?style=flat-square" alt="GitHub last commit"
+          /></a>
+          <a href="https://github.com/prettier/prettier" alt="code style: prettier"
+            ><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"
+          /></a>
+          <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/built%20with-TypeScript-blue?style=flat-square"/></a>
+        </p>
+        <hr />
         <h2>About</h2>
         <p>
-          Enable3d is written in TypeScript, and wraps three.js and ammo.js.
+          Initially I only wanted to make a 3d extension for Phaser 3. That is where the name enable3d is coming from. But now, this project can do much more. I
+          have extracted the main project into 3 separate modules. So, you can now use enable3d as a <b>physics plugin for three.js</b>, as a
+          <b>standalone 3d framework</b>, or as an <b>3d extension for Phaser</b>.
         </p>
-        <p>
-          Enable3d helps you in 3 different ways. As a <b>physics extension for three.js</b>, as a <b>Standalone 3D Framework</b> or as
-          <b>3D Extension for Phaser</b>.
-        </p>
+        <p>The structure looks like this:</p>
+        <pre>
+          <code class="bash">
+├─ @enable3d/phaser-extension      # 3d extension for Phaser
+│   └─ @enable3d/three-graphics    # 3d framework on top of three.js
+│       └─ @enable3d/ammo-physics  # Physics plugin for three.js
+│
+├─ @enable3d/common                # Some common codes
+└─ @enable3d/three-wrapper         # Simple three.js wrapper
+          </code>
+        </pre>
+        <script>
+          document.addEventListener('DOMContentLoaded', event => {
+            document.querySelectorAll('pre code').forEach(block => {
+              hljs.highlightBlock(block)
+            })
+          })
+        </script>
 
-        <h2>Documentation</h2>
-        <p><a href="docs.html">Go to the documentation</a></p>
+        <p>
+          So, if you have an existing three.js project and want to add physics to it, you simply need to add <b>@enable3d/ammo-physics</b>. If want to build a
+          simple 3d scene, simple use <b>@enable3d/three-graphics</b> which wraps some three.js functionalities into a simple, phaser alike api. If you want to
+          make a game, and want to use all the cool features (DataManager, TweenManager, SceneManager, InputManager, Loaders, SoundManager and more) that Phaser
+          provides, install <b>@enable3d/phaser-extension</b>.
+        </p>
 
         <h2>Examples</h2>
         <p><a href="examples.html">Go to the examples</a></p>
+
+        <h2>Documentation</h2>
+        <p><a href="docs.html">Go to the documentation</a></p>
 
         <h2>Get Started</h2>
         <p>

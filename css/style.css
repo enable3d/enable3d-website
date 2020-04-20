@@ -81,10 +81,6 @@ li p {
   font-size: 18px;
 }
 
-.content a:before {
-  content: '\1F517';
-}
-
 ul.examples-list {
   list-style-type: none;
   padding-left: 4px;
