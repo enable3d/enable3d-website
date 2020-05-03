@@ -40,6 +40,52 @@ footer {
   max-width: 250px;
 }
 
+@media only screen and (max-width: 640px) {
+  #logo img {
+    max-width: 125px;
+    position: relative;
+    top: 2px;
+  }
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar-items {
+  margin: auto 0px;
+  padding: 0px;
+}
+
+.navbar-items a {
+  color: unset;
+  text-decoration: none;
+}
+
+.navbar-items a:hover {
+  color: unset;
+  text-decoration: none;
+}
+
+.navbar-item {
+  display: inline-block;
+  margin: 0px;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.navbar-item:hover {
+  color: #0366d6;
+}
+
+@media only screen and (max-width: 640px) {
+  .navbar-item {
+    padding: 8px 4px;
+    font-size: 16px;
+  }
+}
+
 h1,
 h2,
 h3,
