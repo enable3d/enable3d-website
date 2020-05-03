@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yandeu/enable3d-website.git"
+    "url": "git+https://github.com/enable3d/enable3d-website.git"
   },
   "author": "Yannick Deubel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yandeu/enable3d-website/issues"
+    "url": "https://github.com/enable3d/enable3d-website/issues"
   },
-  "homepage": "https://github.com/yandeu/enable3d-website#readme",
+  "homepage": "https://github.com/enable3d/enable3d-website#readme",
   "dependencies": {},
   "devDependencies": {
     "live-server": "^1.2.1",
