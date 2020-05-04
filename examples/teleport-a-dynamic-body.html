@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Simple Setup</title>
+    <title>Teleport a Dynamic Body</title>
     <link rel="stylesheet" href="/css/examples.css" />
     <script src="/js/examples.js"></script>
     <script src="/lib/phaser.min.js"></script>
@@ -12,6 +12,7 @@
   </head>
 
   <body>
+    <div id="info-text">Teleports the box after 2 seconds to a new position</div>
     <script>
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
@@ -27,8 +28,30 @@
         create() {
           this.accessThirdDimension()
           this.third.warpSpeed()
-          this.third.physics.add.box()
-          this.third.haveSomeFun()
+
+          this.third.physics.debug.enable()
+
+          const blueBox = this.third.physics.add.box({ y: 4 }, { lambert: { color: 'cornflowerblue' } })
+
+          // teleport after 2 seconds
+          setTimeout(() => {
+            // set body to be kinematic
+            blueBox.body.setCollisionFlags(2)
+
+            // set the new position
+            blueBox.position.set(2, 4, 2)
+            blueBox.body.needUpdate = true
+
+            // this will run only on the next update if body.needUpdate = true
+            blueBox.body.once.update(() => {
+              // set body back to dynamic
+              blueBox.body.setCollisionFlags(0)
+
+              // if you do not reset the velocity, the object will keep it
+              blueBox.body.setVelocity(0, 0, 0)
+              blueBox.body.setAngularVelocity(0, 0, 0)
+            })
+          }, 2000)
         }
       }
 
