@@ -128,12 +128,12 @@ li p {
 }
 
 ul.examples-list {
-  list-style-type: none;
-  padding-left: 4px;
+  list-style-type: unset;
+  padding-left: 32px;
 }
 
 ul.examples-list li {
-  line-height: 2.5;
+  line-height: 2.2;
 }
 
 ul.examples-list li a {
