@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <div id="info-text">Use WASD, SPACE and your Mouse.<br />Try to play it on your mobile device :)</div>
+    <div id="info-text">Use WASD, SPACE and your Mouse.<br />Works on mobile and desktop.</div>
     <script>
       const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
 
@@ -73,8 +73,6 @@
           bridge.body.setLinearFactor(0, 0, 0)
           bridge.body.setFriction(0.8)
 
-          this.third.physics.debug.enable()
-
           /**
            * Create Player
            */
@@ -124,9 +122,10 @@
              */
             this.third.add.existing(this.man)
             this.third.physics.add.existing(this.man, {
-              shape: 'sphere',
-              radius: 0.4,
-              offset: { y: -0.4 }
+              shape: 'capsule',
+              radius: 0.2,
+              height: 0.75,
+              offset: { y: -0.55 }
             })
             this.man.body.setFriction(0.8)
             this.man.body.setAngularFactor(0, 0, 0)
