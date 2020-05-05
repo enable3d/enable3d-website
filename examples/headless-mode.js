@@ -21,7 +21,7 @@ class ServerScene {
       width: 40,
       depth: 40,
       collisionFlags: 2,
-      mass: 0,
+      mass: 0
     })
 
     const box = this.physics.add.box({ name: 'box', y: 5 })
@@ -45,8 +45,15 @@ class ServerScene {
 
     // you can use you own clock if you want
     // '@enable3d/ammo-physics' does also exports the three.js Clock
-    this.clock = new ServerClock()
-    this.clock.onTick((delta) => this.update(delta))
+    const clock = new ServerClock()
+
+    /**
+     * Once version > 0.0.17 is available, you should disable
+     * high accuracy clocking while developing to save some cpu power.
+     * "clock.disableHighAccuracy()"
+     */
+
+    clock.onTick(delta => this.update(delta))
   }
 
   update(delta) {
