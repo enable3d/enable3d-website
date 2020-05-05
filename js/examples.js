@@ -3,6 +3,10 @@
 window.addEventListener('load', function() {
   var repo = 'https://github.com/enable3d/enable3d-website/tree/master'
   var pathname = window.location.pathname
+
+  // link to .js file if it is a "headless mode" example
+  if (/\headless/.test(pathname)) pathname = pathname.replace(/\.html$/, '.js')
+
   var node = document.createElement('DIV')
   node.innerHTML += '<a href="'.concat(repo + pathname, '"><div id="link-to-github"><div>&#10094;&#10095;</div></div></a>')
   document.body.appendChild(node)

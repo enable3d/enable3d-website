@@ -22,7 +22,7 @@ div#info-text {
 }
 
 div#link-to-github {
-  position: absolute;
+  position: fixed;
   background: white;
   bottom: 36px;
   right: 36px;

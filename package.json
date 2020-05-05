@@ -21,7 +21,10 @@
     "url": "https://github.com/enable3d/enable3d-website/issues"
   },
   "homepage": "https://github.com/enable3d/enable3d-website#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@enable3d/ammo-physics": "0.0.16",
+    "three": "^0.116.1"
+  },
   "devDependencies": {
     "live-server": "^1.2.1",
     "prettier": "^1.19.1"
