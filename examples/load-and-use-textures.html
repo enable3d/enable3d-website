@@ -33,12 +33,17 @@
           this.third.warpSpeed('light', 'camera', 'sky', 'orbitControls')
           this.third.camera.position.set(20, 20, 40)
 
+          // add a simple box
+          this.third.add.box({ y: 2 })
+
           // get the texture and add the ground
           const grass = this.third.load.cache.texture('grass')
           grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
           grass.offset.set(0, 0)
           grass.repeat.set(2, 2)
-          this.third.physics.add.ground({ width: 20, height: 20, y: -5 }, { phong: { map: grass } })
+
+          // BUG: To add shadows to your ground, set transparent = true
+          this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
         }
       }
 
