@@ -17,12 +17,15 @@
 
       // ThreeScene extends from ThreeGraphics
       class MainScene extends ThreeScene {
+        constructor() {
+          super({ antialias: false })
+        }
+
         init() {
           console.log('init')
 
-          // setPixelRatio
-          const DPR = window.devicePixelRatio
-          this.renderer.setPixelRatio(Math.min(2, DPR))
+          this.renderer.setPixelRatio(1)
+          this.renderer.setSize(window.innerWidth, window.innerHeight)
         }
 
         preload() {
