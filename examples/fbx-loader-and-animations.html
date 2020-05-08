@@ -12,6 +12,10 @@
   </head>
 
   <body>
+    <div id="info-text">
+      Loads the robot, animates it<br />and adds a cube (or any mesh you want)<br />
+      to its left and.
+    </div>
     <script>
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
@@ -44,6 +48,13 @@
             robot.anims['Idle'] = object.animations[0]
             robot.action = robot.mixer.clipAction(object.animations[0])
             robot.action.play()
+
+            // attach a cube to the left hand
+            robot.traverse(child => {
+              if (child.name === 'mixamorigLeftHandIndex1') {
+                child.add(this.third.add.box({ width: 20, height: 20, depth: 20 }))
+              }
+            })
 
             robot.traverse(child => {
               if (child.isMesh) child.castShadow = child.receiveShadow = true
