@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Physics Raycaster</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.threeGraphics.0.17.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">A Raycaster for all Physical Bodies. Check the Console to see the Results of the Raycaster.</div>
+    <script>
+      const { ThreeScene, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends ThreeScene {
+        create() {
+          this.warpSpeed('-ground')
+
+          // draw the line
+          const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
+          const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-2, 5, 2), new THREE.Vector3(2, -10, 0)])
+          const line = new THREE.Line(geometry, material)
+          this.scene.add(line)
+
+          // add 3 ground
+          this.physics.add.ground({ y: 2, width: 4, height: 4, name: 'ground-1' })
+          this.physics.add.ground({ y: -1, width: 4, height: 4, name: 'ground-2' })
+          this.physics.add.ground({ y: -4, width: 4, height: 4, name: 'ground-3' })
+
+          // check closest raycaster
+          const closest = () => {
+            const raycaster = this.physics.add.raycaster('closest') // 'closest' is the default
+
+            raycaster.setRayFromWorld(-2, 5, 2)
+            raycaster.setRayToWorld(2, -10, 0)
+            raycaster.rayTest()
+
+            if (raycaster.hasHit()) {
+              const { x, y, z } = raycaster.getHitPointWorld()
+              const { name } = raycaster.getCollisionObject()
+              console.log('closest:', `${name}:`, `x:${x.toFixed(2)}`, `y:${x.toFixed(2)}`, `z:${x.toFixed(2)}`)
+            }
+
+            // destroy the raycaster if you do not use it anymore
+            // (but you can of course reuse it multiple times)
+            raycaster.destroy()
+          }
+
+          // check allHits raycaster
+          const allHits = () => {
+            const raycaster = this.physics.add.raycaster('allHits')
+
+            raycaster.setRayFromWorld(-2, 5, 2)
+            raycaster.setRayToWorld(2, -10, 0)
+            raycaster.rayTest()
+
+            if (raycaster.hasHit()) {
+              raycaster.getCollisionObjects().forEach((obj, i) => {
+                const { x, y, z } = raycaster.getHitPointWorld()[i]
+                const { name } = obj
+                console.log('allHits: ', `${name}:`, `x:${x.toFixed(2)}`, `y:${x.toFixed(2)}`, `z:${x.toFixed(2)}`)
+              })
+            }
+
+            // destroy the raycaster if you do not use it anymore
+            // (but you can of course reuse it multiple times)
+            raycaster.destroy()
+          }
+
+          console.log('-- CLOSEST --')
+          closest()
+          console.log('-- ALL HITS --')
+          allHits()
+        }
+      }
+      PhysicsLoader('/lib', () => new MainScene())
+    </script>
+  </body>
+</html>
