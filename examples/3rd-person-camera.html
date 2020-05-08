@@ -32,7 +32,7 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
           this.canJump = true
           this.isJumping = false
           this.move = false
@@ -42,7 +42,6 @@
         }
 
         create() {
-          this.accessThirdDimension()
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
           this.third.ground.body.setFriction(1)
 
