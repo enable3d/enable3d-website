@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>All Constraints Types</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.threeGraphics.0.17.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">From Left to Right:<br />Lock, Fixed, PointToPoint, Hinge, Slider, Spring, ConeTwist, 6DOF (Six degrees of freedom)</div>
+    <script>
+      const { ThreeScene, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends ThreeScene {
+        create() {
+          this.warpSpeed('-ground')
+
+          this.camera.position.set(0, 2, 20)
+          this.camera.lookAt(0, 0, 0)
+
+          this.physics.debug.enable()
+
+          let i = 2
+
+          const changeMode = () => {
+            let mode = i % 3 === 0 ? 1 + 2048 : i % 3 === 1 ? 1 + 4096 : 1 + 2048 + 4096
+            this.physics.debug.mode(mode)
+            i++
+          }
+          changeMode()
+
+          setInterval(changeMode, 4000)
+
+          let mat1 = this.add.material({ lambert: { color: 'yellow', transparent: true, opacity: 0.5 } })
+          let mat2 = this.add.material({ lambert: { color: 'blue', transparent: true, opacity: 0.5 } })
+          let mat3 = this.add.material({ lambert: { color: 'green', transparent: true, opacity: 0.5 } })
+
+          const lock = x => {
+            let box1 = this.physics.add.box({ y: 2, x, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 0.75, x: x + 0.75, z: 0.5 }, { custom: mat2 })
+            this.physics.add.constraints.lock(box1.body, box2.body)
+          }
+
+          const fixed = x => {
+            let box1 = this.physics.add.box({ y: 2, x, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 0.75, x: x + 0.75, z: 0.5 }, { custom: mat2 })
+            this.physics.add.constraints.fixed(box1.body, box2.body)
+            box2.body.setVelocityX(10)
+          }
+
+          const pointToPoint = x => {
+            let box1 = this.physics.add.box({ y: 2, x, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 2, x, z: 4 }, { custom: mat2 })
+            this.physics.add.constraints.pointToPoint(box1.body, box2.body, {
+              // the offset from the center of each object
+              pivotA: { z: 1.5 },
+              pivotB: { x: -1.5 }
+            })
+          }
+
+          const hinge = x => {
+            let box1 = this.physics.add.box({ depth: 0.25, y: 2, x: x, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ depth: 0.25, y: 2, x: x + 1.25 }, { custom: mat2 })
+            let box3 = this.physics.add.box({ depth: 0.25, y: 2, x: x + 1.25 }, { custom: mat3 })
+
+            this.physics.add.constraints.hinge(box1.body, box2.body, {
+              pivotA: { y: -0.65 },
+              pivotB: { y: 0.65 },
+              axisA: { x: 1 },
+              axisB: { x: 1 }
+            })
+            this.physics.add.constraints.hinge(box2.body, box3.body, {
+              pivotA: { y: -0.65 },
+              pivotB: { y: 0.65 },
+              axisA: { x: 1 },
+              axisB: { x: 1 }
+            })
+          }
+
+          const slider = x => {
+            let box1 = this.physics.add.cylinder({ height: 6, y: 2, x: x, radiusTop: 0.6, radiusBottom: 0.6, collisionFlags: 6, mass: 100 }, { custom: mat1 })
+            let box2 = this.physics.add.cylinder({ height: 4, y: 2, x: x, radiusTop: 0.4, radiusBottom: 0.4, collisionFlags: 4, mass: 1 }, { custom: mat2 })
+            this.physics.add.constraints.slider(box1.body, box2.body, {
+              frameA: { x: Math.PI / 2, y: 0, z: 0 },
+              frameB: { x: Math.PI / 2, y: 0, z: 0 },
+              linearLowerLimit: -5,
+              linearUpperLimit: 5
+            })
+
+            this.box = box1 // we rotate this box in update()
+          }
+
+          const spring = x => {
+            let box1 = this.physics.add.box({ y: 2, x: x, z: 0, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 1, x: x, z: 0, mass: 2 }, { custom: mat2 })
+            let box3 = this.physics.add.box({ y: 0, x: x, z: 0, mass: 8 }, { custom: mat3 })
+            const linearLowerLimit = { x: -100, y: -100, z: -100 }
+            const linearUpperLimit = { x: 100, y: 100, z: 100 }
+            this.physics.add.constraints.spring(box1.body, box2.body, {
+              damping: 250,
+              linearLowerLimit,
+              linearUpperLimit
+            })
+            this.physics.add.constraints.spring(box2.body, box3.body, {
+              damping: 20,
+              linearLowerLimit,
+              linearUpperLimit
+            })
+          }
+
+          const coneTwist = x => {
+            let box1 = this.physics.add.box({ y: 2, x: x, collisionFlags: 2, mass: 100 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 0, x: x, z: 0 }, { custom: mat2 })
+            this.physics.add.constraints.coneTwist(box1.body, box2.body, { x: 1, y: 2, z: 2 }, { x: 0.5, y: -0.5, z: 0.5 })
+          }
+
+          const dof = x => {
+            let box1 = this.physics.add.box({ y: 2, x: x, collisionFlags: 2, mass: 100 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ y: 0, x: x, z: 0 }, { custom: mat2 })
+            this.physics.add.constraints.dof(box1.body, box2.body, { center: true })
+
+            this.box2 = box1 // we rotate this box in update()
+          }
+
+          lock(-14)
+          fixed(-10)
+          pointToPoint(-6)
+          hinge(-2)
+          slider(2)
+          spring(6)
+          coneTwist(10)
+          dof(14)
+        }
+
+        update() {
+          this.box.rotation.x += 0.01
+          this.box.body.needUpdate = true
+          this.box2.rotation.x += 0.01
+          this.box2.body.needUpdate = true
+        }
+      }
+      PhysicsLoader('/lib', () => new MainScene())
+    </script>
+  </body>
+</html>
