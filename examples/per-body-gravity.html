@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Per Body Gravity</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.threeGraphics.0.17.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">The Right Box uses a different Gravity.</div>
+    <script>
+      const { ThreeScene, PhysicsLoader } = ENABLE3D
+
+      class MainScene extends ThreeScene {
+        create() {
+          this.warpSpeed()
+
+          const leftBox = this.physics.add.box({ x: -2, y: 5 })
+          const rightBox = this.physics.add.box({ x: 2, y: 5 })
+
+          rightBox.body.setGravity(0, -1, 0)
+        }
+      }
+      PhysicsLoader('/lib', () => new MainScene())
+    </script>
+  </body>
+</html>
