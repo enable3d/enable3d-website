@@ -71,28 +71,28 @@
         pole2.body.setAngularFactor(1, 1, 0)
 
         physics.add.constraints.pointToPoint(back.body, pole1.body, {
-          pivot: { x: 2.5, y: 0.5, z: 0 },
-          targetPivot: { x: 0, y: -1.6, z: 0 }
+          pivotA: { x: 2.5, y: 0.5, z: 0 },
+          pivotB: { x: 0, y: -1.6, z: 0 }
         })
 
         physics.add.constraints.pointToPoint(back.body, pole2.body, {
-          pivot: { x: 2.5, y: -0.5, z: 0 },
-          targetPivot: { x: 0, y: -1.6, z: 0 }
+          pivotA: { x: 2.5, y: -0.5, z: 0 },
+          pivotB: { x: 0, y: -1.6, z: 0 }
         })
 
         physics.add.constraints.pointToPoint(front.body, pole1.body, {
-          pivot: { x: 0, y: 0.5, z: 0 },
-          targetPivot: { x: 0, y: 1.6, z: 0 }
+          pivotA: { x: 0, y: 0.5, z: 0 },
+          pivotB: { x: 0, y: 1.6, z: 0 }
         })
 
         physics.add.constraints.pointToPoint(front.body, pole2.body, {
-          pivot: { x: 0, y: -0.5, z: 0 },
-          targetPivot: { x: 0, y: 1.6, z: 0 }
+          pivotA: { x: 0, y: -0.5, z: 0 },
+          pivotB: { x: 0, y: 1.6, z: 0 }
         })
 
         physics.add.constraints.pointToPoint(back.body, ball.body, {
-          pivot: { x: -2.5, y: 0, z: 0 },
-          targetPivot: { x: 0.1, y: 0, z: 0 }
+          pivotA: { x: -2.5, y: 0, z: 0 },
+          pivotB: { x: 0.1, y: 0, z: 0 }
         })
 
         let mouseDown = false
