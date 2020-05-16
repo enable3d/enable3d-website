@@ -8,7 +8,7 @@
     <link rel="icon" sizes="32x32" type="image/png" href="/img/icon/logo-32x32.png" />
     <link rel="icon" sizes="96x96" type="image/png" href="/img/icon/logo-96x96.png" />
     <title>enable3d • 3D for Web, Mobile and PC</title>
-    <meta name="description" content="3D Framework wrapping three.js and ammo.js. Includes a Headless Physics mode for node.js and a Phaser 3 Extension." />
+    <meta name="description" content="Cross-Platform 3D Game Framework using HTML5 and WebGL wrapping Three.js and ammo.js (bullet3). Includes Headless Physics mode for your Node.js Server and a Phaser 3D Extension." />
     <link rel="stylesheet" href="/css/style.css?ver=1.1.0" />
   </head>
 
@@ -70,12 +70,9 @@
 
     <section class="content">
       <div class="container">
-        <h1 align="center" style="margin-top: 0; margin-bottom: 1em;">3D for Web, Mobile and PC</h1>
-        <!-- <h1 align="center">Physics for three.js / 3D extension for Phaser 3 / Standalone 3D Framework</h1> -->
-        <!-- <p align="center">
-          Written in TypeScript, uses three.js and ammo.js, brings physics to your three.js project and the third dimension to your Phaser 3 game.
-        </p> -->
-        <p align="center">
+        <h1 style="text-align: center; margin-top: 0; margin-bottom: 1em;">3D for Web, Mobile and PC</h1>
+ 
+        <p style="text-align: center;">
           <a href="https://www.npmjs.com/search?q=enable3d"
             ><img src="https://img.shields.io/npm/v/@enable3d/phaser-extension?style=flat-square" alt="NPM version"
           /></a>
@@ -90,25 +87,25 @@
           /></a>
           <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/built%20with-TypeScript-blue?style=flat-square"/></a>
         </p>
-
+        
         <div class="benefits">
           <div class="benefit">
-            <h3>Physics for three.js</h3>
+            <h3>Physics for Three.js</h3>
             <p>
-              Easily add Physics (ammo.js) to your three.js scene. Including Dynamic, Static and Kinematic Bodies, Compound Shapes, Constraints, CCD Motion Clamping and
+              Easily add Physics (ammo.js) to your Three.js scene. Including Dynamic, Static and Kinematic Bodies, Compound Shapes, Constraints, CCD Motion Clamping and
               more.
             </p>
           </div>
           <div class="benefit">
             <h3>Ammo Physics on Node.js</h3>
-            <p>Run enable3d's physics module on your node.js server without the use of additional packages like electron, node-canvas or puppeteer.</p>
+            <p>Run enable3d's Headless Physics Module on your Node.js Server without the use of additional packages like electron, node-canvas, jsdom or puppeteer.</p>
           </div>
           <div class="benefit">
-            <h3>Standalone 3d Framework</h3>
-            <p>Use enable3d as three.js and ammo.js wrapper to build amazing 3D Games. The ThreeScene class helps you to get your three.js scene up and running in seconds.</p>
+            <h3>Standalone 3D Framework</h3>
+            <p>Use enable3d to easily get your first 3D HTML5 WebGL Game up and running in minutes. It uses the popular Three.js Engine and ammo.js (bullet3) Physics.</p>
           </div>
           <div class="benefit">
-            <h3>Phaser 3 Extension</h3>
+            <h3>Phaser 3D Extension</h3>
             <p>Integrate 3D Objects and Physics with few lines of code to your Phaser Games. Use all cool Phaser features you are used to, to create an amazing 3D game.</p>
           </div>
           <div class="benefit">
@@ -120,7 +117,7 @@
           <div class="benefit">
             <h3>Web, Mobile and PC</h3>
             <p>
-              Written in JavaScript, allows you to easily deploy it to any http server. Use <a href="https://capacitor.ionicframework.com/">capacitor</a> to
+              Written in JavaScript (TypeScript), allows you to easily deploy it to any http server. Use <a href="https://capacitor.ionicframework.com/">capacitor</a> to
               deploy your game to Android and iOS and <a href="https://www.electronjs.org/">electron</a> to deploy it to Windows and OSX.
             </p>
           </div>
@@ -147,7 +144,7 @@
         </style>
         <div style="display: flex; justify-content: space-evenly; flex-wrap: wrap; padding: 24px  0px;">
           <div>
-            <h2 align="center" style="margin-bottom:8px;">Get Started</h2>
+            <h2 style="text-align: center;" style="margin-bottom:8px;">Get Started</h2>
             <div style="display:flex; flex-wrap:wrap; justify-content:center; margin-top:0px; margin-bottom:32px;">
               <a href="/examples.html" class="button-bw">Examples</a>
               <a href="/docs.html" class="button-bw">Documentation</a>
@@ -156,7 +153,7 @@
 
        
         <div>
-          <h2 align="center"  style="margin-bottom:8px;">Download</h2>
+          <h2 style="text-align: center;"  style="margin-bottom:8px;">Download</h2>
           <div style="display:flex; flex-wrap:wrap; justify-content:center; margin-top:0px; margin-bottom:32px;">
             <a href="https://www.npmjs.com/search?q=%40enable3d" class="button-bw">Packages from npm</a>
             <a href="https://github.com/enable3d/enable3d/tree/master/bundles" class="button-bw">Bundles from github</a>
@@ -168,13 +165,13 @@
       <div class="container">
         <h2>About</h2>
         <p>
-          Initially I only wanted to make a 3d extension for Phaser 3. That is where the name enable3d is coming from. But now, this project can do much more. I
-          have extracted the main project into 3 separate modules. So, you can now use enable3d as a <b>physics plugin for three.js</b>, as a
-          <b>standalone 3d framework</b>, or as an <b>3d extension for Phaser</b>.
+          Initially I only wanted to make a 3D extension for Phaser 3. That is where the name enable3d is coming from. But now, this project can do much more. I
+          have extracted the main project into 3 separate modules. So, you can now use enable3d as a <b>physics plugin for Three.js</b>, as a
+          <b>standalone 3D framework</b>, or as an <b>3D extension for Phaser</b>.
         </p>
         <p>
-          So, if you have an existing three.js project and want to add physics to it, you simply need to add <b>@enable3d/ammo-physics</b>. If want to build a
-          simple 3d scene, simple use <b>@enable3d/three-graphics</b> which wraps some three.js functionalities into a simple, phaser alike api. If you want to
+          So, if you have an existing Three.js project and want to add physics to it, you simply need to add <b>@enable3d/ammo-physics</b>. If want to build a
+          simple 3D scene, simple use <b>@enable3d/three-graphics</b> which wraps some Three.js functionalities into a simple, phaser alike api. If you want to
           make a game, and want to use all the cool features (DataManager, TweenManager, SceneManager, InputManager, Loaders, SoundManager and more) that Phaser
           provides, install <b>@enable3d/phaser-extension</b>.
         </p>
@@ -182,7 +179,7 @@
         <h2>Phaser Project Template</h2>
         <p>
           Simply clone the <a href="https://github.com/enable3d/enable3d-project-template">enable3d-project-template</a> to make a beautiful 3D game with
-          phaser.js, three.js and ammo.js.
+          phaser.js, Three.js and ammo.js.
         </p>
       </div>
     </section>
