@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -24,17 +24,11 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          // height map from http://danni-three.blogspot.com/2013/09/threejs-heightmaps.html
-          this.load.image('heightmap-simple', '/assets/heightmap/heightmap-simple.png')
-        }
-
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
         }
 
         create() {
-          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
           this.third.warpSpeed('-ground')
           this.third.camera.position.set(20, 20, 40)
 
@@ -42,16 +36,17 @@
             this.third.haveSomeFun(1)
           })
 
-          const heightmap = this.third.load.cache.texture('heightmap-simple')
-
-          const mesh = this.third.add.heightMap(heightmap)
-          if (mesh) {
-            // yes, you have to convert it manually :/
-            mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
-            // we position, scale, rotate etc. the mesh before adding physics to it
-            mesh.scale.set(2, 2, 2)
-            this.third.physics.add.existing(mesh, { mass: 0 })
-          }
+          // height map from http://danni-three.blogspot.com/2013/09/threejs-heightmaps.html
+          this.third.load.texture('', '/assets/heightmap/heightmap-simple.png').then(heightmap => {
+            const mesh = this.third.heightMap.add(heightmap)
+            if (mesh) {
+              // yes, you have to convert it manually :/
+              mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
+              // we position, scale, rotate etc. the mesh before adding physics to it
+              mesh.scale.set(2, 2, 2)
+              this.third.physics.add.existing(mesh, { mass: 0 })
+            }
+          })
         }
       }
 

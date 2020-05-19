@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Play with Physics Bodies</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.framework.0.18.0-alpha.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">There are many different ways to add a Physics Body.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, ExtendedObject3D } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          const features = await this.warpSpeed()
+
+          this.physics.debug?.enable()
+
+          // simple sphere
+          let sphere0 = this.add.sphere({ x: -9 })
+          this.physics.add.existing(sphere0)
+
+          // add custom custom shape to a mesh
+          let sphere1 = this.add.sphere({ x: -6, radius: 0.5 })
+          sphere1.position.setY(2)
+          this.physics.add.existing(sphere1, { shape: 'box', width: 0.4 })
+
+          // add custom custom shape to a mesh (as child)
+          let object = new ExtendedObject3D()
+          let sphere2 = this.make.sphere({ radius: 0.5 }) // relative position to object
+          object.add(sphere2)
+          object.position.setY(4)
+          object.position.setX(-3)
+          this.add.existing(object)
+          this.physics.add.existing(object, { shape: 'box' })
+
+          // compound shape (child based)
+          // (the center of mass is the center of the box)
+          let box1 = this.add.box({ x: 0, y: 2 })
+          let sphere3 = this.add.sphere({ radius: 0.5, x: 0.25, y: 0.5 }) // relative position to box1
+          box1.add(sphere3)
+          this.physics.add.existing(box1)
+
+          // compound shape (group based)
+          // (the center of mass is 0,0,0)
+          let group = new THREE.Group()
+          const body = this.add.box({ height: 0.8, y: 1, width: 0.4, depth: 0.4 }, { lambert: { color: 0xffff00 } })
+          const head = this.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
+          group.add(body, head)
+          group.position.setX(3)
+          this.add.existing(group)
+          this.physics.add.existing(group)
+
+          // add hacd shape to existing mesh
+          let torus = this.add.torus({ x: 6, y: 2 })
+          this.physics.add.existing(torus, { shape: 'hacd' })
+
+          // custom compound shape
+          const box = this.add.box({ x: 9 })
+          const compound = [
+            { shape: 'box', width: 0.5, height: 1, depth: 0.4, y: -0.5, z: 0.5 },
+            { shape: 'box', width: 2.4, height: 0.6, depth: 0.4, z: -0.4, y: 0.2 },
+            { shape: 'sphere', radius: 0.65, z: -0.25, y: 0.35 },
+            { shape: 'box', width: 1.5, height: 0.8, depth: 1, y: 0.2, z: 0.2 }
+          ]
+          this.physics.add.existing(box, { compound })
+        }
+      }
+
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

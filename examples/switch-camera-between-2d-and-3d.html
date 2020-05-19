@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Use WASD to move,<br />SPACE to jump<br />and F to change perspective.</div>
     <script>
-      const { enable3d, Scene3D, Canvas, Cameras } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, Cameras, THREE, ExtendedObject3D } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -22,19 +22,13 @@
         }
 
         preload() {
-          /**
-           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
-           * https://threejs.org/examples/#webgl_animation_skinning_morph
-           * CC-0 license
-           */
-          this.load.binary('robot', '/assets/glb/robot.glb')
-
           this.load.image('sky', '/assets/img/sky.png')
           this.load.html('star', '/assets/svg/star.svg')
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
+
           delete this.robot
           this.stars = []
           this.score = 0
@@ -45,19 +39,16 @@
           const w = this.cameras.main.width / zoom
           const h = this.cameras.main.height / zoom
           this.cams = {
-            ortho: Cameras.OrthographicCamera(this, { left: w / -2, right: w / 2, top: h / 2, bottom: h / -2 }),
-            perspective: Cameras.PerspectiveCamera(this),
+            ortho: this.third.cameras.orthographicCamera(this, { left: w / -2, right: w / 2, top: h / 2, bottom: h / -2 }),
+            perspective: this.third.camera,
             active: 'perspective',
             inTransition: false,
             offset: null
           }
 
-          this.accessThirdDimension({ camera: this.cams.perspective, gravity: { x: 0, y: -20, z: 0 } })
           this.third.warpSpeed('-ground', '-sky', '-orbitControls')
 
-          this.cams.offset = this.third.new.vector3()
-
-          let ortho = Cameras.OrthographicCamera(this)
+          this.cams.offset = new THREE.Vector3()
 
           const flash = delay => {
             this.time.addEvent({
@@ -157,12 +148,18 @@
             this.stars.push(star)
           })
 
+          /**
+           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
+           * https://threejs.org/examples/#webgl_animation_skinning_morph
+           * CC-0 license
+           */
           // add robot
-          this.third.load.cache.gltf('robot', gltf => {
-            this.robot = this.third.new.extendedObject3D()
+          this.third.load.gltf('/assets/glb/robot.glb').then(gltf => {
+            this.robot = new ExtendedObject3D()
             this.robot.add(gltf.scene)
             const scale = 1 / 3
             this.robot.scale.set(scale, scale, scale)
+            this.robot.position.setY(0)
 
             this.robot.traverse(child => {
               if (child.isMesh) {
@@ -171,7 +168,7 @@
             })
 
             // animations
-            this.robot.mixer = this.third.new.animationMixer(this.robot)
+            this.robot.mixer = this.third.animationMixers.create(this.robot)
             gltf.animations.forEach(animation => {
               this.robot.anims[animation.name] = animation
             })
@@ -186,7 +183,7 @@
             this.third.camera.lookAt(this.robot.position)
 
             // add a sensor
-            const sensor = this.third.new.extendedObject3D()
+            const sensor = new ExtendedObject3D()
             sensor.position.setY(-0.5)
             this.third.physics.add.existing(sensor, { mass: 1e-8, shape: 'box', width: 0.2, height: 0.2, depth: 0.2 })
             sensor.body.setCollisionFlags(4)
@@ -254,9 +251,9 @@
 
             this.cams.offset.lerp(cameraOffset, 0.2)
 
-            this.third.camera.position.copy(this.robot.position).add(this.third.new.vector3(this.cams.offset.x, this.cams.offset.y, this.cams.offset.z))
+            this.third.camera.position.copy(this.robot.position).add(new THREE.Vector3(this.cams.offset.x, this.cams.offset.y, this.cams.offset.z))
 
-            if (withPerspective || inTransition) this.third.camera.lookAt(this.robot.position.clone().add(this.third.new.vector3(0, 2, 0)))
+            if (withPerspective || inTransition) this.third.camera.lookAt(this.robot.position.clone().add(new THREE.Vector3(0, 2, 0)))
             else this.third.camera.lookAt(this.third.camera.position.clone())
 
             // get rotation of robot

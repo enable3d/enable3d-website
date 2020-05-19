@@ -1,23 +1,13 @@
-const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
+const { enable3d, Scene3D, Canvas, ThirdDimension, ExtendedObject3D, THREE, JoyStick, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
+
+/**
+ * Is touch device?
+ */
+const isTouchDevice = 'ontouchstart' in window
 
 class MainScene extends Scene3D {
   constructor() {
     super({ key: 'MainScene' })
-  }
-
-  preload() {
-    /**
-     * box_man.glb by Jan Bláha
-     * https://github.com/swift502/Sketchbook
-     * CC-0 license 2018
-     */
-    this.load.binary('box_man', '/assets/glb/box_man.glb')
-    /**
-     * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
-     * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
-     * Attribution 4.0 International (CC BY 4.0)
-     */
-    this.load.binary('book', '/assets/glb/book.glb')
   }
 
   init() {
@@ -43,19 +33,14 @@ class MainScene extends Scene3D {
     // this.third.physics.debug.enable()
 
     /**
-     * Is touch device?
+     * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
+     * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
+     * Attribution 4.0 International (CC BY 4.0)
      */
-    const isTouchDevice = () => {
-      return 'ontouchstart' in window
-    }
-
-    /**
-     * Add Book
-     */
-    this.third.load.cache.gltf('book', object => {
+    this.third.load.gltf('/assets/glb/book.glb').then(object => {
       const scene = object.scenes[0]
 
-      const book = this.third.new.extendedObject3D()
+      const book = new ExtendedObject3D()
       book.name = 'scene'
       book.add(scene)
       this.third.add.existing(book)
@@ -63,7 +48,7 @@ class MainScene extends Scene3D {
       // add animations
       // sadly only the flags animations works
       object.animations.forEach((anim, i) => {
-        book.mixer = this.third.new.animationMixer(book)
+        book.mixer = this.third.animationMixers.create(book)
         // overwrite the action to be an array of actions
         book.action = []
         book.action[i] = book.mixer.clipAction(anim)
@@ -93,13 +78,16 @@ class MainScene extends Scene3D {
     })
 
     /**
-     * Create Player
+     * box_man.glb by Jan Bláha
+     * https://github.com/swift502/Sketchbook
+     * CC-0 license 2018
      */
-    this.third.load.cache.gltf('box_man', object => {
+    this.third.load.gltf('/assets/glb/box_man.glb').then(object => {
       const man = object.scene.children[0]
 
-      this.man = this.third.new.extendedObject3D()
+      this.man = new ExtendedObject3D()
       this.man.name = 'man'
+      this.man.rotateY(Math.PI + 0.1) // a hack
       this.man.add(man)
       this.man.rotation.set(0, Math.PI * 1.5, 0)
       this.man.position.set(35, -3.5, 0)
@@ -116,7 +104,7 @@ class MainScene extends Scene3D {
       /**
        * Animations
        */
-      this.man.mixer = this.third.new.animationMixer(this.man)
+      this.man.mixer = this.third.animationMixers.create(this.man)
       object.animations.forEach(animation => {
         if (animation.name) {
           this.man.anims[animation.name] = animation
@@ -144,14 +132,26 @@ class MainScene extends Scene3D {
       /**
        * Add 3rd Person Controls
        */
-      const pointerLock = isTouchDevice() ? false : true
-      this.controls = this.third.controls.add.thirdPerson(this.man, {
-        offset: this.third.new.vector3(0, 1, 0),
-        pointerLock,
+      this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+        offset: new THREE.Vector3(0, 1, 0),
         targetRadius: 3
       })
       // set initial view to 90 deg theta
       this.controls.theta = 90
+
+      /**
+       * Add Pointer Lock and Pointer Drag
+       */
+      if (!isTouchDevice) {
+        let pl = new PointerLock(this.game.canvas)
+        let pd = new PointerDrag(this.game.canvas)
+        pd.onMove(delta => {
+          if (pl.isLocked()) {
+            this.moveTop = -delta.y
+            this.moveRight = delta.x
+          }
+        })
+      }
     })
 
     /**
@@ -168,10 +168,10 @@ class MainScene extends Scene3D {
     /**
      * Add joystick
      */
-    if (isTouchDevice()) {
-      const joystick = this.third.controls.add.joystick()
+    if (isTouchDevice) {
+      const joystick = new JoyStick()
       const axis = joystick.add.axis({
-        styles: { left: 20, bottom: 195, size: 100 }
+        styles: { left: 35, bottom: 35, size: 100 }
       })
       axis.onMove(event => {
         /**
@@ -183,12 +183,12 @@ class MainScene extends Scene3D {
       })
       const buttonA = joystick.add.button({
         letter: 'A',
-        styles: { right: 20, bottom: 270, size: 80 }
+        styles: { right: 35, bottom: 110, size: 80 }
       })
       buttonA.onClick(() => this.jump())
       const buttonB = joystick.add.button({
         letter: 'B',
-        styles: { right: 95, bottom: 195, size: 80 }
+        styles: { right: 110, bottom: 35, size: 80 }
       })
       buttonB.onClick(() => (this.move = true))
       buttonB.onRelease(() => (this.move = false))
@@ -220,21 +220,21 @@ class MainScene extends Scene3D {
        * Update Controls
        */
       this.controls.update(this.moveRight * 3, -this.moveTop * 3)
+      if (!isTouchDevice) this.moveRight = this.moveTop = 0
       /**
        * Player Turn
        */
       const speed = 4
-      const v3 = this.third.new.vector3()
+      const v3 = new THREE.Vector3()
 
       const rotation = this.third.camera.getWorldDirection(v3)
       const theta = Math.atan2(rotation.x, rotation.z)
       const rotationMan = this.man.getWorldDirection(v3)
       const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
-
       this.man.body.setAngularVelocityY(0)
 
       const l = Math.abs(theta - thetaMan)
-      let rotationSpeed = 8
+      let rotationSpeed = isTouchDevice ? 2 : 4
       let d = Math.PI / 24
 
       if (l > d) {
@@ -272,7 +272,6 @@ const config = {
   type: Phaser.WEBGL,
   scale: {
     mode: Phaser.Scale.FIT,
-    //autoCenter: Phaser.Scale.CENTER_BOTH,
     width: WIDTH,
     height: HEIGHT
   },

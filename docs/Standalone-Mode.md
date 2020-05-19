@@ -1,7 +1,7 @@
 ## Using Enable3d in Standalone Mode
 
 ```js
-import { ThreeScene, PhysicsLoader, THREE } from '@enable3d/three-graphics'
+import { ThreeScene, PhysicsLoader, THREE } from 'enable3d'
 
 class MainScene extends ThreeScene {
   init() {

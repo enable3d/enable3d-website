@@ -1,7 +1,4 @@
-const ENABLE3D = require('@enable3d/ammo-physics')
-const Ammo = require('@enable3d/ammo-physics/ammo/ammo.js')
-
-const { ServerClock, AmmoPhysics } = ENABLE3D
+const { Ammo, Physics, ServerClock } = require('@enable3d/ammo-on-nodejs')
 
 class ServerScene {
   constructor() {
@@ -10,8 +7,8 @@ class ServerScene {
   }
 
   init() {
-    // init the AmmoPhysics in 'headless' mode
-    this.physics = new AmmoPhysics('headless')
+    // init the Physics
+    this.physics = new Physics()
     this.factory = this.physics.factory
   }
 
@@ -43,15 +40,12 @@ class ServerScene {
 
     this.objects = [ground, box]
 
-    // you can use you own clock if you want
-    // '@enable3d/ammo-physics' does also exports the three.js Clock
+    // clock
     const clock = new ServerClock()
 
-    /**
-     * Once version > 0.0.17 is available, you should disable
-     * high accuracy clocking while developing to save some cpu power.
-     * "clock.disableHighAccuracy()"
-     */
+    // for debugging you disable high accuracy
+    // high accuracy uses much more cpu power
+    if (process.env.NODE_ENV !== 'production') clock.disableHighAccuracy()
 
     clock.onTick(delta => this.update(delta))
   }
@@ -60,19 +54,10 @@ class ServerScene {
     this.physics.update(delta * 1000)
 
     const box = this.objects[1]
-
-    box.body.transform()
-    const y = box.body.position.y.toFixed(2)
-
-    /**
-     * In version > 0.0.17 you will be able to simply do
-     * "const y = box.position.y.toFixed(2)"
-     * without calling "box.body.transform()"
-     * just like you would in non-headless mode
-     */
+    const y = box.position.y.toFixed(2)
 
     // will print the y position of the box from 5.00 to 1.00
-    if (y > 1) console.log('y', box.body.position.y.toFixed(2))
+    if (y > 1) console.log('y:', y)
 
     // TODO
     // send new positions to the client (via geckos.io)

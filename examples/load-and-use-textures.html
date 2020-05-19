@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -20,9 +20,7 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          this.load.image('grass', '/assets/img/grass.jpg')
-        }
+        preload() {}
 
         init() {
           this.requestThirdDimension()
@@ -37,13 +35,15 @@
           this.third.add.box({ y: 2 })
 
           // get the texture and add the ground
-          const grass = this.third.load.cache.texture('grass')
-          grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
-          grass.offset.set(0, 0)
-          grass.repeat.set(2, 2)
 
-          // BUG: To add shadows to your ground, set transparent = true
-          this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
+          this.third.load.texture('', '/assets/img/grass.jpg').then(grass => {
+            grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
+            grass.offset.set(0, 0)
+            grass.repeat.set(2, 2)
+
+            // BUG: To add shadows to your ground, set transparent = true
+            this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
+          })
         }
       }
 

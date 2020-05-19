@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Use A and D to move<br />and W to jump.</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -22,26 +22,18 @@
         }
 
         preload() {
-          /**
-           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
-           * https://threejs.org/examples/#webgl_animation_skinning_morph
-           * CC-0 license
-           */
-          this.load.binary('robot', '/assets/glb/robot.glb')
-
           this.load.image('sky', '/assets/img/sky.png')
           this.load.html('star', '/assets/svg/star.svg')
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
           delete this.robot
           this.stars = []
           this.score = 0
         }
 
         create() {
-          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
           this.third.warpSpeed('-ground', '-sky', '-orbitControls')
 
           // adjust gamma factor
@@ -109,9 +101,14 @@
             this.stars.push(star)
           })
 
+          /**
+           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
+           * https://threejs.org/examples/#webgl_animation_skinning_morph
+           * CC-0 license
+           */
           // add robot
-          this.third.load.cache.gltf('robot', gltf => {
-            this.robot = this.third.new.extendedObject3D()
+          this.third.load.gltf('/assets/glb/robot.glb').then(gltf => {
+            this.robot = new ExtendedObject3D()
             this.robot.add(gltf.scene)
             const scale = 1 / 3
             this.robot.scale.set(scale, scale, scale)
@@ -123,7 +120,7 @@
             })
 
             // animations
-            this.robot.mixer = this.third.new.animationMixer(this.robot)
+            this.robot.mixer = this.third.animationMixers.create(this.robot)
             gltf.animations.forEach(animation => {
               this.robot.anims[animation.name] = animation
             })
@@ -138,7 +135,7 @@
             this.third.camera.lookAt(this.robot.position)
 
             // add a sensor
-            const sensor = this.third.new.extendedObject3D()
+            const sensor = new ExtendedObject3D()
             sensor.position.setY(-0.5)
             this.third.physics.add.existing(sensor, { mass: 1e-8, shape: 'box', width: 0.2, height: 0.2, depth: 0.2 })
             sensor.body.setCollisionFlags(4)
@@ -193,7 +190,7 @@
 
           if (this.robot && this.robot.body) {
             // add just the camera position
-            this.third.camera.position.copy(this.robot.position).add(this.third.new.vector3(0, 5, 16))
+            this.third.camera.position.copy(this.robot.position).add(new THREE.Vector3(0, 5, 16))
 
             // get rotation of robot
             const theta = this.robot.world.theta

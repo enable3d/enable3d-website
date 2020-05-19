@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -16,21 +16,12 @@
       Use WASD to move, Q and E to tilt, right mouse button to aim and left mouse button to shoot.
     </div>
     <script>
-      const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ThirdDimension, ExtendedObject3D, FirstPersonControls, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
           this.move = { x: 0, y: 0, z: 0 }
-        }
-
-        preload() {
-          /**
-           * hashtag3d (https://www.cgtrader.com/hashtag3d)
-           * https://www.cgtrader.com/free-3d-models/military/armor/m4a1-carbine-e81d81d5-cfdb-4c57-be71-5c1b8092f4ea
-           * Editorial License (https://www.cgtrader.com/pages/terms-and-conditions#general-terms-of-licensing)
-           */
-          this.load.binary('rifle', '/assets/glb/M4A1.glb')
         }
 
         create() {
@@ -39,11 +30,15 @@
           this.third.haveSomeFun(50)
           this.third.renderer.gammaFactor = 1.5
 
-          // add rifle
-          this.third.load.cache.gltf('rifle', object => {
+          /**
+           * hashtag3d (https://www.cgtrader.com/hashtag3d)
+           * https://www.cgtrader.com/free-3d-models/military/armor/m4a1-carbine-e81d81d5-cfdb-4c57-be71-5c1b8092f4ea
+           * Editorial License (https://www.cgtrader.com/pages/terms-and-conditions#general-terms-of-licensing)
+           */
+          this.third.load.gltf('', '/assets/glb/M4A1.glb').then(object => {
             const rifle = object.scene
 
-            this.rifle = this.third.new.extendedObject3D()
+            this.rifle = new ExtendedObject3D()
             this.rifle.name = 'rifle'
             this.rifle.add(rifle)
 
@@ -62,11 +57,24 @@
           this.redDot.depth = 1
 
           // add player
-          this.player = this.third.new.extendedObject3D()
+          this.player = new ExtendedObject3D()
           this.player.position.setY(1)
 
           // add first person controls
-          this.firstPersonControls = this.third.controls.add.firstPerson(this.player, {})
+          this.firstPersonControls = new FirstPersonControls(this.third.camera, this.player, {})
+
+          // lock the pointer and update the first person control
+          this.input.on('pointerdown', () => {
+            this.input.mouse.requestPointerLock()
+          })
+          this.input.on('pointermove', pointer => {
+            if (this.input.mouse.locked) {
+              this.firstPersonControls.update(pointer.movementX, pointer.movementY)
+            }
+          })
+          this.events.on('update', () => {
+            this.firstPersonControls.update(0, 0)
+          })
 
           // add keys
           this.keys = {
@@ -84,7 +92,7 @@
             // some variables
             const zoom = this.input.mousePointer.rightButtonDown()
             const speed = 0.1
-            const direction = this.third.new.vector3()
+            const direction = new THREE.Vector3()
             const rotation = this.third.camera.getWorldDirection(direction)
             const theta = Math.atan2(rotation.x, rotation.z)
 
@@ -110,20 +118,20 @@
             // tilt
             if (this.keys.q.isDown) {
               this.third.camera.rotateZ(0.2)
-              this.firstPersonControls.offset = this.third.new.vector3(Math.sin(theta + Math.PI * 0.5) * 0.4, 0, Math.cos(theta + Math.PI * 0.5) * 0.4)
+              this.firstPersonControls.offset = new THREE.Vector3(Math.sin(theta + Math.PI * 0.5) * 0.4, 0, Math.cos(theta + Math.PI * 0.5) * 0.4)
             } else if (this.keys.e.isDown) {
               this.third.camera.rotateZ(-0.2)
-              this.firstPersonControls.offset = this.third.new.vector3(Math.sin(theta - Math.PI * 0.5) * 0.4, 0, Math.cos(theta - Math.PI * 0.5) * 0.4)
+              this.firstPersonControls.offset = new THREE.Vector3(Math.sin(theta - Math.PI * 0.5) * 0.4, 0, Math.cos(theta - Math.PI * 0.5) * 0.4)
             } else {
               this.third.camera.rotateZ(0)
-              this.firstPersonControls.offset = this.third.new.vector3(0, 0, 0)
+              this.firstPersonControls.offset = new THREE.Vector3(0, 0, 0)
             }
 
             // adjust the position of the rifle to the camera
-            const raycaster = this.third.new.raycaster()
+            const raycaster = new THREE.Raycaster()
             // x and y are normalized device coordinates from -1 to +1
             raycaster.setFromCamera({ x: 0.6 - this.move.x, y: -0.8 - this.move.y }, this.third.camera)
-            const pos = this.third.new.vector3()
+            const pos = new THREE.Vector3()
             pos.copy(raycaster.ray.direction)
             pos.multiplyScalar(0.8 + this.move.z)
             pos.add(raycaster.ray.origin)
@@ -154,7 +162,7 @@
               const x = 0
               const y = 0
               const force = 5
-              const pos = this.third.new.vector3()
+              const pos = new THREE.Vector3()
 
               raycaster.setFromCamera({ x, y }, this.third.camera)
 

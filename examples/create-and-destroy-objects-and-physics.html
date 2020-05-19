@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -21,12 +21,11 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
-        create() {
-          this.accessThirdDimension()
-          this.third.warpSpeed()
+        async create() {
+          const { ground } = await this.third.warpSpeed()
 
           this.third.physics.debug.enable()
 
@@ -48,7 +47,7 @@
 
           setTimeout(() => this.third.destroy(redBox), 4000)
 
-          setTimeout(() => this.third.destroy(this.third.ground), 5000)
+          setTimeout(() => this.third.destroy(ground), 5000)
         }
       }
 

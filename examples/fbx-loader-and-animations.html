@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -16,7 +16,7 @@
       Loads the robot, animates it and adds a cube (or any mesh you want) to its left and.
     </div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -24,25 +24,24 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
         create() {
-          this.accessThirdDimension()
           this.third.warpSpeed()
           this.third.camera.position.set(20, 20, 40)
 
           // These assets are from mixamo.com
           // The the Idle.fbx contains the skin and the idle animation.
 
-          const robot = this.third.new.extendedObject3D()
+          const robot = new ExtendedObject3D()
           const animations = ['Jumping', 'LookingAround', 'Running', 'BodyJabCross', 'HipHopDancing']
           const pos = { x: 0, y: 5, z: 0 }
 
-          this.third.load.fbx('/assets/fbx/Idle.fbx', object => {
+          this.third.load.fbx('', '/assets/fbx/Idle.fbx').then(object => {
             robot.add(object)
 
-            robot.mixer = this.third.new.animationMixer(robot)
+            robot.mixer = this.third.animationMixers.create(robot)
 
             robot.anims['Idle'] = object.animations[0]
             robot.action = robot.mixer.clipAction(object.animations[0])
@@ -63,12 +62,12 @@
             robot.position.set(pos.x, pos.y, pos.z)
 
             this.third.add.existing(robot)
-            this.third.physics.add.existing(robot, { offset: { y: -0.5 } })
+            this.third.physics.add.existing(robot, { shape: 'box', offset: { y: -0.5 } })
 
             // load more animations
             animations.forEach(key => {
               if (key === 'Idle') return
-              this.third.load.fbx(`/assets/fbx/${key}.fbx`, object => {
+              this.third.load.fbx('', `/assets/fbx/${key}.fbx`).then(object => {
                 robot.anims[key] = object.animations[0]
               })
             })

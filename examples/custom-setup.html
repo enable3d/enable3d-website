@@ -8,35 +8,30 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Cameras, Third, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Cameras, Third, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
+          console.log(Cameras)
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
         create() {
-          this.accessThirdDimension({
-            camera: Cameras.PerspectiveCamera({
-              x: 10,
-              y: 15,
-              z: 20
-            })
-          })
+          this.third.camera.position.set(10, 15, 20)
 
-          this.third.scene.background = this.third.new.color(0xbfd1e5)
+          this.third.scene.background = new THREE.Color(0xbfd1e5)
 
-          this.third.add.ambientLight({ color: 0x707070 })
-          const light = this.third.add.directionalLight({
+          this.third.lights.ambientLight({ color: 0x707070 })
+          const light = this.third.lights.directionalLight({
             skyColor: 0xffffff,
             intensity: 0.8,
             x: -10,
@@ -55,31 +50,34 @@
           // grid (texture)
           const gridData =
             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOnAAADusBZ+q87AAAAJtJREFUeJzt0EENwDAAxLDbNP6UOxh+NEYQ5dl2drFv286598GrA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAu37AD8eaBH5JQdVbAAAAAElFTkSuQmCC'
-          const texture = this.third.load.texture(gridData)
-          texture.wrapS = texture.wrapT = 1000 // RepeatWrapping
-          texture.repeat.set(25, 25)
 
-          // ground
-          const ground = this.third.physics.add.ground(
-            {
-              name: 'ground',
-              width: 50,
-              height: 50,
-              depth: 1,
-              y: 0
-            },
-            {
-              phong: {
-                map: texture,
-                transparent: true,
-                opacity: 0.8,
-                color: 0xffffff
+          this.third.load.texture('', gridData).then(texture => {
+            console.log(texture)
+            texture.wrapS = texture.wrapT = 1000 // RepeatWrapping
+            texture.repeat.set(25, 25)
+
+            // ground
+            const ground = this.third.physics.add.ground(
+              {
+                name: 'ground',
+                width: 50,
+                height: 50,
+                depth: 1,
+                y: 0
+              },
+              {
+                phong: {
+                  map: texture,
+                  transparent: true,
+                  opacity: 0.8,
+                  color: 0xffffff
+                }
               }
-            }
-          )
-          ground.body.setRestitution(1)
+            )
+            ground.body.setRestitution(1)
+          })
 
-          Third.OrbitControls(this.third.camera, this.scale.parent)
+          new THREE.OrbitControls(this.third.camera, this.scale.parent)
 
           this.third.physics.add.box({ width: 1, height: 2, depth: 2.5, y: 10 }, { lambert: { color: 0xff00ff } })
         }

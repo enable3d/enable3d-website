@@ -8,35 +8,31 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">From left to right:<br />box, compound, hull, hacd, convexMesh, concaveMesh</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          this.load.binary('suzanne', '/assets/glb/suzanne.glb')
-        }
-
         init() {
           this.requestThirdDimension()
         }
 
-        create() {
+        async create() {
           this.accessThirdDimension()
           this.third.warpSpeed()
 
           this.third.physics.debug.enable()
 
           // add suzanne (the monkey's name is suzanne)
-          this.third.load.cache.gltf('suzanne', gltf => {
+          this.third.load.gltf('suzanne', '/assets/glb/suzanne.glb').then(gltf => {
             // If you can, always use simple shapes like BOX, SPHERE, CONE etc.
             // The second most efficient shape is a COMPOUND, which merges multiple simple shapes.
             // Prefer HULL over CONVEX MESH.
@@ -57,7 +53,7 @@
 
             // compound multiple simple shape together
             const compoundShape = {
-              shapes: [
+              compound: [
                 // nose
                 { shape: 'box', width: 0.5, height: 1, depth: 0.4, y: -0.5, z: 0.5 },
                 // ears
@@ -76,7 +72,7 @@
             })
 
             shapes.forEach((shape, i) => {
-              const object = this.third.new.extendedObject3D()
+              const object = new ExtendedObject3D()
 
               object.add(suzanne.clone())
               object.position.set(i * 3 - 7.5, 1.2, 0)

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -20,23 +20,24 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          this.load.image('water1', '/assets/water/Water_1_M_Normal.jpg')
-          this.load.image('water2', '/assets/water/Water_2_M_Normal.jpg')
-        }
-
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
-        create() {
-          this.accessThirdDimension()
-          this.third.warpSpeed()
+        async create() {
+          await this.third.warpSpeed()
 
-          this.third.add.water({
+          this.third.camera.position.set(0, 1.5, 0)
+
+          const textures = await Promise.all([
+            this.third.load.texture('water1', '/assets/water/Water_1_M_Normal.jpg'),
+            this.third.load.texture('water2', '/assets/water/Water_2_M_Normal.jpg')
+          ])
+
+          this.third.misc.water({
             y: 1,
-            normalMap0: this.third.load.cache.texture('water1'),
-            normalMap1: this.third.load.cache.texture('water2')
+            normalMap0: textures[0],
+            normalMap1: textures[1]
           })
         }
       }

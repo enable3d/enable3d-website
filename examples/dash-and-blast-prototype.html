@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class Player {
         constructor(scene) {
@@ -51,7 +51,7 @@
           this.speed = Math.random() * 2 + 2
 
           const addCurve = (x = 0, z = 0, speed = 1, length = 3.16, radius = 4, width = 1, depth = 1) => {
-            const curve = scene.third.new.shape()
+            const curve = new THREE.Shape()
             curve.arc(0, 0, radius, 0, length, false)
             let currentPoint = curve.getPoint(1)
             curve.arc(-currentPoint.x, -currentPoint.y, radius - width, length, 2 * Math.PI, true)

@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
+    <script src="/lib/chroma.min.js"></script>
   </head>
 
   <body>
@@ -24,16 +25,11 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          // heightmap from https://medium.com/@travall/procedural-2d-island-generation-noise-functions-13976bddeaf9
-          this.load.image('heightmap-island', '/assets/heightmap/heightmap-island.png')
-        }
-
         init() {
           this.requestThirdDimension()
         }
 
-        create() {
+        async create() {
           this.accessThirdDimension()
           // we remove the default ground
           this.third.warpSpeed('-ground')
@@ -45,14 +41,15 @@
             this.third.haveSomeFun(1)
           })
 
-          const heightmap = this.third.load.cache.texture('heightmap-island')
+          // heightmap from https://medium.com/@travall/procedural-2d-island-generation-noise-functions-13976bddeaf9
+          const heightmap = await this.third.load.texture('/assets/heightmap/heightmap-island.png')
 
           // Powered by Chroma.js (https://github.com/gka/chroma.js/)
-          const colorScale = this.third.chroma
+          const colorScale = chroma
             .scale(['#003eb2', '#0952c6', '#a49463', '#867645', '#3c6114', '#5a7f32', '#8c8e7b', '#a0a28f', '#ebebeb'])
             .domain([0, 0.025, 0.1, 0.2, 0.25, 0.8, 1.3, 1.45, 1.6])
 
-          const mesh = this.third.add.heightMap(heightmap, { colorScale })
+          const mesh = this.third.heightMap.add(heightmap, { colorScale })
           if (mesh) {
             // yes, you have to convert it manually :/
             mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -32,7 +32,7 @@
           this.accessThirdDimension({ enableXR: true })
           this.third.warpSpeed('grid', 'ground', 'light', 'sky')
 
-          const ctrl0 = this.third.xr.getController(0)
+          const ctrl0 = this.third.webXR.getController(0)
           ctrl0.addEventListener('selectstart', event => (this.move = true))
           ctrl0.addEventListener('selectend', event => (this.move = false))
 
@@ -42,7 +42,7 @@
         // In XR mode, use updateXR instead of the normal update method
         updateXR(time, delta) {
           if (this.move) {
-            const cam = this.third.xr.camera
+            const cam = this.third.webXR.camera
             const v3 = this.third.new.vector3()
             const distance = 0.5
             cam.getWorldDirection(v3)
@@ -50,7 +50,7 @@
           }
 
           // this is how you would move the camera manually
-          // const cam = this.third.xr.camera
+          // const cam = this.third.webXR.camera
           // cam.position.setY(Math.sin(time / 1000) * 10 + 12)
           // cam.position.setX(Math.cos(time / 1000) * 10)
 

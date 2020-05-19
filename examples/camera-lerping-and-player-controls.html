@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -16,7 +16,7 @@
       Use WASD to move the player, change the camera with SPACE.
     </div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         camerasArr
@@ -45,39 +45,32 @@
           // this.third.physics.debug.enable()
 
           // add player
-          // @ts-ignore
-          this.player = this.third.new.group()
+          this.player = new THREE.Group()
           this.player.position.setY(2)
           const body = this.third.add.box({ height: 0.8, y: 1, width: 0.4, depth: 0.4 }, { lambert: { color: 0xffff00 } })
           const head = this.third.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
           this.player.add(body, head)
           this.third.add.existing(this.player)
-          // @ts-ignore
-          this.third.physics.add.existing(this.player, {
-            width: 0.4,
-            depth: 0.4,
-            height: 1,
-            offset: { y: -1.1 }
-          })
+          this.third.physics.add.existing(this.player)
           this.player.body.setAngularFactor(0, 0, 0)
           this.player.body.setFriction(0.8)
 
           // default camera
-          const followCam = this.third.new.object3D()
+          const followCam = new THREE.Object3D()
           // copies the position of the default camera
           followCam.position.copy(this.third.camera.position)
           this.player.add(followCam)
           this.camerasArr.push(followCam)
 
           // back camera
-          const frontCam = this.third.new.object3D()
-          frontCam.position.copy(this.third.new.vector3(0, 3, -5))
+          const frontCam = new THREE.Object3D()
+          frontCam.position.copy(new THREE.Vector3(0, 3, -5))
           this.player.add(frontCam)
           this.camerasArr.push(frontCam)
 
           // overhead camera
-          const overheadCam = this.third.new.object3D()
-          overheadCam.position.copy(this.third.new.vector3(0, 20, 0))
+          const overheadCam = new THREE.Object3D()
+          overheadCam.position.copy(new THREE.Vector3(0, 20, 0))
           // this.player.add(overheadCam) // uncomment this line if you want the overheadCam follow the player
           this.camerasArr.push(overheadCam)
 
@@ -92,7 +85,7 @@
         }
 
         update(time, delta) {
-          this.third.camera.position.lerp(this.camerasArr[this.cameraIndex % 3].getWorldPosition(this.third.new.vector3()), 0.05)
+          this.third.camera.position.lerp(this.camerasArr[this.cameraIndex % 3].getWorldPosition(new THREE.Vector3()), 0.05)
           const pos = this.player.position.clone()
           this.third.camera.lookAt(pos.x, pos.y + 3, pos.z)
 

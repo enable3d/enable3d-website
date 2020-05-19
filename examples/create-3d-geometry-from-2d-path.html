@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -32,7 +32,7 @@
           // this.third.physics.debug.enable()
 
           // curve
-          const curve = this.third.new.shape()
+          const curve = new THREE.Shape()
           curve.arc(0, 0, 4, 0, Math.PI, false)
           curve.arc(4, 0, 3, Math.PI, 2 * Math.PI, true)
           this.third.physics.add.extrude({
@@ -44,7 +44,7 @@
           })
 
           // speechBalloon
-          const speechBalloon = this.third.new.shape()
+          const speechBalloon = new THREE.Shape()
           speechBalloon.moveTo(3, 1)
           speechBalloon.quadraticCurveTo(1, 1, 1, 2.5)
           speechBalloon.quadraticCurveTo(1, 4, 2, 4)
@@ -65,7 +65,7 @@
           })
 
           // heart
-          const heart = this.third.new.shape()
+          const heart = new THREE.Shape()
           heart.moveTo(3, 1.6)
           heart.bezierCurveTo(3, 1.48, 2.8, 1, 2, 1)
           heart.bezierCurveTo(0.8, 1, 0.8, 2.5, 0.8, 2.5)

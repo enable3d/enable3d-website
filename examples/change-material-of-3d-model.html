@@ -8,34 +8,24 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Enlighten colors by 10% and added a metallic look.</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          /**
-           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
-           * https://threejs.org/examples/#webgl_animation_skinning_morph
-           * CC-0 license
-           */
-          this.load.binary('robot', '/assets/glb/robot.glb')
-        }
-
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
         create() {
-          this.accessThirdDimension()
           this.third.warpSpeed('-ground')
 
           // https://css-tricks.com/snippets/javascript/lighten-darken-color/
@@ -67,18 +57,22 @@
             return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16)
           }
 
-          // add robot
-          this.third.load.cache.gltf('robot', gltf => {
-            this.robot = this.third.new.extendedObject3D()
+          /**
+           * Model by Tomás Laulhé (https://www.patreon.com/quaternius), modifications by Don McCurdy (https://donmccurdy.com)
+           * https://threejs.org/examples/#webgl_animation_skinning_morph
+           * CC-0 license
+           */
+          this.third.load.gltf('/assets/glb/robot.glb').then(gltf => {
+            this.robot = new ExtendedObject3D()
             this.robot.add(gltf.scene)
 
             this.robot.traverse(child => {
               if (child.isMesh) {
                 child.castShadow = child.receiveShadow = true
                 if (child.material.isMaterial) {
-                  const color = this.third.new.color(child.material.color).getHexString()
+                  const color = new THREE.Color(child.material.color).getHexString()
                   // lighten color by 10%
-                  const newColor = this.third.new.color(LightenDarkenColor(`#${color}`, 10))
+                  const newColor = new THREE.Color(LightenDarkenColor(`#${color}`, 10))
                   // add new standard material with metallic look
                   child.material = this.third.add.material({ standard: { color: newColor, emissive: newColor, roughness: 0.4, metalness: 1, skinning: true } })
                   child.material.needsUpdate = true
@@ -90,7 +84,7 @@
             this.third.add.existing(this.robot)
 
             // add idle animation
-            this.robot.mixer = this.third.new.animationMixer(this.robot)
+            this.robot.mixer = this.third.animationMixers.create(this.robot)
             this.robot.anims['Idle'] = gltf.animations.find(anim => anim.name === 'Idle')
             this.robot.setAction('Idle')
           })

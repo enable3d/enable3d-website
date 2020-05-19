@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Use WASD, SPACE and your Mouse.<br />Works on mobile and desktop.</div>
     <script>
-      const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ThirdDimension, THREE, JoyStick, PointerLock, PointerDrag, ExtendedObject3D, ThirdPersonControls } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -22,12 +22,6 @@
         }
 
         preload() {
-          /**
-           * box_man.glb by Jan Bláha
-           * https://github.com/swift502/Sketchbook
-           * CC-0 license 2018
-           */
-          this.load.binary('box_man', '/assets/glb/box_man.glb')
           this.load.html('bridge', '/assets/svg/bridge.svg')
         }
 
@@ -43,16 +37,14 @@
 
         create() {
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
-          this.third.ground.body.setFriction(1)
+          // this.third.ground.body.setFriction(1)
 
           // this.third.physics.debug.enable()
 
           /**
            * Is touch device?
            */
-          const isTouchDevice = () => {
-            return 'ontouchstart' in window
-          }
+          const isTouchDevice = 'ontouchstart' in window
 
           /**
            * Create bridge
@@ -75,10 +67,15 @@
           /**
            * Create Player
            */
-          this.third.load.cache.gltf('box_man', object => {
+          /**
+           * box_man.glb by Jan Bláha
+           * https://github.com/swift502/Sketchbook
+           * CC-0 license 2018
+           */
+          this.third.load.gltf('box_man', '/assets/glb/box_man.glb').then(object => {
             const man = object.scene.children[0]
 
-            this.man = this.third.new.extendedObject3D()
+            this.man = new ExtendedObject3D()
             this.man.name = 'man'
             this.man.rotateY(Math.PI + 0.1) // a hack
             this.man.add(man)
@@ -96,7 +93,7 @@
             /**
              * Animations
              */
-            this.man.mixer = this.third.new.animationMixer(this.man)
+            this.man.mixer = this.third.animationMixers.create(this.man)
             object.animations.forEach(animation => {
               if (animation.name) {
                 /**
@@ -132,10 +129,8 @@
             /**
              * Add 3rd Person Controls
              */
-            const pointerLock = isTouchDevice() ? false : true
-            this.controls = this.third.controls.add.thirdPerson(this.man, {
-              offset: this.third.new.vector3(0, 1, 0),
-              pointerLock,
+            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+              offset: new THREE.Vector3(0, 1, 0),
               targetRadius: 3
             })
           })
@@ -152,10 +147,22 @@
           }
 
           /**
+           * PointerLock and PointerDrag
+           */
+          if (!isTouchDevice) {
+            new PointerLock(this.game.canvas)
+            const pointerDrag = new PointerDrag(this.game.canvas)
+            pointerDrag.onMove(delta => {
+              const { x, y } = delta
+              this.moveTop = x
+              this.moveRight = y
+            })
+          }
+          /**
            * Add joystick
            */
-          if (isTouchDevice()) {
-            const joystick = this.third.controls.add.joystick()
+          if (isTouchDevice) {
+            const joystick = new JoyStick()
             const axis = joystick.add.axis({
               styles: { left: 35, bottom: 35, size: 100 }
             })
@@ -201,7 +208,7 @@
         }
 
         update(time, delta) {
-          if (this.man && this.man.body) {
+          if (this.man && this.man.body && this.controls && this.controls.update) {
             /**
              * Update Controls
              */
@@ -210,7 +217,7 @@
              * Player Turn
              */
             const speed = 4
-            const v3 = this.third.new.vector3()
+            const v3 = new THREE.Vector3()
 
             const rotation = this.third.camera.getWorldDirection(v3)
             const theta = Math.atan2(rotation.x, rotation.z)

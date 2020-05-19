@@ -7,15 +7,15 @@
     <title>Per Body Gravity</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
-    <script src="/lib/enable3d.threeGraphics.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">The Right Box uses a different Gravity.</div>
     <script>
-      const { ThreeScene, PhysicsLoader } = ENABLE3D
+      const { Project, Scene3D, PhysicsLoader } = ENABLE3D
 
-      class MainScene extends ThreeScene {
+      class MainScene extends Scene3D {
         create() {
           this.warpSpeed()
 
@@ -25,7 +25,7 @@
           rightBox.body.setGravity(0, -1, 0)
         }
       }
-      PhysicsLoader('/lib', () => new MainScene())
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
     </script>
   </body>
 </html>

@@ -2,6 +2,8 @@ const { Ammo, Physics, ServerClock, Loaders, ExtendedObject3D } = require('@enab
 const path = require('path')
 
 class ServerScene {
+  robot
+
   constructor() {
     this.init()
     this.create()
@@ -22,27 +24,22 @@ class ServerScene {
       mass: 0
     })
 
-    this.objects = [ground]
+    const FBXLoader = new Loaders.FBXLoader()
+    FBXLoader.load(path.resolve(__dirname, 'assets/Idle.fbx')).then(fbx => {
+      const robot = new ExtendedObject3D()
+      robot.name = 'robot'
 
-    const GLTFLoader = new Loaders.GLTFLoader()
-    GLTFLoader.load(path.resolve(__dirname, '../assets/glb/suzanne.glb')).then(gltf => {
-      const child = gltf.scene.children[0]
-      const suzanne = new ExtendedObject3D()
-
-      suzanne.add(child)
-      suzanne.position.set(0, 5, 0)
+      robot.add(fbx)
+      robot.scale.set(0.05, 0.05, 0.05)
+      robot.position.set(0, 10, 0)
 
       const physicsOptions = {
         addChildren: false,
-        shape: 'hacd' // or any other shape you want
+        shape: 'hull' // or any other shape you want
       }
 
-      this.factory.add.existing(suzanne)
-      this.physics.add.existing(suzanne, physicsOptions)
-
-      suzanne.body.setFriction(1)
-
-      this.objects.push(suzanne)
+      physics.add.existing(robot, physicsOptions)
+      this.robot = robot
     })
 
     // clock
@@ -58,13 +55,12 @@ class ServerScene {
   update(delta) {
     this.physics.update(delta * 1000)
 
-    const suzanne = this.objects[1]
-    if (!suzanne) return // suzanne has not been parsed yet
+    if (!this.robot) return // robot has not been parsed yet
 
-    const y = suzanne.position.y.toFixed(2)
+    const y = this.robot.position.y.toFixed(2)
 
     // watch the y position fall down from 5 to the ground
-    if (y > 2) console.log('y:', suzanne.body.position.y.toFixed(2))
+    if (y > 2) console.log('y:', y)
 
     // TODO
     // send new positions to the client (via geckos.io)

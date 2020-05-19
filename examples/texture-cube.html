@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -20,27 +20,26 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          this.load.image('top', '/assets/img/box-top.png')
-          this.load.image('side', '/assets/img/box-side.png')
-          this.load.image('bottom', '/assets/img/box-bottom.png')
-        }
-
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
-        create() {
-          this.accessThirdDimension()
+        async create() {
           this.third.warpSpeed('-ground')
 
           // create the texture cube
-          const side = this.third.load.cache.texture('side')
-          const top = this.third.load.cache.texture('top')
-          const bottom = this.third.load.cache.texture('bottom')
-          const textureCube = this.third.texture.cube([side, side, top, bottom, side, side])
+          const leftRight = await this.third.load.texture('/assets/img/box-side.png')
+          const backFront = await this.third.load.texture('/assets/img/box-side.png')
+          const top = await this.third.load.texture('/assets/img/box-top.png')
+          const bottom = await this.third.load.texture('/assets/img/box-bottom.png')
+
+          const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
+
           textureCube.texture.front.repeat.set(4, 1)
           textureCube.texture.back.repeat.set(4, 1)
+
+          textureCube.texture.left.repeat.set(1, 1)
+          textureCube.texture.right.repeat.set(1, 1)
 
           // add the texture cube's materials as a custom material
           this.third.add.box({ width: 4 }, { custom: textureCube.materials })

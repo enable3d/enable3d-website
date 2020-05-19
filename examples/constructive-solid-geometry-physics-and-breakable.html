@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
@@ -34,11 +34,11 @@
           const box = this.third.make.box({ x: 0.75, y: 1.75, z: -0.25 })
           const sphere = this.third.make.sphere({ radius: 0.5, x: 1, y: 2 })
 
-          const int = this.third.mesh.intersect(box, sphere)
-          const sub = this.third.mesh.subtract(box, sphere)
-          const uni = this.third.mesh.union(box, sphere)
+          const int = this.third.csg.intersect(box, sphere)
+          const sub = this.third.csg.subtract(box, sphere)
+          const uni = this.third.csg.union(box, sphere)
 
-          const mat = this.third.new.defaultMaterial()
+          const mat = this.third.add.material()
 
           const geometries = [int, sub, uni]
           geometries.forEach((geo, i) => {

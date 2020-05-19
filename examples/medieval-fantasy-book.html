@@ -8,32 +8,22 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.17.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Use WASD, SPACE and your Mouse.<br />Try to play it on your mobile device :)</div>
     <script>
-      const { enable3d, Scene3D, Canvas, ThirdDimension } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ThirdDimension, THREE, JoyStick, ExtendedObject3D, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
+
+      /**
+       * Is touch device?
+       */
+      const isTouchDevice = 'ontouchstart' in window
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
-        }
-
-        preload() {
-          /**
-           * box_man.glb by Jan Bláha
-           * https://github.com/swift502/Sketchbook
-           * CC-0 license 2018
-           */
-          this.load.binary('box_man', '/assets/glb/box_man.glb')
-          /**
-           * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
-           * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
-           * Attribution 4.0 International (CC BY 4.0)
-           */
-          this.load.binary('book', '/assets/glb/book.glb')
         }
 
         init() {
@@ -52,19 +42,14 @@
           // this.third.physics.debug.enable()
 
           /**
-           * Is touch device?
+           * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
+           * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
+           * Attribution 4.0 International (CC BY 4.0)
            */
-          const isTouchDevice = () => {
-            return 'ontouchstart' in window
-          }
-
-          /**
-           * Add Book
-           */
-          this.third.load.cache.gltf('book', object => {
+          this.third.load.gltf('/assets/glb/book.glb').then(object => {
             const scene = object.scenes[0]
 
-            const book = this.third.new.extendedObject3D()
+            const book = new ExtendedObject3D()
             book.name = 'scene'
             book.add(scene)
             this.third.add.existing(book)
@@ -72,7 +57,7 @@
             // add animations
             // sadly only the flags animations works
             object.animations.forEach((anim, i) => {
-              book.mixer = this.third.new.animationMixer(book)
+              book.mixer = this.third.animationMixers.create(book)
               // overwrite the action to be an array of actions
               book.action = []
               book.action[i] = book.mixer.clipAction(anim)
@@ -102,16 +87,19 @@
           })
 
           /**
-           * Create Player
+           * box_man.glb by Jan Bláha
+           * https://github.com/swift502/Sketchbook
+           * CC-0 license 2018
            */
-          this.third.load.cache.gltf('box_man', object => {
+          this.third.load.gltf('/assets/glb/box_man.glb').then(object => {
             const man = object.scene.children[0]
 
-            this.man = this.third.new.extendedObject3D()
+            this.man = new ExtendedObject3D()
             this.man.name = 'man'
             this.man.rotateY(Math.PI + 0.1) // a hack
             this.man.add(man)
-            this.man.position.set(35, 2, 0)
+            this.man.rotation.set(0, Math.PI * 1.5, 0)
+            this.man.position.set(35, -3.5, 0)
             // add shadow
             this.man.traverse(child => {
               if (child.isMesh) {
@@ -125,7 +113,7 @@
             /**
              * Animations
              */
-            this.man.mixer = this.third.new.animationMixer(this.man)
+            this.man.mixer = this.third.animationMixers.create(this.man)
             object.animations.forEach(animation => {
               if (animation.name) {
                 this.man.anims[animation.name] = animation
@@ -153,12 +141,26 @@
             /**
              * Add 3rd Person Controls
              */
-            const pointerLock = isTouchDevice() ? false : true
-            this.controls = this.third.controls.add.thirdPerson(this.man, {
-              offset: this.third.new.vector3(0, 1, 0),
-              pointerLock,
+            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+              offset: new THREE.Vector3(0, 1, 0),
               targetRadius: 3
             })
+            // set initial view to 90 deg theta
+            this.controls.theta = 90
+
+            /**
+             * Add Pointer Lock and Pointer Drag
+             */
+            if (!isTouchDevice) {
+              let pl = new PointerLock(this.game.canvas)
+              let pd = new PointerDrag(this.game.canvas)
+              pd.onMove(delta => {
+                if (pl.isLocked()) {
+                  this.moveTop = -delta.y
+                  this.moveRight = delta.x
+                }
+              })
+            }
           })
 
           /**
@@ -175,8 +177,8 @@
           /**
            * Add joystick
            */
-          if (isTouchDevice()) {
-            const joystick = this.third.controls.add.joystick()
+          if (isTouchDevice) {
+            const joystick = new JoyStick()
             const axis = joystick.add.axis({
               styles: { left: 35, bottom: 35, size: 100 }
             })
@@ -222,21 +224,28 @@
              * Update Controls
              */
             this.controls.update(this.moveRight * 3, -this.moveTop * 3)
+            if (!isTouchDevice) this.moveRight = this.moveTop = 0
             /**
              * Player Turn
              */
             const speed = 4
-            const v3 = this.third.new.vector3()
+            const v3 = new THREE.Vector3()
 
             const rotation = this.third.camera.getWorldDirection(v3)
             const theta = Math.atan2(rotation.x, rotation.z)
             const rotationMan = this.man.getWorldDirection(v3)
             const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
+            this.man.body.setAngularVelocityY(0)
 
             const l = Math.abs(theta - thetaMan)
-            if (theta > thetaMan && l > 0.05) this.man.body.setAngularVelocityY(3)
-            else if (theta < thetaMan && l > 0.05) this.man.body.setAngularVelocityY(-3)
-            else this.man.body.setAngularVelocityY(0)
+            let rotationSpeed = isTouchDevice ? 2 : 4
+            let d = Math.PI / 24
+
+            if (l > d) {
+              if (l > Math.PI - d) rotationSpeed *= -1
+              if (theta < thetaMan) rotationSpeed *= -1
+              this.man.body.setAngularVelocityY(rotationSpeed)
+            }
 
             /**
              * Player Move
@@ -268,11 +277,11 @@
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth, // * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight // * Math.max(1, window.devicePixelRatio / 2)
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
         },
         scene: [MainScene],
-        ...Canvas({ antialias: true })
+        ...Canvas({ antialias: false })
       }
 
       window.addEventListener('load', () => {
