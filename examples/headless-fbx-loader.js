@@ -2,8 +2,6 @@ const { Ammo, Physics, ServerClock, Loaders, ExtendedObject3D } = require('@enab
 const path = require('path')
 
 class ServerScene {
-  robot
-
   constructor() {
     this.init()
     this.create()
@@ -25,7 +23,7 @@ class ServerScene {
     })
 
     const FBXLoader = new Loaders.FBXLoader()
-    FBXLoader.load(path.resolve(__dirname, 'assets/Idle.fbx')).then(fbx => {
+    FBXLoader.load(path.resolve(__dirname, '../assets/fbx/Idle.fbx')).then(fbx => {
       const robot = new ExtendedObject3D()
       robot.name = 'robot'
 
@@ -38,7 +36,7 @@ class ServerScene {
         shape: 'hull' // or any other shape you want
       }
 
-      physics.add.existing(robot, physicsOptions)
+      this.physics.add.existing(robot, physicsOptions)
       this.robot = robot
     })
 
