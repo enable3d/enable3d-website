@@ -1,4 +1,4 @@
-const { enable3d, Scene3D, Canvas, ThirdDimension, ExtendedObject3D, THREE, JoyStick, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
+const { Project, PhysicsLoader, Scene3D, Canvas, ThirdDimension, ExtendedObject3D, THREE, JoyStick, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
 
 /**
  * Is touch device?
@@ -7,17 +7,11 @@ const isTouchDevice = 'ontouchstart' in window
 
 class MainScene extends Scene3D {
   constructor() {
-    super({ key: 'MainScene' })
+    super('MainScene')
   }
 
   init() {
-    this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
-
-    this.third.renderer.setSize(WIDTH, HEIGHT)
-    this.third.camera.aspect = WIDTH / HEIGHT
-    this.third.camera.updateProjectionMatrix()
-
-    this.third.renderer.setPixelRatio(Math.max(1, window.devicePixelRatio / 2))
+    this.renderer.setPixelRatio(Math.max(1, window.devicePixelRatio / 2))
 
     this.canJump = true
     this.move = false
@@ -26,29 +20,29 @@ class MainScene extends Scene3D {
     this.moveRight = 0
   }
 
-  create() {
-    this.third.warpSpeed('-ground', '-orbitControls')
-    this.third.renderer.gammaFactor = 1.5
+  async create() {
+    this.warpSpeed('-ground', '-orbitControls')
+    this.renderer.gammaFactor = 1.5
 
-    // this.third.physics.debug.enable()
+    // this.physics.debug.enable()
 
     /**
      * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
      * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
      * Attribution 4.0 International (CC BY 4.0)
      */
-    this.third.load.gltf('/assets/glb/book.glb').then(object => {
+    this.load.gltf('/assets/glb/book.glb').then(object => {
       const scene = object.scenes[0]
 
       const book = new ExtendedObject3D()
       book.name = 'scene'
       book.add(scene)
-      this.third.add.existing(book)
+      this.add.existing(book)
 
       // add animations
       // sadly only the flags animations works
       object.animations.forEach((anim, i) => {
-        book.mixer = this.third.animationMixers.create(book)
+        book.mixer = this.animationMixers.create(book)
         // overwrite the action to be an array of actions
         book.action = []
         book.action[i] = book.mixer.clipAction(anim)
@@ -57,7 +51,7 @@ class MainScene extends Scene3D {
 
       book.traverse(child => {
         if (child.isMesh) {
-          child.castShadow = child.receiveShadow = true
+          child.castShadow = child.receiveShadow = false
           child.material.metalness = 0
           child.material.roughness = 1
 
@@ -65,7 +59,7 @@ class MainScene extends Scene3D {
             child.shape = 'concave'
             // I do not know why the physics has an offset but I just fixed it manually
             child.position.set(-18.8, 4.35, -15.55)
-            this.third.physics.add.existing(child, {
+            this.physics.add.existing(child, {
               autoCenter: false,
               collisionFlags: 1,
               offset: { x: 18.8, y: -4.35, z: 15.55 }
@@ -82,7 +76,7 @@ class MainScene extends Scene3D {
      * https://github.com/swift502/Sketchbook
      * CC-0 license 2018
      */
-    this.third.load.gltf('/assets/glb/box_man.glb').then(object => {
+    await this.load.gltf('/assets/glb/box_man.glb').then(object => {
       const man = object.scene.children[0]
 
       this.man = new ExtendedObject3D()
@@ -90,11 +84,11 @@ class MainScene extends Scene3D {
       this.man.rotateY(Math.PI + 0.1) // a hack
       this.man.add(man)
       this.man.rotation.set(0, Math.PI * 1.5, 0)
-      this.man.position.set(35, -3.5, 0)
+      this.man.position.set(35, 0, 0)
       // add shadow
       this.man.traverse(child => {
         if (child.isMesh) {
-          child.castShadow = child.receiveShadow = true
+          child.castShadow = child.receiveShadow = false
           // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
           child.material.roughness = 1
           child.material.metalness = 0
@@ -104,7 +98,7 @@ class MainScene extends Scene3D {
       /**
        * Animations
        */
-      this.man.mixer = this.third.animationMixers.create(this.man)
+      this.man.mixer = this.animationMixers.create(this.man)
       object.animations.forEach(animation => {
         if (animation.name) {
           this.man.anims[animation.name] = animation
@@ -115,8 +109,8 @@ class MainScene extends Scene3D {
       /**
        * Add the player to the scene with a body
        */
-      this.third.add.existing(this.man)
-      this.third.physics.add.existing(this.man, {
+      this.add.existing(this.man)
+      this.physics.add.existing(this.man, {
         shape: 'sphere',
         radius: 0.25,
         width: 0.5,
@@ -132,7 +126,7 @@ class MainScene extends Scene3D {
       /**
        * Add 3rd Person Controls
        */
-      this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+      this.controls = new ThirdPersonControls(this.camera, this.man, {
         offset: new THREE.Vector3(0, 1, 0),
         targetRadius: 3
       })
@@ -143,8 +137,8 @@ class MainScene extends Scene3D {
        * Add Pointer Lock and Pointer Drag
        */
       if (!isTouchDevice) {
-        let pl = new PointerLock(this.game.canvas)
-        let pd = new PointerDrag(this.game.canvas)
+        let pl = new PointerLock(this.canvas)
+        let pd = new PointerDrag(this.canvas)
         pd.onMove(delta => {
           if (pl.isLocked()) {
             this.moveTop = -delta.y
@@ -158,12 +152,31 @@ class MainScene extends Scene3D {
      * Add Keys
      */
     this.keys = {
-      a: this.input.keyboard.addKey('a'),
-      w: this.input.keyboard.addKey('w'),
-      d: this.input.keyboard.addKey('d'),
-      s: this.input.keyboard.addKey('s'),
-      space: this.input.keyboard.addKey(32)
+      w: { isDown: false },
+      a: { isDown: false },
+      s: { isDown: false },
+      d: { isDown: false },
+      space: { isDown: false }
     }
+
+    const press = (e, isDown) => {
+      e.preventDefault()
+      const { keyCode } = e
+      switch (keyCode) {
+        case 87: // w
+          this.keys.w.isDown = isDown
+          break
+        case 38: // arrow up
+          this.keys.w.isDown = isDown
+          break
+        case 32: // space
+          this.keys.space.isDown = isDown
+          break
+      }
+    }
+
+    document.addEventListener('keydown', e => press(e, true))
+    document.addEventListener('keyup', e => press(e, false))
 
     /**
      * Add joystick
@@ -204,17 +217,15 @@ class MainScene extends Scene3D {
     if (!this.man || !this.canJump) return
     this.canJump = false
     this.man.setAction('jump_running')
-    this.time.addEvent({
-      delay: 750,
-      callback: () => {
-        this.canJump = true
-        this.man.setAction('idle')
-      }
-    })
+    setTimeout(() => {
+      this.canJump = true
+      this.man.setAction('idle')
+    }, 750)
     this.man.body.applyForceY(6)
   }
 
   update(time, delta) {
+    this.animationMixers.update(delta)
     if (this.man && this.man.body) {
       /**
        * Update Controls
@@ -227,7 +238,7 @@ class MainScene extends Scene3D {
       const speed = 4
       const v3 = new THREE.Vector3()
 
-      const rotation = this.third.camera.getWorldDirection(v3)
+      const rotation = this.camera.getWorldDirection(v3)
       const theta = Math.atan2(rotation.x, rotation.z)
       const rotationMan = this.man.getWorldDirection(v3)
       const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
@@ -268,30 +279,28 @@ class MainScene extends Scene3D {
   }
 }
 
-const config = {
-  type: Phaser.WEBGL,
-  scale: {
-    mode: Phaser.Scale.FIT,
-    width: WIDTH,
-    height: HEIGHT
-  },
-  scene: [MainScene],
-  ...Canvas({ antialias: false })
-}
-
 window.addEventListener('load', () => {
-  enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+  PhysicsLoader('/lib', () => {
+    const project = new Project({ antialias: false, maxSubSteps: 10, fixedTimeStep: 1 / 120, scenes: [MainScene] })
 
-  const destination = document.getElementById('welcome-game')
-  const source = document.getElementById('myCustomCanvas')
-  destination.appendChild(source)
+    const destination = document.getElementById('welcome-game')
+    destination.appendChild(project.canvas)
 
-  source.style.marginTop = '0px !important'
+    project.canvas.style.marginTop = '0px !important'
 
-  window.onresize = ev => {
-    const newWidth = window.innerWidth
-    const newHeight = (HEIGHT / WIDTH) * newWidth
-    destination.style.width = `${newWidth}px`
-    destination.style.height = `${newHeight}px`
-  }
+    const resize = () => {
+      const newWidth = window.innerWidth
+      const newHeight = (HEIGHT / WIDTH) * newWidth
+
+      destination.style.width = `${newWidth}px`
+      destination.style.height = `${newHeight}px`
+
+      project.renderer.setSize(newWidth, newHeight)
+      project.camera.aspect = newWidth / newHeight
+      project.camera.updateProjectionMatrix()
+    }
+
+    window.onresize = resize
+    resize()
+  })
 })
