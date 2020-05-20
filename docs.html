@@ -64,20 +64,22 @@
       ]
 
       Promise.all(docs.map(doc => fetch(`/docs/${doc}.md`)))
-        .then(responses => {
+        .then(files => {
           document.getElementById('loading').remove()
 
-          responses.forEach(res => {
-            if (res.status === 200) {
-              res.text().then(function(data) {
+          Promise.all(files.map(f => f.text()))
+            .then(text => {
+              text.forEach(t => {
                 const node = document.createElement('div')
-                node.innerHTML = marked(data)
+                node.innerHTML = marked(t)
                 document.getElementById('marked').appendChild(node)
                 document.querySelectorAll('pre code').forEach(block => {
                   hljs.highlightBlock(block)
                 })
               })
-            }
+            })
+            .catch(err => {
+              console.log(err)
           })
         })
         .catch(err => {
