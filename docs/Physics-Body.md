@@ -47,17 +47,6 @@ These bodies do never interact with other bodies. But they fire collision events
 
 ## Methods
 
-You can use all these methods on a dynamic body:
+You can use a lot of method on the body (`object.body.something()`). It does not make send listing them all here.
 
-- **body.setVelocity(x, y, z)**
-- **body.setAngularVelocity(x, y, z)**
-- **body.applyForce(x, y, z)**
-- **body.setRestitution(value)** _A value from 0 to 1_
-- **body.setFriction(value)** _A value from 0 to 1_
-- **body.setLinearFactor(x, y, z)** _0 for disable, 1 for enable_
-- **body.setAngularFactor(x, y, z)** _0 for disable, 1 for enable_
-
-Getters:
-
-- **body.velocity.(x,y,z)**
-- **body.angularVelocity.(x,y,z)**
+Just take a look the the [physicsBody.ts source code](https://github.com/enable3d/enable3d/blob/master/packages/common/src/physicsBody.ts).

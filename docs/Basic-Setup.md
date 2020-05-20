@@ -1,75 +1,91 @@
 ## Basic Setup
 
-The project enable3d can be used in 3 different ways. As a physics plugin for [three.js](https://threejs.org/), as a 3d objects and physics extension for [Phaser](http://phaser.io/), or as a standalone 3d framework.
+The project enable3d offers 4 different ways. As a Standalone 3D Framework, a Physics Plugin for [three.js](https://threejs.org/), as a 3D Objects and Physics extension for [Phaser](http://phaser.io/) or as a library to run Ammo.js on Node.js
 
-Take a look at the [examples](https://enable3d.io/examples.html) to see what Enable3d can do.
+In this guide, you will learn how to use the Standalone 3D Framework. Most of what you learn, will be applicable to all packages. Just take a look at the [examples](https://enable3d.io/examples.html) to see what Enable3d can do and how to use the different packages.
 
-### Using as a physics plugin for three.js
+_Note: Not everything is documented yet, the [examples](https://enable3d.io/examples.html) page helps a lot!_
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="/lib/three.min.js"></script>
-    <script src="/lib/enable3d.ammoPhysics.min.js"></script>
-  </head>
+### Basic Setup
 
-  <body>
-    <script>
-      // or get it from npm @enable3d/ammo-physics
-      const { AmmoPhysics, PhysicsLoader } = ENABLE3D
+```ts
+// import the UMD bundle enable3d.framework.min.js
+// or from npm enable3d
+import { Project, Scene3D, PhysicsLoader } from 'enable3d'
 
-      const MainScene = () => {
-        // scene
-        const scene = new THREE.Scene()
-        scene.background = new THREE.Color(0xf0f0f0)
+class MainScene extends Scene3D {
+  constructor() {
+    super('MainScene')
+  }
 
-        // camera
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
-        camera.position.set(10, 10, 20)
+  async init() {
+    this.renderer.setPixelRatio(1)
+    this.renderer.setSize(window.innerWidth, window.innerHeight)
+  }
 
-        // renderer
-        const renderer = new THREE.WebGLRenderer()
-        renderer.setSize(window.innerWidth, window.innerHeight)
-        document.body.appendChild(renderer.domElement)
+  async preload() {
+    // preload your assets here
+  }
 
-        // lights
-        scene.add(new THREE.HemisphereLight(0xffffbb, 0x080820, 1))
-        scene.add(new THREE.AmbientLight(0x666666))
-        const light = new THREE.DirectionalLight(0xdfebff, 1)
-        light.position.set(50, 200, 100)
-        light.position.multiplyScalar(1.3)
+  async create() {
+    // set up scene (light, ground, grid, sky, orbitControls)
+    this.warpSpeed()
 
-        // physics
-        const physics = new AmmoPhysics(scene)
+    // enable physics debug
+    this.physics.debug.enable()
 
-        // blue box
-        const geometry = new THREE.BoxBufferGeometry()
-        const material = new THREE.MeshLambertMaterial({ color: 0x2194ce })
-        const cube = new THREE.Mesh(geometry, material)
-        cube.position.set(0, 5, 0)
-        scene.add(cube)
+    // position camera
+    this.camera.position.set(10, 10, 20)
 
-        // add physics to the box
-        physics.add.existing(cube)
+    // blue box (without physics)
+    this.add.box({ y: 2 }, { lambert: { color: 'deepskyblue' } })
 
-        // clock
-        const clock = new THREE.Clock()
+    // pink box (with physics)
+    this.physics.add.box({ y: 10 }, { lambert: { color: 'hotpink' } })
+  }
 
-        // animation loop
-        const animate = () => {
-          physics.update(clock.getDelta() * 1000)
+  update() {
+    this.box.rotation.x += 0.01
+    this.box.rotation.y += 0.01
+  }
+}
 
-          renderer.render(scene, camera)
+// set your project configs
+const config = { scenes: [MainScene] }
 
-          requestAnimationFrame(animate)
-        }
-        requestAnimationFrame(animate)
-      }
+// load the ammo.js file from the /lib folder and start the project
+PhysicsLoader('/lib', () => new Project(config))
+```
 
-      // load ammo.js from the /lib folder
-      PhysicsLoader('/lib', () => MainScene())
-    </script>
-  </body>
-</html>
+### Native Three.js Objects
+
+You can use native Three.js objects if you include THREE
+
+```ts
+import { THREE } from 'enable3d'
+
+// green sphere
+const geometry = new THREE.SphereGeometry(0.8, 16, 16)
+const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+const cube = new THREE.Mesh(geometry, material)
+cube.position.set(0.2, 3, 0)
+this.scene.add(cube)
+// add physics to an existing object
+this.physics.add.existing(cube)
+```
+
+### Extended Three.js Objects
+
+To have more functionalities and a better compatibility, use `new ExtendedMesh()` and `new ExtendedObject3D()` instead of `new THREE.Mesh()` and `new THREE.Object3D()`
+
+```ts
+import { THREE, ExtendedMesh, ExtendedObject3D } from 'enable3d'
+
+const cube = new THREE.Mesh(geometry, material)
+// instead of
+const cube = new ExtendedMesh(geometry, material)
+
+const object = new ExtendedObject3D()
+// instead of
+const object = new THREE.Object3D()
 ```
