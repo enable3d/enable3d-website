@@ -51,7 +51,14 @@ const upload = (file, data) => {
   const Key = file.match(/\/src\/[\S]+$/gm)[0].replace('/src/', '')
   const Body = data
   const ContentType = mime.getType(file)
-  s3.putObject({ Bucket, Key, Body, ContentType }, (err, data) => {
+
+  let CacheControl = 'public, max-age=300, s-maxage=864000' // public, 5 minutes, 10 days
+  const oneMonth = 'public, max-age=2592000, s-maxage=864000' // public, 30 days, 10 days
+  if (/image/.test(ContentType)) CacheControl = oneMonth
+  if (/model/.test(ContentType)) CacheControl = oneMonth
+  if (/application/.test(ContentType)) CacheControl = oneMonth
+
+  s3.putObject({ Bucket, Key, Body, ContentType, CacheControl }, (err, data) => {
     if (err) {
       console.log(err, err.stack)
       throw err
