@@ -8,7 +8,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "live-server",
+    "start": "live-server src",
     "format": "prettier --write examples/**/*.html index.html examples.html"
   },
   "repository": {
