@@ -1,7 +1,7 @@
 'use strict'
 
 window.addEventListener('load', function() {
-  var repo = 'https://github.com/enable3d/enable3d-website/tree/master'
+  var repo = 'https://github.com/enable3d/enable3d-website/tree/master/src'
   var pathname = window.location.pathname
 
   // link to .js file if it is a "headless mode" example
