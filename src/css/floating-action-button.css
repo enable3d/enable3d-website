@@ -1,0 +1,24 @@
+/** FAB */
+div#floating-action-button {
+  position: fixed;
+  background: white;
+  bottom: 36px;
+  right: 36px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+
+  -webkit-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+  -moz-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+  box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+}
+
+div#floating-action-button div {
+  color: #464646;
+  font-size: 24px;
+  width: 60px;
+  height: 60px;
+  line-height: 56px;
+  text-align: center;
+}

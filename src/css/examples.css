@@ -20,28 +20,3 @@ div#info-text {
   margin: 0px 48px;
   text-align: center;
 }
-
-div#link-to-github {
-  position: fixed;
-  background: white;
-  bottom: 36px;
-  right: 36px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  cursor: pointer;
-
-  -webkit-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
-  -moz-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
-  box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
-}
-
-div#link-to-github div {
-  color: #464646;
-  font-size: 24px;
-  width: 60px;
-  height: 60px;
-  position: relative;
-  top: 14px;
-  left: 10px;
-}

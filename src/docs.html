@@ -10,6 +10,7 @@
     <title>enable3d • documentation</title>
     <meta name="description" content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3." />
     <link rel="stylesheet" href="/css/style.css?ver=1.1.1" />
+    <link rel="stylesheet" href="/css/floating-action-button.css?ver=1.0.0" />
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -18,6 +19,15 @@
   </head>
 
   <body>
+    <div>
+      <a href="#logo">
+        <div id="floating-action-button" style="transform: rotate(90deg);">
+          <div>
+            &#10094;
+          </div>
+        </div>
+      </a>
+    </div>
     <style>
       .hljs-comment {
         color: gray !important;
@@ -43,7 +53,7 @@
     </header>
     <section class="content">
       <div class="container">
-        <h1>Documentation</h1>
+        <h1 id="documentation">Documentation</h1>
         <ul id="menu"></ul>
         <div id="loading">loading...</div>
         <div id="marked"></div>
