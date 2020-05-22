@@ -9,7 +9,7 @@
     <link rel="icon" sizes="96x96" type="image/png" href="/img/icon/logo-96x96.png" />
     <title>enable3d • documentation</title>
     <meta name="description" content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3." />
-    <link rel="stylesheet" href="/css/style.css?ver=1.1.0" />
+    <link rel="stylesheet" href="/css/style.css?ver=1.1.1" />
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -44,6 +44,7 @@
     <section class="content">
       <div class="container">
         <h1>Documentation</h1>
+        <ul id="menu"></ul>
         <div id="loading">loading...</div>
         <div id="marked"></div>
       </div>
@@ -64,12 +65,16 @@
         'Physics-Configuration'
       ]
 
+      // load all markdown files
       Promise.all(docs.map(doc => fetch(`/docs/${doc}.md`)))
         .then(files => {
+          // remove loading placeholder
           document.getElementById('loading').remove()
 
+          // get text from response
           Promise.all(files.map(f => f.text()))
             .then(text => {
+              // add text to page
               text.forEach(t => {
                 const node = document.createElement('div')
                 node.innerHTML = marked(t)
@@ -78,6 +83,18 @@
                   hljs.highlightBlock(block)
                 })
               })
+              // make menu
+              const h2 = document.getElementsByTagName('h2')
+              const menu = document.getElementById('menu')
+              for (var i = 0; i < h2.length; i++) {
+                const a = document.createElement('a')
+                a.href = `#${h2[i].id}`
+                const li = document.createElement('li')
+                li.innerText = h2[i].outerText
+                li.style.margin = '4px 0px'
+                a.append(li)
+                menu.append(a)
+              }
             })
             .catch(err => {
               console.log(err)
