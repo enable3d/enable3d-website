@@ -54,6 +54,7 @@ const upload = (file, data) => {
 
   let CacheControl = 'public, max-age=300, s-maxage=864000' // public, 5 minutes, 10 days
   const oneMonth = 'public, max-age=2592000, s-maxage=864000' // public, 30 days, 10 days
+  if (/css/.test(ContentType)) CacheControl = oneMonth
   if (/image/.test(ContentType)) CacheControl = oneMonth
   if (/model/.test(ContentType)) CacheControl = oneMonth
   if (/application/.test(ContentType)) CacheControl = oneMonth
