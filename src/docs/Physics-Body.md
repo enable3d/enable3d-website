@@ -1,6 +1,6 @@
 ## Physics Body
 
-### Types
+### Body Types
 
 There are 4 different body types you can choose from by setting `object.body.setCollisionFlags(number)` accordingly.
 
@@ -45,7 +45,7 @@ update() {
 
 These bodies do never interact with other bodies. But they fire collision events. Use them as sensory in your game. Ghost can be dynamic (4), static (5) or kinematic (6), by settings the `collisionFlags` accordingly.
 
-## Methods
+### Body Methods
 
 You can use a lot of method on the body (`object.body.something()`). It does not make send listing them all here.
 

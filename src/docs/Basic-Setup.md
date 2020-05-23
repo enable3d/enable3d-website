@@ -1,4 +1,4 @@
-## Basic Setup
+## Getting Started
 
 The project enable3d offers 4 different ways. As a Standalone 3D Framework, a Physics Plugin for [three.js](https://threejs.org/), as a 3D Objects and Physics extension for [Phaser](http://phaser.io/) or as a library to run Ammo.js on Node.js
 

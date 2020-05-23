@@ -67,12 +67,16 @@
         'Basic-Shapes',
         'Compound-Shapes',
         'Physics-Body',
+        'Physics-Configuration',
         'Collisions',
         'Constraints',
-        'Tweens',
+        'Lights',
         'Loaders',
-        'Object-Scaling',
-        'Physics-Configuration'
+        'Tweens',
+        'Controls',
+        'Raycasting',
+        'WebXR',
+        'Misc'
       ]
 
       // load all markdown files
@@ -94,16 +98,21 @@
                 })
               })
               // make menu
-              const h2 = document.getElementsByTagName('h2')
+              const heading = document.querySelectorAll('h2, h3')
               const menu = document.getElementById('menu')
-              for (var i = 0; i < h2.length; i++) {
+              for (var i = 0; i < heading.length; i++) {
                 const a = document.createElement('a')
-                a.href = `#${h2[i].id}`
+                a.href = `#${heading[i].id}`
+                a.innerText = heading[i].outerText
+
                 const li = document.createElement('li')
-                li.innerText = h2[i].outerText
                 li.style.margin = '4px 0px'
-                a.append(li)
-                menu.append(a)
+                if (heading[i].tagName === 'H3') {
+                  li.style.marginLeft = '18px'
+                  li.style.listStyle = 'none'
+                }
+                li.append(a)
+                menu.append(li)
               }
             })
             .catch(err => {
