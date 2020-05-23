@@ -4,4 +4,4 @@ Not documented yet.
 
 ### Virtual Reality
 
-## Augmented Reality
+### Augmented Reality
