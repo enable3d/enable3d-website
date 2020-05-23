@@ -103,7 +103,7 @@
               for (var i = 0; i < heading.length; i++) {
                 const a = document.createElement('a')
                 a.href = `#${heading[i].id}`
-                a.innerText = heading[i].outerText
+                a.innerText = heading[i].innerText
 
                 const li = document.createElement('li')
                 li.style.margin = '4px 0px'
