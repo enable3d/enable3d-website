@@ -7,34 +7,27 @@
     <title>Teleport a Dynamic Body</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
-    <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.18.0-alpha.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.18.0-alpha.0.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Teleports the box after 2 seconds to a new position</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { Project, Scene3D, PhysicsLoader } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
         }
 
-        init() {
-          this.requestThirdDimension()
-        }
-
         create() {
-          this.accessThirdDimension()
-          this.third.warpSpeed()
+          this.warpSpeed()
 
-          this.third.physics.debug.enable()
+          this.physics.debug.enable()
 
-          const blueBox = this.third.physics.add.box({ y: 4 }, { lambert: { color: 'cornflowerblue' } })
+          const blueBox = this.physics.add.box({ y: 4 }, { lambert: { color: 'cornflowerblue' } })
 
-          // teleport after 2 seconds
-          setTimeout(() => {
+          const teleport = () => {
             // set body to be kinematic
             blueBox.body.setCollisionFlags(2)
 
@@ -47,28 +40,19 @@
               // set body back to dynamic
               blueBox.body.setCollisionFlags(0)
 
-              // if you do not reset the velocity, the object will keep it
+              // if you do not reset the velocity and angularVelocity, the object will keep it
               blueBox.body.setVelocity(0, 0, 0)
               blueBox.body.setAngularVelocity(0, 0, 0)
             })
-          }, 2000)
+          }
+
+          // teleport after 2 seconds
+          setTimeout(teleport, 2000)
         }
       }
 
-      const config = {
-        type: Phaser.WEBGL,
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
-        },
-        scene: [MainScene],
-        ...Canvas()
-      }
-
-      window.addEventListener('load', () => {
-        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      PhysicsLoader('/lib', () => {
+        new Project({ scenes: [MainScene] })
       })
     </script>
   </body>
