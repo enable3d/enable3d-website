@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Project Options and Multiple Scenes</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.framework.0.18.0-alpha.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Project Options and Multiple Scenes</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+
+      class PreloadScene extends Scene3D {
+        preload() {
+          const grass = this.load.texture('grass', '/assets/img/grass.jpg')
+          const robot = this.load.gltf('robot', '/assets/glb/robot.glb')
+
+          // start the MainScene when all assets are loaded
+          Promise.all([grass, robot]).then(() => {
+            this.start('MainScene')
+          })
+        }
+
+        async create() {
+          // create a loading screen
+        }
+      }
+
+      class MainScene extends Scene3D {
+        constructor() {
+          // define the key and if you want it to be an WebXR scene or not
+          super({ key: 'MainScene', enableXR: false })
+        }
+
+        create() {
+          // we do not need a ground in this scene
+          this.warpSpeed('-ground')
+
+          // set a per scene physics
+          // this.physics.setGravity(0, -9.81, 0) // will work in the next version (^0.19.0)
+
+          // add grass
+          const grass = this.cache.get('grass')
+          grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
+          grass.offset.set(0, 0)
+          grass.repeat.set(2, 2)
+          this.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass } })
+
+          // add robot
+          const robot = new ExtendedObject3D()
+          robot.name = 'robot'
+          robot.add(this.cache.get('robot').scene.children[0])
+          robot.traverse(child => {
+            if (child.isMesh) child.castShadow = child.receiveShadow = true
+          })
+          robot.position.set(0, 5, 0)
+          robot.scale.set(0.5, 0.5, 0.5)
+          this.add.existing(robot)
+          this.physics.add.existing(robot, { shape: 'box', offset: { y: -0.5 } })
+        }
+      }
+
+      // if you do not use physics, just do not use the PhysicLoader
+      PhysicsLoader(
+        '/lib',
+        () =>
+          new Project({
+            anisotropy: 1, // https://threejs.org/docs/#api/en/textures/Texture.anisotropy
+            antialias: false, // false by default
+            fixedTimeStep: 1 / 60,
+            gravity: { x: 0, y: -9.81, z: 0 }, // the default gravity for all scenes
+            maxSubSteps: 1,
+            // parent: 'myCustomDiv', // will work in the next version (^0.19.0)
+            renderer: new THREE.WebGLRenderer({ antialias: false }), // add a custom renderer if you want
+            scenes: [PreloadScene, MainScene]
+          })
+      )
+    </script>
+  </body>
+</html>
