@@ -20,18 +20,32 @@ class MainScene extends Scene3D {
     this.moveRight = 0
   }
 
+  async preload() {
+    /**
+     * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
+     * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
+     * Attribution 4.0 International (CC BY 4.0)
+     */
+    const book = this.load.gltf('book', '/assets/glb/book.glb')
+
+    /**
+     * box_man.glb by Jan Bláha
+     * https://github.com/swift502/Sketchbook
+     * CC-0 license 2018
+     */
+    const man = this.load.gltf('man', '/assets/glb/box_man.glb')
+
+    await Promise.all([book, man])
+  }
+
   async create() {
     this.warpSpeed('-ground', '-orbitControls')
     this.renderer.gammaFactor = 1.5
 
     // this.physics.debug.enable()
 
-    /**
-     * Medieval Fantasy Book by Pixel (https://sketchfab.com/stefan.lengyel1)
-     * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
-     * Attribution 4.0 International (CC BY 4.0)
-     */
-    this.load.gltf('/assets/glb/book.glb').then(object => {
+    const addBook = () => {
+      const object = this.cache.get('book')
       const scene = object.scenes[0]
 
       const book = new ExtendedObject3D()
@@ -69,14 +83,9 @@ class MainScene extends Scene3D {
           }
         }
       })
-    })
-
-    /**
-     * box_man.glb by Jan Bláha
-     * https://github.com/swift502/Sketchbook
-     * CC-0 license 2018
-     */
-    await this.load.gltf('/assets/glb/box_man.glb').then(object => {
+    }
+    const addMan = () => {
+      const object = this.cache.get('man')
       const man = object.scene.children[0]
 
       this.man = new ExtendedObject3D()
@@ -146,7 +155,10 @@ class MainScene extends Scene3D {
           }
         })
       }
-    })
+    }
+
+    addBook()
+    addMan()
 
     /**
      * Add Keys
