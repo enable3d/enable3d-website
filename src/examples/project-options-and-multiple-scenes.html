@@ -22,7 +22,7 @@
 
           // start the MainScene when all assets are loaded
           Promise.all([grass, robot]).then(() => {
-            this.start('MainScene')
+            this.start('MainScene', { level: 1 })
           })
         }
 
@@ -35,6 +35,12 @@
         constructor() {
           // define the key and if you want it to be an WebXR scene or not
           super({ key: 'MainScene', enableXR: false })
+        }
+
+        init(data) {
+          const { level } = data
+          this.currentLevel = level
+          console.log(`Playing level ${this.currentLevel}`)
         }
 
         create() {
@@ -62,6 +68,12 @@
           robot.scale.set(0.5, 0.5, 0.5)
           this.add.existing(robot)
           this.physics.add.existing(robot, { shape: 'box', offset: { y: -0.5 } })
+
+          // load the next level after 3 seconds
+          setTimeout(() => {
+            // will work in the next version (^0.19.0)
+            // this.restart({ level: this.currentLevel + 1 })
+          }, 3000)
         }
       }
 
