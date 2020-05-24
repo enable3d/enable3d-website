@@ -16,7 +16,7 @@
       const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
 
       class PreloadScene extends Scene3D {
-        preload() {
+        async preload() {
           const grass = this.load.texture('grass', '/assets/img/grass.jpg')
           const robot = this.load.gltf('robot', '/assets/glb/robot.glb')
 
@@ -37,15 +37,18 @@
           super({ key: 'MainScene', enableXR: false })
         }
 
-        init(data) {
+        async init(data) {
           const { level } = data
           this.currentLevel = level
           console.log(`Playing level ${this.currentLevel}`)
         }
 
-        create() {
+        async create() {
           // we do not need a ground in this scene
-          this.warpSpeed('-ground')
+          const { orbitControls } = await this.warpSpeed('-ground')
+
+          // dispose the orbitControls on reload
+          // this.deconstructor.add(() => orbitControls?.dispose)  // will work in the next version (^0.19.0)
 
           // set a per scene physics
           // this.physics.setGravity(0, -9.81, 0) // will work in the next version (^0.19.0)
