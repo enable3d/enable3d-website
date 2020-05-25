@@ -17,6 +17,18 @@ const server = app.listen(port, () => console.log('Server started. Press Ctrl+C 
 const ssr = async url => {
   const browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()
+
+  await page.setRequestInterception(true)
+
+  page.on('request', req => {
+    const blacklist = ['buttons.github.io/buttons.js']
+    if (blacklist.find(regex => req.url().match(regex))) {
+      return req.abort()
+    }
+
+    req.continue()
+  })
+
   await page.goto(url, { waitUntil: 'networkidle0' })
   const html = await page.content() // serialized HTML of page DOM.
   await browser.close()
