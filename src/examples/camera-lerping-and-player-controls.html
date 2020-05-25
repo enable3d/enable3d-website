@@ -46,14 +46,25 @@
 
           // add player
           this.player = new THREE.Group()
+          this.player.name = 'player' // <-- set a name if you haven't already
           this.player.position.setY(2)
           const body = this.third.add.box({ height: 0.8, y: 1, width: 0.4, depth: 0.4 }, { lambert: { color: 0xffff00 } })
           const head = this.third.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
           this.player.add(body, head)
+          this.player.position.setY(5)
           this.third.add.existing(this.player)
           this.third.physics.add.existing(this.player)
           this.player.body.setAngularFactor(0, 0, 0)
           this.player.body.setFriction(0.8)
+
+          // uncomment this, to destroy the body and create a new one (for testing)
+          // setTimeout(() => {
+          //   this.third.physics.destroy(this.player.body)
+          // }, 1000)
+
+          // setTimeout(() => {
+          //   this.third.physics.add.existing(this.player)
+          // }, 2000)
 
           // default camera
           const followCam = new THREE.Object3D()
@@ -85,6 +96,8 @@
         }
 
         update(time, delta) {
+          if (typeof this.player?.body === 'undefined') return
+
           this.third.camera.position.lerp(this.camerasArr[this.cameraIndex % 3].getWorldPosition(new THREE.Vector3()), 0.05)
           const pos = this.player.position.clone()
           this.third.camera.lookAt(pos.x, pos.y + 3, pos.z)
