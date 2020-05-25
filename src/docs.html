@@ -80,49 +80,52 @@
         'Misc'
       ]
 
-      // load all markdown files
-      Promise.all(docs.map(doc => fetch(`/docs/${doc}.md`)))
-        .then(files => {
-          // remove loading placeholder
-          document.getElementById('loading').remove()
+      const m = document.getElementById('marked')
+      if (!!m && !m.hasChildNodes()) {
+        // load all markdown files
+        Promise.all(docs.map(doc => fetch(`/docs/${doc}.md`)))
+          .then(files => {
+            // remove loading placeholder
+            document.getElementById('loading').remove()
 
-          // get text from response
-          Promise.all(files.map(f => f.text()))
-            .then(text => {
-              // add text to page
-              text.forEach(t => {
-                const node = document.createElement('div')
-                node.innerHTML = marked(t)
-                document.getElementById('marked').appendChild(node)
-                document.querySelectorAll('pre code').forEach(block => {
-                  hljs.highlightBlock(block)
+            // get text from response
+            Promise.all(files.map(f => f.text()))
+              .then(text => {
+                // add text to page
+                text.forEach(t => {
+                  const node = document.createElement('div')
+                  node.innerHTML = marked(t)
+                  document.getElementById('marked').appendChild(node)
+                  document.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightBlock(block)
+                  })
                 })
-              })
-              // make menu
-              const heading = document.querySelectorAll('h2, h3')
-              const menu = document.getElementById('menu')
-              for (var i = 0; i < heading.length; i++) {
-                const a = document.createElement('a')
-                a.href = `#${heading[i].id}`
-                a.innerText = heading[i].innerText
+                // make menu
+                const heading = document.querySelectorAll('h2, h3')
+                const menu = document.getElementById('menu')
+                for (var i = 0; i < heading.length; i++) {
+                  const a = document.createElement('a')
+                  a.href = `#${heading[i].id}`
+                  a.innerText = heading[i].innerText
 
-                const li = document.createElement('li')
-                li.style.margin = '4px 0px'
-                if (heading[i].tagName === 'H3') {
-                  li.style.marginLeft = '18px'
-                  li.style.listStyle = 'none'
+                  const li = document.createElement('li')
+                  li.style.margin = '4px 0px'
+                  if (heading[i].tagName === 'H3') {
+                    li.style.marginLeft = '18px'
+                    li.style.listStyle = 'none'
+                  }
+                  li.append(a)
+                  menu.append(li)
                 }
-                li.append(a)
-                menu.append(li)
-              }
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        })
-        .catch(err => {
-          console.log(err)
-        })
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     </script>
     <footer>
       <a href="https://github.com/enable3d/enable3d#readme">

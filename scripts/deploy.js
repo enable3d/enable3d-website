@@ -1,3 +1,7 @@
+/**
+ * Deploy Website to AWS S3
+ */
+
 const S3 = require('aws-sdk/clients/s3')
 const CloudFront = require('aws-sdk/clients/cloudfront')
 const fs = require('fs')
