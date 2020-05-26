@@ -16,6 +16,14 @@
     <script>
       const { enable3d, Scene3D, Canvas, ThirdDimension, THREE, JoyStick, PointerLock, PointerDrag, ExtendedObject3D, ThirdPersonControls } = ENABLE3D
 
+      /**
+       * Is touch device?
+       */
+      const isTouchDevice = 'ontouchstart' in window
+
+      /**
+       * MainScene
+       */
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
@@ -40,11 +48,6 @@
           // this.third.ground.body.setFriction(1)
 
           // this.third.physics.debug.enable()
-
-          /**
-           * Is touch device?
-           */
-          const isTouchDevice = 'ontouchstart' in window
 
           /**
            * Create bridge
@@ -150,12 +153,13 @@
            * PointerLock and PointerDrag
            */
           if (!isTouchDevice) {
-            new PointerLock(this.game.canvas)
+            const pointerLock = new PointerLock(this.game.canvas)
             const pointerDrag = new PointerDrag(this.game.canvas)
             pointerDrag.onMove(delta => {
+              if (!pointerLock.isLocked()) return
               const { x, y } = delta
-              this.moveTop = x
-              this.moveRight = y
+              this.moveTop = -y
+              this.moveRight = x
             })
           }
           /**
@@ -213,6 +217,7 @@
              * Update Controls
              */
             this.controls.update(this.moveRight * 3, -this.moveTop * 3)
+            if (!isTouchDevice) this.moveRight = this.moveTop = 0
             /**
              * Player Turn
              */
