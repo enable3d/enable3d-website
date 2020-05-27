@@ -16,19 +16,14 @@
     <script>
       const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
 
-      class PreloadScene extends Scene3D {
+      class MenuScene extends Scene3D {
         async preload() {
-          const grass = this.load.texture('grass', '/assets/img/grass.jpg')
-          const robot = this.load.gltf('robot', '/assets/glb/robot.glb')
-
-          // start the MainScene when all assets are loaded
-          Promise.all([grass, robot]).then(() => {
-            this.start('MainScene', { level: 1 })
-          })
+          await this.load.texture('grass', '/assets/img/grass.jpg')
         }
 
         async create() {
-          // create a loading screen
+          // create a nice menu and then start level 1
+          this.start('MainScene', { level: 1 })
         }
       }
 
@@ -49,7 +44,7 @@
           const { orbitControls } = await this.warpSpeed('-ground')
 
           // dispose the orbitControls on reload
-          this.deconstructor.add(() => orbitControls?.dispose)
+          this.deconstructor.add(() => orbitControls?.dispose())
 
           // set a per scene physics
           this.physics.setGravity(0, -9.81, 0)
@@ -62,9 +57,10 @@
           this.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass } })
 
           // add robot
+          const gltf = await this.load.gltf('/assets/glb/robot.glb')
           const robot = new ExtendedObject3D()
           robot.name = 'robot'
-          robot.add(this.cache.get('robot').scene.children[0])
+          robot.add(gltf.scene.children[0])
           robot.traverse(child => {
             if (child.isMesh) child.castShadow = child.receiveShadow = true
           })
@@ -75,8 +71,7 @@
 
           // load the next level after 3 seconds
           setTimeout(() => {
-            // will work in the next version (^0.19.0)
-            // this.restart({ level: this.currentLevel + 1 })
+            this.restart({ level: this.currentLevel + 1 })
           }, 3000)
         }
       }
@@ -93,7 +88,7 @@
             maxSubSteps: 1,
             parent: 'myCustomDiv',
             renderer: new THREE.WebGLRenderer({ antialias: false }), // add a custom renderer if you want
-            scenes: [PreloadScene, MainScene]
+            scenes: [MenuScene, MainScene]
           })
       )
     </script>
