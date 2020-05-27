@@ -252,10 +252,6 @@
         }
 
         update(time, delta) {
-          // TODO: bugfix: remove this line in the next version
-          // https://github.com/enable3d/enable3d/commit/16a8c5e0bafce69a269291be265cad23b65806d7
-          this.animationMixers.update(delta)
-
           if (this.man && this.man.body) {
             /**
              * Update Controls
