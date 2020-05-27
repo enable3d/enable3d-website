@@ -12,6 +12,7 @@
 
   <body>
     <div id="info-text">Project Options and Multiple Scenes</div>
+    <div id="myCustomDiv"></div>
     <script>
       const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
 
@@ -48,10 +49,10 @@
           const { orbitControls } = await this.warpSpeed('-ground')
 
           // dispose the orbitControls on reload
-          // this.deconstructor.add(() => orbitControls?.dispose)  // will work in the next version (^0.19.0)
+          this.deconstructor.add(() => orbitControls?.dispose)
 
           // set a per scene physics
-          // this.physics.setGravity(0, -9.81, 0) // will work in the next version (^0.19.0)
+          this.physics.setGravity(0, -9.81, 0)
 
           // add grass
           const grass = this.cache.get('grass')
@@ -90,7 +91,7 @@
             fixedTimeStep: 1 / 60,
             gravity: { x: 0, y: -9.81, z: 0 }, // the default gravity for all scenes
             maxSubSteps: 1,
-            // parent: 'myCustomDiv', // will work in the next version (^0.19.0)
+            parent: 'myCustomDiv',
             renderer: new THREE.WebGLRenderer({ antialias: false }), // add a custom renderer if you want
             scenes: [PreloadScene, MainScene]
           })
