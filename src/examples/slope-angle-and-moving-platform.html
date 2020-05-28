@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Slope Angle and Moving Platform</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.framework.0.18.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use your Arrow Keys to move<br />(This example will only work in the next version of enable3d)</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        player
+        platform
+        raycaster
+
+        jump = false
+        canJump = true
+        isMovingRight = false
+        isMovingLeft = false
+
+        async create() {
+          this.warpSpeed('-orbitControls')
+
+          this.camera.position.set(0, 10, 20)
+          this.camera.lookAt(0, 0, 0)
+
+          // this.physics.debug?.enable()
+
+          this.raycaster = this.physics.add.raycaster('closest')
+
+          this.player = this.physics.add.sphere({ y: 5, x: 4, radius: 1 })
+          this.player.body.setAngularFactor(0, 1, 0)
+          this.player.body.setFriction(0)
+
+          const slopeRight = this.add.box({ width: 10, depth: 10 })
+          slopeRight.name = 'slopeRight'
+          slopeRight.position.set(2, 1, 0)
+          slopeRight.rotateZ(Math.PI / 8)
+          this.physics.add.existing(slopeRight, { mass: 0, collisionFlags: 1 })
+          slopeRight.body.setFriction(0)
+
+          const slopeLeft = this.add.box({ width: 10, depth: 10 })
+          slopeLeft.name = 'slopeLeft'
+          slopeLeft.position.set(-8, 1, 0)
+          slopeLeft.rotateZ(-Math.PI / 4)
+          this.physics.add.existing(slopeLeft, { mass: 0, collisionFlags: 1 })
+          slopeLeft.body.setFriction(0)
+
+          this.platform = this.add.box({ width: 10, depth: 10 })
+          this.platform.name = 'platform'
+          this.platform.position.set(12, 3, 0)
+          this.physics.add.existing(this.platform, { mass: 10, collisionFlags: 2 })
+
+          document.addEventListener('keydown', e => {
+            switch (e.keyCode) {
+              case 32: // space
+                this.jump = true
+                break
+              case 38: // up
+                this.jump = true
+                break
+              case 37: // left
+                this.isMovingLeft = true
+                break
+              case 39: // right
+                this.isMovingRight = true
+                break
+            }
+          })
+
+          document.addEventListener('keyup', e => {
+            switch (e.keyCode) {
+              case 37: // left
+                this.isMovingLeft = false
+                break
+              case 39: // right
+                this.isMovingRight = false
+                break
+            }
+          })
+        }
+
+        update(time, delta) {
+          const { x, y, z } = this.player.position
+
+          if (y < -20) {
+            this.restart()
+            return
+          }
+
+          this.platform.position.x = (Math.sin(time) + 1) * 5 + 12
+          this.platform.body.needUpdate = true
+
+          this.camera.lookAt(x, y, z)
+
+          let tooSteep = false
+          let addVelocity = 0
+
+          let offset = 0
+          const rayLength = 1.25
+          if (this.isMovingLeft) offset = -rayLength / 2
+          else if (this.isMovingRight) offset = rayLength / 2
+
+          this.raycaster.setRayFromWorld(x, y, z)
+          this.raycaster.setRayToWorld(x + offset, y - rayLength, z)
+          this.raycaster.rayTest()
+
+          // getHitNormalWorld() will only work in the next version of enable3d
+          if (this.raycaster.hasHit() && 1 === 2) {
+            const hnw = this.raycaster.getHitNormalWorld()
+            const co = this.raycaster.getCollisionObject()
+
+            // adjust the velocity of the player while on the moving platform
+            if (co.name === 'platform') addVelocity = co.body.velocity.x
+
+            // normal to slope in deg
+            const slopeInDeg = Math.abs((Math.atan2(hnw.y, hnw.x) * 180) / Math.PI - 90)
+            if (slopeInDeg >= 5 && slopeInDeg < 30 && this.canJump && !this.isMovingRight && !this.isMovingLeft) {
+              this.player.body.setVelocity(0, 0, 0)
+              this.player.body.setGravity(0, 0, 0)
+            }
+            if (slopeInDeg >= 30) {
+              tooSteep = true
+            }
+          }
+
+          if (!tooSteep) {
+            if (this.isMovingLeft) this.player.body.setVelocityX(-5)
+            else if (this.isMovingRight) this.player.body.setVelocityX(5)
+            else this.player.body.setVelocityX(0)
+          }
+
+          if (addVelocity !== 0) {
+            const vx = this.player.body.velocity.x
+            this.player.body.setVelocityX(vx + addVelocity)
+          }
+          addVelocity = 0
+
+          if (this.isMovingRight || this.isMovingLeft) {
+            this.player.body.setGravity(0, -9.81 * 2, 0)
+          }
+
+          if (this.jump && this.canJump) {
+            this.player.body.setGravity(0, -9.81 * 2, 0)
+            this.player.body.applyForceY(12)
+            this.jump = false
+            this.canJump = false
+            setTimeout(() => {
+              this.canJump = true
+            }, 250)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib', () => new Project({ gravity: { x: 0, y: -9.81 * 2, z: 0 }, scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
