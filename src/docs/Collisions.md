@@ -18,7 +18,7 @@ physics.add.collider(blueBox, redBox, event => {
 })
 ```
 
-See the [collisions example](http://127.0.0.1:8080/examples/collision-detection.html) for details on implementing and using this event.
+See the [collisions example](https://enable3d.io/examples/collision-detection.html) for details on implementing and using this event.
 
 ### Motion Clamping
 
