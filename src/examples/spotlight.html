@@ -16,13 +16,10 @@
 
       class MainScene extends Scene3D {
         createSpotlight(color) {
-          var newObj = new THREE.SpotLight(color, 2)
-          newObj.castShadow = true
-          newObj.angle = 0.3
-          newObj.penumbra = 0.2
-          newObj.decay = 2
-          newObj.distance = 50
-          return newObj
+          var spot = this.lights.spotLight({ color, intensity: 2, distance: 50, angle: 0.3, penumbra: 0.2, decay: 2 })
+          // castShadow is true by default
+          // spot.castShadow = true
+          return spot
         }
 
         create() {
@@ -31,29 +28,32 @@
           this.camera.position.set(20, 20, 20)
           this.camera.lookAt(0, 0, 0)
 
-          this.add.box({ y: 5 })
+          this.box = this.add.box({ y: 2 })
           this.add.ground({ width: 50, height: 50 }, { phong: { color: 0xaaaaaa } })
 
-          const ambient = this.lights.ambientLight({ color: '0x111111' })
+          const ambient = this.lights.ambientLight({ color: 0x444444 })
 
-          this.spotLight1 = this.createSpotlight(0xff7f00)
-          this.spotLight2 = this.createSpotlight(0x00ff7f)
-          this.spotLight3 = this.createSpotlight(0x7f00ff)
+          const spotLight1 = this.createSpotlight(0xff7f00)
+          const spotLight2 = this.createSpotlight(0x00ff7f)
+          const spotLight3 = this.createSpotlight(0x7f00ff)
 
-          this.spotLight1.position.set(5, 20, 22)
-          this.spotLight2.position.set(0, 20, -15)
-          this.spotLight3.position.set(-8, 20, 2)
+          spotLight1.position.set(5, 20, 22)
+          spotLight2.position.set(0, 20, -15)
+          spotLight3.position.set(-8, 20, 2)
 
-          this.spotLight1.target.position.set(2, 0, 5)
-          this.spotLight1.target.updateMatrixWorld()
+          // the target is where the spot light should shine to
+          spotLight1.target.position.set(2, 0, 5)
+          spotLight1.target.updateMatrixWorld()
 
-          this.lightHelper1 = new THREE.SpotLightHelper(this.spotLight1)
-          this.lightHelper2 = new THREE.SpotLightHelper(this.spotLight2)
-          this.lightHelper3 = new THREE.SpotLightHelper(this.spotLight3)
+          this.lights.helper.spotLightHelper(spotLight1)
+          this.lights.helper.spotLightHelper(spotLight2)
+          this.lights.helper.spotLightHelper(spotLight3)
+        }
 
-          this.scene.add(this.spotLight1, this.spotLight2, this.spotLight3)
-          this.scene.add(this.spotLight1.target)
-          this.scene.add(this.lightHelper1, this.lightHelper2, this.lightHelper3)
+        update(time, delta) {
+          this.box.rotation.x += 0.01
+          this.box.rotation.y += 0.01
+          this.box.position.y += Math.sin(time) / 50
         }
       }
       PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
