@@ -165,8 +165,7 @@
               let pd = new PointerDrag(this.canvas)
               pd.onMove(delta => {
                 if (pl.isLocked()) {
-                  this.moveTop = -delta.y
-                  this.moveRight = delta.x
+                  this.controls.update(delta.x * 2, delta.y * 2)
                 }
               })
             }
@@ -256,8 +255,7 @@
             /**
              * Update Controls
              */
-            this.controls.update(this.moveRight * 3, -this.moveTop * 3)
-            if (!isTouchDevice) this.moveRight = this.moveTop = 0
+            this.controls.update(this.moveRight * 2, -this.moveTop * 2)
             /**
              * Player Turn
              */
