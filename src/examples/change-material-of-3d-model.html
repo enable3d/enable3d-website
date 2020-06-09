@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.18.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
   </head>
 
   <body>
@@ -84,9 +84,12 @@
             this.third.add.existing(this.robot)
 
             // add idle animation
-            this.robot.mixer = this.third.animationMixers.create(this.robot)
-            this.robot.anims['Idle'] = gltf.animations.find(anim => anim.name === 'Idle')
-            this.robot.setAction('Idle')
+            this.third.animationMixers.add(this.robot.animation.mixer)
+            this.robot.animation.add(
+              'Idle',
+              gltf.animations.find(anim => anim.name === 'Idle')
+            )
+            this.robot.animation.play('Idle')
           })
         }
       }

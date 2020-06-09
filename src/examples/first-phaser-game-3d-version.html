@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.18.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
   </head>
 
   <body>
@@ -120,11 +120,11 @@
             })
 
             // animations
-            this.robot.mixer = this.third.animationMixers.create(this.robot)
+            this.third.animationMixers.add(this.robot.animation.mixer)
             gltf.animations.forEach(animation => {
-              this.robot.anims[animation.name] = animation
+              this.robot.animation.add(animation.name, animation)
             })
-            this.robot.setAction('Idle')
+            this.robot.animation.play('Idle')
 
             this.third.add.existing(this.robot)
             this.third.physics.add.existing(this.robot, { shape: 'box', width: 0.5, depth: 0.5, offset: { y: -0.5 } })
@@ -173,11 +173,11 @@
         }
 
         walkAnimation() {
-          if (this.robot.currentAnimation !== 'Walking') this.robot.setAction('Walking')
+          if (this.robot.animation.current !== 'Walking') this.robot.animation.play('Walking')
         }
 
         idleAnimation() {
-          if (this.robot.currentAnimation !== 'Idle') this.robot.setAction('Idle')
+          if (this.robot.animation.current !== 'Idle') this.robot.animation.play('Idle')
         }
 
         update(time, delta) {
@@ -219,7 +219,7 @@
 
             // jump
             if (this.keys.w.isDown && this.robot.userData.onGround && Math.abs(this.robot.body.velocity.y) < 1e-1) {
-              this.robot.setAction('WalkJump')
+              this.robot.animation.play('WalkJump')
               this.robot.body.applyForceY(16)
             }
           }

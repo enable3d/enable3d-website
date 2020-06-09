@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.18.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
   </head>
 
   <body>
@@ -41,11 +41,12 @@
           this.third.load.fbx('', '/assets/fbx/Idle.fbx').then(object => {
             robot.add(object)
 
-            robot.mixer = this.third.animationMixers.create(robot)
+            console.log(this.third)
 
-            robot.anims['Idle'] = object.animations[0]
-            robot.action = robot.mixer.clipAction(object.animations[0])
-            robot.action.play()
+            this.third.animationMixers.add(robot.animation.mixer)
+
+            robot.animation.add('Idle', object.animations[0])
+            robot.animation.play('Idle')
 
             // attach a cube to the left hand
             robot.traverse(child => {
@@ -68,7 +69,7 @@
             animations.forEach(key => {
               if (key === 'Idle') return
               this.third.load.fbx('', `/assets/fbx/${key}.fbx`).then(object => {
-                robot.anims[key] = object.animations[0]
+                robot.animation.add(key, object.animations[0])
               })
             })
 
@@ -78,7 +79,7 @@
               callback: () => {
                 const anim = Phaser.Math.RND.pick(animations)
                 console.log(`Set animation ${anim}`)
-                robot.setAction(anim)
+                robot.animation.play(anim, 200)
               }
             })
           })

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.18.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
   </head>
 
   <body>
@@ -58,11 +58,10 @@
 
             this.robot.add(object)
 
-            this.robot.mixer = this.third.animationMixers.create(this.robot)
+            this.third.animationMixers.add(this.robot.animation.mixer)
 
-            this.robot.anims['Idle'] = object.animations[0]
-            this.robot.action = this.robot.mixer.clipAction(object.animations[0])
-            this.robot.action.play()
+            this.robot.animation.add('Idle', object.animations[0])
+            this.robot.animation.play('Idle')
 
             this.robot.traverse(child => {
               if (child.isMesh) child.castShadow = child.receiveShadow = true
@@ -76,7 +75,9 @@
             this.third.physics.add.existing(this.robot, { shape: 'box', width: 1, depth: 1, offset: { y: -0.5 } })
 
             this.third.physics.add.constraints.lock(this.robot.body, sensor.body)
+
             this.third.physics.add.collider(sensor, ground, event => {
+              console.log(event)
               if (event === 'end') this.robot.body.setAngularVelocityY(5)
               else this.robot.body.setAngularVelocityY(0)
             })
@@ -84,8 +85,8 @@
             // load Walking animations
             this.third.load.fbx('', `/assets/fbx/Walking.fbx`).then(object => {
               console.log('loaded')
-              this.robot.anims['Walking'] = object.animations[0]
-              this.robot.setAction('Walking')
+              this.robot.animation.add('Walking', object.animations[0])
+              this.robot.animation.play('Walking')
             })
           })
         }

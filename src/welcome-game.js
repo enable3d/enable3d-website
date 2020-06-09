@@ -107,13 +107,15 @@ class MainScene extends Scene3D {
       /**
        * Animations
        */
-      this.man.mixer = this.animationMixers.create(this.man)
+      // ad the box man's animation mixer to the animationMixers array (for auto updates)
+      this.animationMixers.add(this.man.animation.mixer)
+
       object.animations.forEach(animation => {
         if (animation.name) {
-          this.man.anims[animation.name] = animation
+          this.man.animation.add(animation.name, animation)
         }
       })
-      this.man.setAction('idle')
+      this.man.animation.play('idle')
 
       /**
        * Add the player to the scene with a body
@@ -228,10 +230,10 @@ class MainScene extends Scene3D {
   jump() {
     if (!this.man || !this.canJump) return
     this.canJump = false
-    this.man.setAction('jump_running')
+    this.man.animation.play('jump_running')
     setTimeout(() => {
       this.canJump = true
-      this.man.setAction('idle')
+      this.man.animation.play('idle')
     }, 750)
     this.man.body.applyForceY(6)
   }
@@ -269,7 +271,7 @@ class MainScene extends Scene3D {
        * Player Move
        */
       if (this.keys.w.isDown || this.move) {
-        if (this.man.currentAnimation === 'idle' && this.canJump) this.man.setAction('run')
+        if (this.man.animation.current === 'idle' && this.canJump) this.man.animation.play('run')
 
         const x = Math.sin(theta) * speed,
           y = this.man.body.velocity.y,
@@ -277,7 +279,7 @@ class MainScene extends Scene3D {
 
         this.man.body.setVelocity(x, y, z)
       } else {
-        if (this.man.currentAnimation === 'run' && this.canJump) this.man.setAction('idle')
+        if (this.man.animation.current === 'run' && this.canJump) this.man.animation.play('idle')
       }
 
       /**
