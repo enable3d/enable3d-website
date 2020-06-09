@@ -112,8 +112,7 @@
           this.raycaster.setRayToWorld(x + offset, y - rayLength, z)
           this.raycaster.rayTest()
 
-          // getHitNormalWorld() will only work in the next version of enable3d
-          if (this.raycaster.hasHit() && 1 === 2) {
+          if (this.raycaster.hasHit()) {
             const hnw = this.raycaster.getHitNormalWorld()
             const co = this.raycaster.getCollisionObject()
 
