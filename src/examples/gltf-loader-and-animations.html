@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>GLTF Loader and Animations</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.framework.0.19.1.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+          this.camera.position.set(2, 2, 4)
+
+          this.load.gltf('/assets/glb/box_man.glb').then(gltf => {
+            const child = gltf.scene.children[0]
+
+            const boxMan = new ExtendedObject3D()
+            boxMan.add(child)
+            this.scene.add(boxMan)
+
+            let i = 0
+            let anims = ['run', 'sprint', 'jump_running', 'idle', 'driving', 'falling']
+
+            // ad the box man's animation mixer to the animationMixers array (for auto updates)
+            this.animationMixers.add(boxMan.animation.mixer)
+
+            gltf.animations.forEach(animation => {
+              if (animation.name) {
+                // add a new animation to the box man
+                boxMan.animation.add(animation.name, animation)
+              }
+            })
+
+            // play the run animation
+            boxMan.animation.play('idle')
+
+            const nextAnimation = time => {
+              setTimeout(() => {
+                i++
+                let next = anims[i % 5]
+                boxMan.animation.play(next, 200, next === 'jump_running' ? false : true)
+                console.log('current animation', boxMan.animation.current)
+                nextAnimation(next === 'jump_running' ? 650 : 2500)
+              }, time)
+            }
+
+            nextAnimation(2500)
+          })
+        }
+      }
+
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>
