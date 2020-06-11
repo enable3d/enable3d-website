@@ -294,7 +294,7 @@ class MainScene extends Scene3D {
 
 window.addEventListener('load', () => {
   PhysicsLoader('/lib', () => {
-    const project = new Project({ antialias: false, maxSubSteps: 10, fixedTimeStep: 1 / 120, scenes: [MainScene] })
+    const project = new Project({ antialias: true, maxSubSteps: 10, fixedTimeStep: 1 / 120, scenes: [MainScene] })
 
     const destination = document.getElementById('welcome-game')
     destination.appendChild(project.canvas)
