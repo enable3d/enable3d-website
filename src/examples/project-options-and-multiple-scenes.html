@@ -19,6 +19,7 @@
       class MenuScene extends Scene3D {
         async preload() {
           await this.load.preload('grass', '/assets/img/grass.jpg')
+          await this.load.preload('robot', '/assets/glb/robot.glb')
         }
 
         async create() {
@@ -57,7 +58,7 @@
           this.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass } })
 
           // add robot
-          const gltf = await this.load.gltf('/assets/glb/robot.glb')
+          const gltf = await this.load.gltf('robot')
           const robot = new ExtendedObject3D()
           robot.name = 'robot'
           robot.add(gltf.scene.children[0])
