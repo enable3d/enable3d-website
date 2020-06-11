@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -38,7 +38,7 @@
           const animations = ['Jumping', 'LookingAround', 'Running', 'BodyJabCross', 'HipHopDancing']
           const pos = { x: 0, y: 5, z: 0 }
 
-          this.third.load.fbx('', '/assets/fbx/Idle.fbx').then(object => {
+          this.third.load.fbx('/assets/fbx/Idle.fbx').then(object => {
             robot.add(object)
 
             console.log(this.third)
@@ -68,18 +68,18 @@
             // load more animations
             animations.forEach(key => {
               if (key === 'Idle') return
-              this.third.load.fbx('', `/assets/fbx/${key}.fbx`).then(object => {
+              this.third.load.fbx(`/assets/fbx/${key}.fbx`).then(object => {
                 robot.animation.add(key, object.animations[0])
               })
             })
 
             this.time.addEvent({
-              delay: 3000,
+              delay: 2500,
               loop: true,
               callback: () => {
                 const anim = Phaser.Math.RND.pick(animations)
                 console.log(`Set animation ${anim}`)
-                robot.animation.play(anim, 200)
+                robot.animation.play(anim, 350)
               }
             })
           })

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -27,11 +27,11 @@
         async create() {
           await this.third.warpSpeed()
 
-          this.third.camera.position.set(0, 1.5, 0)
+          this.third.camera.position.set(0, 3, 2)
 
           const textures = await Promise.all([
-            this.third.load.texture('water1', '/assets/water/Water_1_M_Normal.jpg'),
-            this.third.load.texture('water2', '/assets/water/Water_2_M_Normal.jpg')
+            this.third.load.texture('/assets/water/Water_1_M_Normal.jpg'),
+            this.third.load.texture('/assets/water/Water_2_M_Normal.jpg')
           ])
 
           this.third.misc.water({

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -36,7 +36,7 @@
 
           // get the texture and add the ground
 
-          this.third.load.texture('', '/assets/img/grass.jpg').then(grass => {
+          this.third.load.texture('/assets/img/grass.jpg').then(grass => {
             grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
             grass.offset.set(0, 0)
             grass.repeat.set(2, 2)

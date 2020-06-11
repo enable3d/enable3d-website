@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -52,7 +52,7 @@
           )
           sensor.castShadow = sensor.receiveShadow = false
 
-          this.third.load.fbx('', '/assets/fbx/Idle.fbx').then(object => {
+          this.third.load.fbx('/assets/fbx/Idle.fbx').then(object => {
             // set the flag to ghost
             sensor.body.setCollisionFlags(4)
 
@@ -83,7 +83,7 @@
             })
 
             // load Walking animations
-            this.third.load.fbx('', `/assets/fbx/Walking.fbx`).then(object => {
+            this.third.load.fbx(`/assets/fbx/Walking.fbx`).then(object => {
               console.log('loaded')
               this.robot.animation.add('Walking', object.animations[0])
               this.robot.animation.play('Walking')

@@ -7,7 +7,7 @@
     <title>Project Options and Multiple Scenes</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
-    <script src="/lib/enable3d.framework.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
 
       class MenuScene extends Scene3D {
         async preload() {
-          await this.load.texture('grass', '/assets/img/grass.jpg')
+          await this.load.preload('grass', '/assets/img/grass.jpg')
         }
 
         async create() {
@@ -50,7 +50,7 @@
           this.physics.setGravity(0, -9.81, 0)
 
           // add grass
-          const grass = this.cache.get('grass')
+          const grass = await this.load.texture('grass')
           grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
           grass.offset.set(0, 0)
           grass.repeat.set(2, 2)

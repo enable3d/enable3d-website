@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
   </head>
 
   <body>
@@ -35,7 +35,7 @@
            * https://www.cgtrader.com/free-3d-models/military/armor/m4a1-carbine-e81d81d5-cfdb-4c57-be71-5c1b8092f4ea
            * Editorial License (https://www.cgtrader.com/pages/terms-and-conditions#general-terms-of-licensing)
            */
-          this.third.load.gltf('', '/assets/glb/M4A1.glb').then(object => {
+          this.third.load.gltf('/assets/glb/M4A1.glb').then(object => {
             const rifle = object.scene
 
             this.rifle = new ExtendedObject3D()
