@@ -37,7 +37,7 @@
           })
 
           // height map from http://danni-three.blogspot.com/2013/09/threejs-heightmaps.html
-          this.third.load.texture('', '/assets/heightmap/heightmap-simple.png').then(heightmap => {
+          this.third.load.texture('/assets/heightmap/heightmap-simple.png').then(heightmap => {
             const mesh = this.third.heightMap.add(heightmap)
             if (mesh) {
               // yes, you have to convert it manually :/

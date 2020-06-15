@@ -29,7 +29,9 @@
 
           // create the texture cube
           const leftRight = await this.third.load.texture('/assets/img/box-side.png')
-          const backFront = await this.third.load.texture('/assets/img/box-side.png')
+          // if we clone a texture, we have to manually set needsUpdate to true
+          const backFront = leftRight.clone()
+          backFront.needsUpdate = true
           const top = await this.third.load.texture('/assets/img/box-top.png')
           const bottom = await this.third.load.texture('/assets/img/box-bottom.png')
 
