@@ -12,6 +12,7 @@
   </head>
 
   <body>
+    <div id="info-text">(scene restarts every 5 seconds)</div>
     <script>
       const { enable3d, Scene3D, Canvas } = ENABLE3D
 
@@ -23,11 +24,11 @@
         preload() {}
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
+          this.third.load.preload('grass', '/assets/img/grass.jpg')
         }
 
         create() {
-          this.accessThirdDimension()
           this.third.warpSpeed('light', 'camera', 'sky', 'orbitControls')
           this.third.camera.position.set(20, 20, 40)
 
@@ -36,7 +37,7 @@
 
           // get the texture and add the ground
 
-          this.third.load.texture('/assets/img/grass.jpg').then(grass => {
+          this.third.load.texture('grass').then(grass => {
             grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
             grass.offset.set(0, 0)
             grass.repeat.set(2, 2)
@@ -44,6 +45,10 @@
             // BUG: To add shadows to your ground, set transparent = true
             this.third.physics.add.ground({ width: 20, height: 20, y: 0 }, { phong: { map: grass, transparent: true } })
           })
+
+          setTimeout(() => {
+            this.scene.restart()
+          }, 5000)
         }
       }
 
