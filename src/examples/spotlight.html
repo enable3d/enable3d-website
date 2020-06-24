@@ -16,7 +16,7 @@
 
       class MainScene extends Scene3D {
         createSpotlight(color) {
-          var spot = this.lights.spotLight({ color, intensity: 2, distance: 50, angle: 0.3, penumbra: 0.2, decay: 2 })
+          var spot = this.lights.spotLight({ color, intensity: 2, distance: 40, angle: 0.3, penumbra: 0.2, decay: 2 })
           // castShadow is true by default
           // spot.castShadow = true
           return spot
@@ -28,14 +28,24 @@
           this.camera.position.set(20, 20, 20)
           this.camera.lookAt(0, 0, 0)
 
-          this.box = this.add.box({ y: 2 })
+          this.box = this.add.box({ y: 2 }, { phong: {} })
           this.add.ground({ width: 50, height: 50 }, { phong: { color: 0xaaaaaa } })
+
+          // makes the shadows sharper
+          const adjustShadowSize = light => {
+            light.shadow.mapSize.width = 1024
+            light.shadow.mapSize.height = 1024
+          }
 
           const ambient = this.lights.ambientLight({ color: 0x444444 })
 
           const spotLight1 = this.createSpotlight(0xff7f00)
           const spotLight2 = this.createSpotlight(0x00ff7f)
           const spotLight3 = this.createSpotlight(0x7f00ff)
+
+          adjustShadowSize(spotLight1)
+          adjustShadowSize(spotLight2)
+          adjustShadowSize(spotLight3)
 
           spotLight1.position.set(5, 20, 22)
           spotLight2.position.set(0, 20, -15)
@@ -56,7 +66,7 @@
           this.box.position.y += Math.sin(time) / 50
         }
       }
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
+      new Project({ scenes: [MainScene] })
     </script>
   </body>
 </html>
