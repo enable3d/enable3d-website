@@ -85,12 +85,13 @@
                 child.material.roughness = 1
 
                 if (/mesh/i.test(child.name)) {
-                  child.shape = 'concave'
-                  // I do not know why the physics has an offset but I just fixed it manually
+                  // I do not know why the physics in this model has an offset but I just fixed it manually
                   child.position.set(-18.8, 4.35, -15.55)
                   this.physics.add.existing(child, {
-                    autoCenter: false,
+                    shape: 'concave',
+                    mass: 0,
                     collisionFlags: 1,
+                    autoCenter: false,
                     offset: { x: 18.8, y: -4.35, z: 15.55 }
                   })
                   child.body.setAngularFactor(0, 0, 0)
