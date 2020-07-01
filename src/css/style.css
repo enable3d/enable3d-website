@@ -251,3 +251,16 @@ ul.examples-list li a {
     height: 5em;
   }
 }
+
+/** sponsor section */
+#sponsor-section {
+  background-color: #fafbfc;
+  text-align: center;
+  padding: 16px;
+  color: #6a6a6a;
+}
+
+#sponsor-section a {
+  color: #6a6a6a;
+  text-decoration: underline;
+}
