@@ -1,5 +1,6 @@
 /** FAB */
 div#floating-action-button {
+  z-index: 1;
   position: fixed;
   background: white;
   bottom: 36px;
