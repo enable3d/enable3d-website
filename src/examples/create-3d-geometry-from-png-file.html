@@ -17,7 +17,7 @@
       <a href="/assets/heightmap/heightmap-simple.png"> this png file</a>.
     </div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -28,7 +28,7 @@
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
         }
 
-        create() {
+        async create() {
           this.third.warpSpeed('-ground')
           this.third.camera.position.set(20, 20, 40)
 
@@ -36,15 +36,27 @@
             this.third.haveSomeFun(1)
           })
 
+          // load grass texture
+          const grass = await this.third.load.texture('/assets/img/grass.jpg')
+          grass.wrapS = THREE.RepeatWrapping
+          grass.wrapT = THREE.RepeatWrapping
+          grass.repeat.set(4, 4)
+
           // height map from http://danni-three.blogspot.com/2013/09/threejs-heightmaps.html
           this.third.load.texture('/assets/heightmap/heightmap-simple.png').then(heightmap => {
             const mesh = this.third.heightMap.add(heightmap)
             if (mesh) {
               // yes, you have to convert it manually :/
               mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
+
+              // add custom material or a texture
+              mesh.material = new THREE.MeshPhongMaterial({ map: grass })
+
               // we position, scale, rotate etc. the mesh before adding physics to it
               mesh.scale.set(2, 2, 2)
-              this.third.physics.add.existing(mesh, { mass: 0 })
+
+              // @ts-ignore
+              this.third.physics.add.existing(mesh, { mass: 0, collisionFlags: 1 })
             }
           })
         }
