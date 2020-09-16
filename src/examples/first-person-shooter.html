@@ -102,9 +102,9 @@
             // the rifle movement
             if (zoom) {
               this.redDot.alpha = 0
-              this.move.x = this.third.new.lerp(this.move.x, 0.6, 0.2)
-              this.move.y = this.third.new.lerp(this.move.y, -0.8 + 1.8, 0.2)
-              this.move.z = this.third.new.lerp(this.move.z, -0.45, 0.2)
+              this.move.x = THREE.MathUtils.lerp(this.move.x, 0.6, 0.2)
+              this.move.y = THREE.MathUtils.lerp(this.move.y, -0.8 + 1.8, 0.2)
+              this.move.z = THREE.MathUtils.lerp(this.move.z, -0.45, 0.2)
             } else if (this.keys.w.isDown) {
               this.move.x = Math.sin(time * -0.015) * 0.075
               this.move.y = Math.sin(time * 0.015) * 0.075
