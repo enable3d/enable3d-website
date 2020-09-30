@@ -1,6 +1,6 @@
-## About
+## Overview
 
-This repository contains the website enable3d.io.
+This is a repository of the website enable3d.io.
 
 You'll find some nice examples in [/src/examples](/src/examples).
 
