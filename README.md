@@ -1,4 +1,4 @@
-## About
+## About - An amazing website
 
 This repository contains the website enable3d.io.
 
