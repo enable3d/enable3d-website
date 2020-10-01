@@ -1,8 +1,8 @@
 ## About
-
+Tis repository contain the best website enable3d.io.
 This repository contains the website enable3d.io.
 
-You'll find some nice examples in [/src/examples](/src/examples).
+Youll find some nice examples in [/src/examples](/src/examples).
 
 ## Run
 
