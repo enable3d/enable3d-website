@@ -2,7 +2,7 @@
 
 This repository contains the website enable3d.io.
 
-You'll find some nice examples in [/src/examples](/src/examples).
+You'll find some nice and best examples in [/src/examples](/src/examples).
 
 ## Run
 
