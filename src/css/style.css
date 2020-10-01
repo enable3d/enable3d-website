@@ -166,6 +166,11 @@ ul.examples-list li a {
 .benefit {
   max-width: 320px;
   padding: 16px;
+  
+}
+
+.benefit:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2); 
 }
 
 .benefit h3 {
