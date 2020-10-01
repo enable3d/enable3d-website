@@ -19,10 +19,10 @@ const cloudfront = new CloudFront({ apiVersion: '2019-03-26', accessKeyId, secre
 const params = {
   DistributionId: DistributionId,
   InvalidationBatch: {
-    CallerReference: Math.round(new Date().getTime() / 1000).toString(),
-    Paths: {
-      Quantity: 1,
-      Items: ['/*']
+  CallerReference: Math.round(new Date().getTime() / 1000).toString(),
+  Paths: {
+  Quantity: 1,
+  Items: ['/*']
     }
   }
 }
@@ -31,11 +31,11 @@ const { resolve } = require('path')
 const { readdir } = require('fs').promises
 
 const getFiles = async dir => {
-  const dirents = await readdir(dir, { withFileTypes: true })
+ const dirents = await readdir(dir, { withFileTypes: true })
   const files = await Promise.all(
     dirents.map(dirent => {
-      const res = resolve(dir, dirent.name)
-      return dirent.isDirectory() ? getFiles(res) : res
+     const res = resolve(dir, dirent.name)
+     return dirent.isDirectory() ? getFiles(res) : res
     })
   )
   return Array.prototype.concat(...files)
@@ -51,7 +51,7 @@ const readFile = (path, cb) => {
   })
 }
 
-const upload = (file, data) => {
+  const upload = (file, data) => {
   const Key = file.match(/\/src\/[\S]+$/gm)[0].replace('/src/', '')
   const Body = data
   const ContentType = mime.getType(file)
