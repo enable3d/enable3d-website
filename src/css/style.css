@@ -74,6 +74,7 @@ footer {
 .navbar-items a:hover {
   color: unset;
   text-decoration: none;
+  scale:1.2rem
 }
 
 .navbar-item {
