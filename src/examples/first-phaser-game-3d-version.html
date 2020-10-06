@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
   </head>
 
   <body>
@@ -21,16 +21,16 @@
           super({ key: 'MainScene' })
         }
 
-        preload() {
-          this.load.image('sky', '/assets/img/sky.png')
-          this.load.html('star', '/assets/svg/star.svg')
-        }
-
         init() {
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
           delete this.robot
           this.stars = []
           this.score = 0
+        }
+
+        preload() {
+          this.third.load.preload('sky', '/assets/img/sky.png')
+          this.load.html('star', '/assets/svg/star.svg')
         }
 
         create() {
@@ -47,12 +47,7 @@
           // this.third.physics.debug.enable()
 
           // add background image
-          const sky = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, 'sky')
-          const scaleX = this.cameras.main.width / sky.width
-          const scaleY = this.cameras.main.height / sky.height
-          const scale = Math.max(scaleX, scaleY)
-          sky.depth = -1
-          sky.setScale(scale).setScrollFactor(0)
+          this.third.load.texture('sky').then(sky => (this.third.scene.background = sky))
 
           // add score text
           this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', { fontSize: '32px', fill: '#000' })
@@ -228,6 +223,7 @@
 
       const config = {
         type: Phaser.WEBGL,
+        transparent: true,
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,

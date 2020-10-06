@@ -7,7 +7,7 @@
     <title>Standalone Modes</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
-    <script src="/lib/enable3d.framework.0.19.1.min.js"></script>
+    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
   </head>
 
   <body>
@@ -64,7 +64,7 @@
           this.box.rotation.y += 0.01
         }
       }
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: true }))
     </script>
   </body>
 </html>

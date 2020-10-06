@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.19.1.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
   </head>
 
   <body>
@@ -21,13 +21,13 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
         create() {
-          this.accessThirdDimension()
-          this.third.warpSpeed()
-          this.third.camera.position.set(15, 15, 30)
+          this.third.warpSpeed('-orbitControls')
+          this.third.camera.position.set(15, 30, 30)
+          this.third.camera.lookAt(0, 0, 0)
 
           // this.third.physics.debug.enable()
 
@@ -116,6 +116,7 @@
 
       const config = {
         type: Phaser.WEBGL,
+        transparent: true,
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
