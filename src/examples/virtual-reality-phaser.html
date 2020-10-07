@@ -4,28 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Virtual Reality</title>
+    <title>Virtual Reality (with Phaser)</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.0.0"></script>
-    <script src="/lib/enable3d.framework.0.20.1-dev1.min.js"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.20.1-dev1.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Get your Phone, click Enter VR, tab on the screen and look around.</div>
     <script>
-      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         move = false
 
         constructor() {
-          super({ enableXR: true })
+          super({ key: 'MainScene' })
         }
 
-        update() {
-          if (this.webXR.isPresenting && this.move) {
+        init() {
+          this.accessThirdDimension({ enableXR: true, antialias: false })
+        }
+
+        // The normal Phaser update method will not run while you are in WebXR mode.
+        update() {}
+
+        // Use updateXR as update loop in WebXR mode.
+        updateXR() {
+          if (this.third.webXR.isPresenting && this.move) {
             // move in the direction of the view
-            const cam = this.webXR.camera
+            const cam = this.third.webXR.camera
             const v3 = new THREE.Vector3()
             const distance = 0.02
             cam.getWorldDirection(v3)
@@ -33,19 +42,25 @@
           }
         }
 
-        async create() {
-          this.warpSpeed('-orbitControls')
-          this.camera.position.set(10, 10, 10)
-          this.camera.lookAt(0, 0, 0)
+        create() {
+          this.third.warpSpeed('-orbitControls')
+
+          // 2d element will not be visible in WebXR mode.
+          // const rect = this.add.rectangle(50, 50, 10, 10, 0xff00ff)
+
+          const controller = this.third.webXR.getController(0)
+
+          // will be available in the next version
+          const controllerGrip = this.third.webXR.getControllerGrip ? this.third.webXR.getControllerGrip(0) : null
 
           setInterval(() => {
             const x = Math.random() * 10 - 5
             const z = Math.random() * 10 - 5
-            const ball = this.physics.add.sphere({ y: 50, x, z, radius: 0.5 }, { lambert: { color: 'red' } })
+            const ball = this.third.physics.add.sphere({ y: 50, x, z, radius: 0.5 }, { lambert: { color: 'red' } })
             ball.body.setBounciness(0.7)
 
             setTimeout(() => {
-              this.destroy(ball)
+              this.third.destroy(ball)
             }, 20000)
           }, 2000)
 
@@ -57,11 +72,6 @@
             this.move = false
           }
 
-          const controller = this.webXR.getController(0)
-
-          // will be available in the next version
-          const controllerGrip = this.webXR.getControllerGrip ? this.webXR.getControllerGrip(0) : null
-
           controller.addEventListener('select', () => {})
           controller.addEventListener('selectstart', onSelectStart)
           controller.addEventListener('selectend', onSelectEnd)
@@ -71,7 +81,7 @@
           controller.addEventListener('squeezeend', onSelectEnd)
 
           controller.addEventListener('connected', event => {
-            const ray = this.webXR.getControllerRay(event.data)
+            const ray = this.third.webXR.getControllerRay(event.data)
             if (ray) controller.add(ray)
           })
           controller.addEventListener('disconnected', () => {
@@ -80,7 +90,22 @@
         }
       }
 
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: true }))
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas({ antialias: true })
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
     </script>
   </body>
 </html>
