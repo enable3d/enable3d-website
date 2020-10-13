@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Railway with Constraints and Convex</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.0.0"></script>
+    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Make a Railway using Constraints and Convex Body</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        isRolling = false
+        wheel
+
+        async create() {
+          this.warpSpeed('-ground')
+          this.camera.position.set(20, 20, 40)
+          this.physics.debug?.enable()
+
+          const distance = 10
+
+          let railLeft = this.add.box({ depth: 80 })
+          railLeft.position.x -= distance
+          this.physics.add.existing(railLeft, { collisionFlags: 1, mass: 0 })
+          railLeft.body.setRestitution(1)
+
+          let railRight = this.add.box({ depth: 80 })
+          railRight.position.x += distance
+          this.physics.add.existing(railRight, { collisionFlags: 1, mass: 0 })
+          railRight.body.setRestitution(1)
+
+          const data = [
+            { radiusSegments: 24, radiusTop: 4, radiusBottom: 4, height: 2, z: 0, x: -10 },
+            { radiusSegments: 24, radiusTop: 5.5, radiusBottom: 5.5, height: 0.3, z: 0, x: -9 },
+            { radiusSegments: 4, radiusTop: 1, radiusBottom: 1, height: 18, z: 0, x: 0 },
+            { radiusSegments: 24, radiusTop: 5.5, radiusBottom: 5.5, height: 0.3, z: 0, x: 9 },
+            { radiusSegments: 24, radiusTop: 4, radiusBottom: 4, height: 2, z: 0, x: 10 }
+          ]
+
+          this.bodies = data.map(d => {
+            let cylinder = this.add.cylinder(d)
+            cylinder.rotateZ(Math.PI / 2)
+            cylinder.position.y += 5
+            cylinder.position.z -= 20
+            this.physics.add.existing(cylinder, { shape: 'convex', mass: 100 })
+            return cylinder
+          })
+
+          for (let i = 0; i < this.bodies.length - 1; i++) {
+            const constraint = this.physics.add.constraints.lock(this.bodies[i].body, this.bodies[i + 1].body)
+
+            // [bug] it is not yet possible to choose to "disableCollisionsBetweenLinkedBodies",
+            // so we remove the constraint add a new one.
+            this.physics.physicsWorld.removeConstraint(constraint)
+            this.physics.physicsWorld.addConstraint(constraint, true)
+          }
+
+          setTimeout(() => {
+            this.isRolling = true
+          }, 2000)
+        }
+
+        update() {
+          // we apply the force the the middle part
+          if (this.isRolling) this.bodies[2].body.setAngularVelocityX(2)
+        }
+      }
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: true }))
+    </script>
+  </body>
+</html>
