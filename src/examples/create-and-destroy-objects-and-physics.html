@@ -39,15 +39,19 @@
 
           hasBody()
 
-          setTimeout(() => this.third.physics.add.existing(redBox), 1000)
+          setTimeout(() => this.third.physics.add.existing(redBox), 1000) // add physics body to redBox
 
-          setTimeout(() => this.third.physics.add.existing(blueBox), 2000)
+          setTimeout(() => this.third.physics.add.existing(blueBox), 2000) // add physics body to blueBox
 
           setTimeout(() => hasBody(), 3000)
 
-          setTimeout(() => this.third.destroy(redBox), 4000)
+          setTimeout(() => this.third.destroy(redBox), 4000) // destroy object and its physics body
 
-          setTimeout(() => this.third.destroy(ground), 5000)
+          setTimeout(() => this.third.physics.destroy(blueBox), 5000) // destroy only the physics body
+
+          setTimeout(() => this.third.destroy(ground), 6000) // destroy object and its physics body
+
+          setTimeout(() => this.third.physics.add.existing(blueBox), 7000) // add physics body to blueBox
         }
       }
 
