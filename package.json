@@ -8,7 +8,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "live-server src",
+    "start": "live-server src --port=8081",
     "format": "prettier --write examples/**/*.html index.html examples.html"
   },
   "repository": {
