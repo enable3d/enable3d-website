@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Use tween.js</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.0"></script>
+    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
+    <script src="/lib/tween.umd.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use tween.js to move three.js objects with or without kinematic body</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        create() {
+          this.warpSpeed()
+          this.physics.debug.enable()
+
+          const box1 = this.add.box({ x: -1, y: 0.5, collisionFlags: 2 })
+          const box2 = this.physics.add.box({ x: 1, y: 0.5, collisionFlags: 2 })
+
+          this.tween(box1, { x: 1, y: 2, z: 2 }, 1000, 1000)
+          this.tween(box2, { x: 3, y: 2, z: 2 }, 1000, 1000)
+        }
+
+        tween(object, moveTo, time = 1000, delay = 0) {
+          const coords = object.position.clone()
+
+          const tween = new TWEEN.Tween(coords)
+            .to({ x: moveTo.x, y: moveTo.y, z: moveTo.z }, time)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate(() => {
+              object.position.set(coords.x, coords.y, coords.z)
+              if (object.body) object.body.needUpdate = true
+            })
+
+          if (delay === 0) tween.start()
+          else setTimeout(() => tween.start(), delay)
+        }
+
+        update(time) {
+          TWEEN.update(time * 1000)
+        }
+      }
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
