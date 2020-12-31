@@ -22,15 +22,15 @@
   },
   "homepage": "https://github.com/enable3d/enable3d-website#readme",
   "dependencies": {
-    "@enable3d/ammo-on-nodejs": "^0.19.0",
-    "three": "^0.116.1"
+    "@enable3d/ammo-on-nodejs": "^0.21.0",
+    "three": "^0.123.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.685.0",
+    "aws-sdk": "^2.819.0",
     "express": "^4.17.1",
     "live-server": "^1.2.1",
-    "mime": "^2.4.6",
+    "mime": "^2.4.7",
     "prettier": "^1.19.1",
-    "puppeteer": "^3.1.0"
+    "puppeteer": "^3.3.0"
   }
 }
