@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -34,7 +34,10 @@
           this.score = 0
         }
 
-        create() {
+        async create() {
+          // change outputEncoding to LinearEncoding
+          this.third.renderer.outputEncoding = THREE.LinearEncoding
+
           const zoom = 70
           const w = this.cameras.main.width / zoom
           const h = this.cameras.main.height / zoom
@@ -46,7 +49,12 @@
             offset: null
           }
 
-          this.third.warpSpeed('-ground', '-sky', '-orbitControls')
+          const { lights } = await this.third.warpSpeed('-ground', '-sky', '-orbitControls')
+          const { hemisphereLight, ambientLight, directionalLight } = lights
+          // adjust lights
+          hemisphereLight.intensity = 0.7
+          ambientLight.intensity = 0.5
+          directionalLight.intensity = 1
 
           this.cams.offset = new THREE.Vector3()
 
@@ -83,9 +91,6 @@
             }
           })
 
-          // adjust gamma factor
-          this.third.renderer.gammaFactor = 1.2
-
           // adjust the camera
           this.third.camera.position.set(0, 5, 20)
           this.third.camera.lookAt(0, 0, 0)
@@ -94,7 +99,12 @@
           // this.third.physics.debug.enable()
 
           // add background image
-          this.third.load.texture('sky').then(sky => (this.third.scene.background = sky))
+          this.third.load.texture('sky').then(sky => {
+            // change encoding to LinearEncoding
+            sky.encoding = THREE.LinearEncoding
+            sky.needUpdate = true
+            this.third.scene.background = sky
+          })
 
           // add score text
           this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', { fontSize: '32px', fill: '#000' })
@@ -138,7 +148,7 @@
             star.material.color.setHex(0xffd851)
             star.position.setX(pos.x)
             star.position.setY(pos.y)
-            this.third.physics.add.existing(star, { shape: 'box', width: 0.5, height: 0.5, depth: 0.5 })
+            this.third.physics.add.existing(star, { shape: 'box', ignoreScale: true, width: 0.5, height: 0.5, depth: 0.5 })
             star.body.setCollisionFlags(6)
             this.stars.push(star)
           })
@@ -170,7 +180,7 @@
             this.robot.animation.play('Idle')
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'box', width: 0.5, height: 1.25, depth: 0.5, offset: { y: -0.625 } })
+            this.third.physics.add.existing(this.robot, { shape: 'box', ignoreScale: true, width: 0.5, height: 1.25, depth: 0.5, offset: { y: -0.625 } })
             this.robot.body.setLinearFactor(1, 1, 1)
             this.robot.body.setAngularFactor(0, 0, 0)
             this.robot.body.setFriction(0)

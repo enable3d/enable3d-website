@@ -7,7 +7,7 @@
     <title>Medieval Fantasy Book</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
-    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -85,14 +85,11 @@
                 child.material.roughness = 1
 
                 if (/mesh/i.test(child.name)) {
-                  // I do not know why the physics in this model has an offset but I just fixed it manually
-                  child.position.set(-18.8, 4.35, -15.55)
                   this.physics.add.existing(child, {
                     shape: 'concave',
                     mass: 0,
                     collisionFlags: 1,
-                    autoCenter: false,
-                    offset: { x: 18.8, y: -4.35, z: 15.55 }
+                    autoCenter: false
                   })
                   child.body.setAngularFactor(0, 0, 0)
                   child.body.setLinearFactor(0, 0, 0)

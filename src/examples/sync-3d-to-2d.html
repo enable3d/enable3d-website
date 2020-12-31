@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sync 3D to 2D</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.0"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use your Mouse to Zoom and Move<br />(Syncs the 2D Square to the 3D Box)</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed()
+
+          this.box = this.third.physics.add.box({ y: 5, x: 2 })
+          this.rect = this.add.rectangle(0, 0, 50, 50, 0xff00ff)
+
+          let distance = this.third.camera.position.distanceTo(this.box.position)
+          this.rect.setData('initialDistance', distance)
+        }
+
+        update() {
+          // adjust the size of the rect
+          let distance = this.third.camera.position.distanceTo(this.box.position)
+          let size = this.rect.getData('initialDistance') / distance
+          this.rect.setScale(size)
+
+          // adjust position of the rect
+          let pos = this.third.transform.from3dto2d(this.box.position)
+          this.rect.setPosition(pos.x, pos.y)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

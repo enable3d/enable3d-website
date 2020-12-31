@@ -75,11 +75,19 @@
           <li><a href="./examples/virtual-reality.html">Virtual Reality</a></li>
           <li><a href="./examples/railway-with-csg.html">Railway (with CSG and HACD Body)</a></li>
           <li><a href="./examples/railway-with-constraints.html">Railway (with Constraints and Convex Body)</a></li>
+          <li><a href="./examples/railway-with-compound-body.html">Railway (with Compound Body) NEW</a></li>
+          <li><a href="./examples/post-processing.html">Post-Processing NEW</a></li>
+          <li><a href="./examples/collisiongroup-and-collisionmask.html">CollisionGroup and CollisionMask NEW</a></li>
+          <li><a href="./examples/softbody-cloth.html">SoftBody Cloth NEW</a></li>
+          <li><a href="./examples/raycast-vehicle.html">Car (Raycast Vehicle) NEW</a></li>
+          <li><a href="./examples/car-using-physics-constraints.html">Car (Physics Constraints) NEW</a></li>
         </ul>
         <h3>As 3D Extension for Phaser</h3>
         <ul class="examples-list">
           <li><a href="./examples/simple-setup.html">Simple Setup</a></li>
           <li><a href="./examples/custom-setup.html">Custom Setup</a></li>
+          <li><a href="./examples/sync-2d-to-3d.html">Sync 2D to 3D NEW</a></li>
+          <li><a href="./examples/sync-3d-to-2d.html">Sync 3D to 2D NEW</a></li>
           <li><a href="./examples/jenga-game.html">Jenga Game</a></li>
           <li><a href="./examples/collision-detection.html">Collision Detection</a></li>
           <li><a href="./examples/load-and-use-textures.html">Load and Use Textures</a></li>
@@ -117,6 +125,16 @@
           <li><a href="./examples/create-and-destroy-objects-and-physics.html">Create and Destroy Objects and Physics</a></li>
         </ul>
       </div>
+      <script>
+        // highlight all new examples
+        const links = document.querySelectorAll('a')
+        links.forEach(link => {
+          link.innerHTML = link.innerHTML.replace(
+            /NEW$/,
+            '<b style="background-color: rgba(0,0,0,0.5); color:white; border-radius: 4px; padding: 2px 8px; font-size: 10px; position: relative; top: -2px;">NEW</b>'
+          )
+        })
+      </script>
     </section>
     <footer>
       <a href="https://github.com/enable3d/enable3d#readme">

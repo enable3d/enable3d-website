@@ -7,7 +7,7 @@
     <title>Virtual Reality</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
-    <script src="/lib/enable3d.framework.0.20.1-dev1.min.js"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -58,8 +58,6 @@
           }
 
           const controller = this.webXR.getController(0)
-
-          // will be available in the next version
           const controllerGrip = this.webXR.getControllerGrip ? this.webXR.getControllerGrip(0) : null
 
           controller.addEventListener('select', () => {})

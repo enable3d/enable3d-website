@@ -40,7 +40,6 @@ class MainScene extends Scene3D {
 
   async create() {
     this.warpSpeed('-ground', '-orbitControls')
-    this.renderer.gammaFactor = 1.5
 
     // this.physics.debug.enable()
 
@@ -70,14 +69,11 @@ class MainScene extends Scene3D {
           child.material.roughness = 1
 
           if (/mesh/i.test(child.name)) {
-            // I do not know why the physics in this model has an offset but I just fixed it manually
-            child.position.set(-18.8, 4.35, -15.55)
             this.physics.add.existing(child, {
               shape: 'concave',
               mass: 0,
               collisionFlags: 1,
-              autoCenter: false,
-              offset: { x: 18.8, y: -4.35, z: 15.55 }
+              autoCenter: false
             })
             child.body.setAngularFactor(0, 0, 0)
             child.body.setLinearFactor(0, 0, 0)

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -22,11 +22,10 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
         }
 
         async create() {
-          this.accessThirdDimension()
           this.third.warpSpeed()
 
           this.third.physics.debug.enable()
@@ -106,7 +105,7 @@
       }
 
       window.addEventListener('load', () => {
-        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/moz')
       })
     </script>
   </body>

@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -25,6 +25,7 @@
         }
 
         async create() {
+          this.third.renderer.outputEncoding = THREE.LinearEncoding
           await this.third.warpSpeed()
 
           this.third.camera.position.set(0, 3, 2)
@@ -33,6 +34,13 @@
             this.third.load.texture('/assets/water/Water_1_M_Normal.jpg'),
             this.third.load.texture('/assets/water/Water_2_M_Normal.jpg')
           ])
+
+          console.log(textures)
+
+          textures[0].encoding = THREE.sRGBEncoding
+          textures[1].encoding = THREE.sRGBEncoding
+          textures[0].needsUpdate = true
+          textures[1].needsUpdate = true
 
           this.third.misc.water({
             y: 1,

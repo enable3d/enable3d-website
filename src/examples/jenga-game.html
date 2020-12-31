@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -21,7 +21,8 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
+          this.third.renderer.outputEncoding = THREE.LinearEncoding
 
           this.selected = null
           this.mousePosition = new THREE.Vector3()
@@ -29,9 +30,18 @@
           this.prev == { x: 0, y: 0 }
         }
 
-        create() {
-          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
-          this.third.warpSpeed('-orbitControls')
+        async create() {
+          // this.third.warpSpeed('-orbitControls')
+
+          const { lights } = await this.third.warpSpeed('-orbitControls')
+
+          const { hemisphereLight, ambientLight, directionalLight } = lights
+          console.log(hemisphereLight.intensity, ambientLight.intensity, directionalLight.intensity)
+
+          const intensity = 0.4
+          hemisphereLight.intensity = intensity
+          ambientLight.intensity = intensity
+          directionalLight.intensity = intensity
 
           this.third.camera.position.set(-8, 8, 8)
           this.third.camera.lookAt(0, 2, 0)
@@ -39,7 +49,8 @@
           const blocks = []
 
           const addTower = () => {
-            const material = this.third.add.material({ lambert: { color: 'chocolate' } })
+            const material = this.third.add.material({ lambert: { color: 0xa04000 } })
+            // material.color.convertSRGBToLinear()
 
             for (let i = 0; i < 12; i++) {
               if (i % 2 == 0) {

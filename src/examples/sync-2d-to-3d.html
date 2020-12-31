@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sync 2D to 3D</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.0"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use your Mouse to Zoom and Move<br />(Syncs the 3D Box to the 2D Square)</div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        init() {
+          this.accessThirdDimension()
+        }
+
+        async create() {
+          await this.third.warpSpeed()
+
+          this.rect = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, 50, 50, 0xff00ff, 0.5)
+
+          this.box = this.third.add.box()
+
+          // adjust position of box with mouse click (will be over written by update())
+          window.addEventListener('pointerdown', async event => {
+            const canvas = this.third.renderer.domElement.getBoundingClientRect()
+            const mouseX = event.clientX - canvas.left
+            const mouseY = event.clientY - canvas.top
+
+            const x = (mouseX / canvas.width) * 2 - 1
+            const y = -(mouseY / canvas.height) * 2 + 1
+
+            const position = this.third.transform.from2dto3d(x, y, 10)
+            if (position) {
+              const { x, y, z } = position
+              this.box.position.set(x, y, z)
+            }
+          })
+        }
+
+        update(time) {
+          if (!this.rect) return
+
+          const speed = 6
+          const angle = time / 800
+          const direction = { x: Math.cos(angle), y: Math.sin(angle) }
+          this.rect.x += speed * direction.x
+          this.rect.y += speed * direction.y
+
+          // normalize values
+          const x = (this.rect.x / this.cameras.main.width) * 2 - 1
+          const y = -(this.rect.y / this.cameras.main.height) * 2 + 1
+
+          const position = this.third.transform.from2dto3d(x, y, 10)
+          if (position) {
+            const { x, y, z } = position
+            this.box.position.set(x, y, z)
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>

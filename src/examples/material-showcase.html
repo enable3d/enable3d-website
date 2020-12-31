@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Cameras, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Cameras, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -27,7 +27,7 @@
         create() {
           this.third.warpSpeed('light', 'orbitControls', 'sky')
 
-          const color = 0xff8c00
+          const color = new THREE.Color('orange').convertSRGBToLinear()
 
           this.objects = [
             this.third.add.box({ x: -2, y: 3 }),

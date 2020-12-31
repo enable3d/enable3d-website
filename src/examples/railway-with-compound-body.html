@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Railway with Compound Body</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.0"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Make a Railway using a Compound Body</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        isRolling = false
+        wheel
+
+        async create() {
+          this.warpSpeed('-ground')
+          this.camera.position.set(20, 20, 40)
+          this.physics.debug?.enable()
+
+          const distance = 10
+
+          let railLeft = this.add.box({ depth: 80 })
+          railLeft.position.x -= distance
+          this.physics.add.existing(railLeft, { collisionFlags: 1, mass: 0 })
+          railLeft.body.setRestitution(1)
+
+          let railRight = this.add.box({ depth: 80 })
+          railRight.position.x += distance
+          this.physics.add.existing(railRight, { collisionFlags: 1, mass: 0 })
+          railRight.body.setRestitution(1)
+
+          const data = [
+            { radiusSegments: 24, radiusTop: 4, radiusBottom: 4, height: 2, z: 0, y: 10 },
+            { radiusSegments: 24, radiusTop: 4, radiusBottom: 4, height: 2, z: 0, y: -10 },
+            { radiusSegments: 24, radiusTop: 5.5, radiusBottom: 5.5, height: 0.3, z: 0, y: 9 },
+            { radiusSegments: 24, radiusTop: 5.5, radiusBottom: 5.5, height: 0.3, z: 0, y: -9 },
+            { radiusSegments: 4, radiusTop: 1, radiusBottom: 1, height: 20, z: 0, y: 0 }
+          ]
+
+          this.wheel = new THREE.Group()
+
+          for (let i = 0; i < data.length; i++) {
+            this.wheel.add(this.make.cylinder(data[i]))
+          }
+
+          this.wheel.material = new THREE.MeshLambertMaterial({ color: 0xcccccc })
+          this.wheel.castShadow = this.wheel.receiveShadow = true
+          this.wheel.rotateZ(Math.PI / 2)
+          this.wheel.position.z -= 20
+          this.wheel.position.y += 6
+
+          this.add.existing(this.wheel)
+          this.physics.add.existing(this.wheel, { mass: 1000 })
+
+          setTimeout(() => {
+            this.isRolling = true
+          }, 2000)
+        }
+
+        update() {
+          if (this.isRolling) this.wheel.body.setAngularVelocityX(1)
+        }
+      }
+      PhysicsLoader('/lib/moz', () => new Project({ scenes: [MainScene], antialias: true }))
+    </script>
+  </body>
+</html>

@@ -7,7 +7,7 @@
     <title>All Constraints Types</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
-    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -63,9 +63,9 @@
           }
 
           const hinge = x => {
-            let box1 = this.physics.add.box({ depth: 0.25, y: 2, x: x, mass: 0 }, { custom: mat1 })
-            let box2 = this.physics.add.box({ depth: 0.25, y: 2, x: x + 1.25 }, { custom: mat2 })
-            let box3 = this.physics.add.box({ depth: 0.25, y: 2, x: x + 1.25 }, { custom: mat3 })
+            let box1 = this.physics.add.box({ depth: 0.25, y: 2, z: 0, x: x, mass: 0 }, { custom: mat1 })
+            let box2 = this.physics.add.box({ depth: 0.25, y: 2, z: 0.5, x: x + 1.25 }, { custom: mat2 })
+            let box3 = this.physics.add.box({ depth: 0.25, y: 2, z: 1, x: x + 1.25 }, { custom: mat3 })
 
             this.physics.add.constraints.hinge(box1.body, box2.body, {
               pivotA: { y: -0.65 },
@@ -115,7 +115,7 @@
           const coneTwist = x => {
             let box1 = this.physics.add.box({ y: 2, x: x, collisionFlags: 2, mass: 100 }, { custom: mat1 })
             let box2 = this.physics.add.box({ y: 0, x: x, z: 0 }, { custom: mat2 })
-            this.physics.add.constraints.coneTwist(box1.body, box2.body, { x: 1, y: 2, z: 2 }, { x: 0.5, y: -0.5, z: 0.5 })
+            this.physics.add.constraints.coneTwist(box1.body, box2.body, { frameA: { x: 1, y: 1, z: 1 }, frameB: { x: 0.5, y: -0.5, z: 0.5 } })
           }
 
           const dof = x => {

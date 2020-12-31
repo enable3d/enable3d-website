@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Post-Processing</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.0"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, EffectComposer, RenderPass, GlitchPass, DotScreenShader, ShaderPass } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        create() {
+          this.warpSpeed()
+
+          this.physics.add.sphere({ y: 5, x: 2 }, { lambert: { color: 'red' } })
+          this.physics.add.box({ y: 5, x: -2 }, { lambert: { color: 'blue' } })
+
+          this.composer = new EffectComposer(this.renderer)
+
+          const renderPass = new RenderPass(this.scene, this.camera)
+          this.composer.addPass(renderPass)
+
+          const effect = new ShaderPass(DotScreenShader)
+          effect.uniforms['scale'].value = 4
+          this.composer.addPass(effect)
+
+          const glitchPass = new GlitchPass()
+          this.composer.addPass(glitchPass)
+
+          let isActive = true
+          setInterval(() => {
+            if (isActive) this.composer.removePass(effect)
+            else this.composer.addPass(effect)
+            isActive = !isActive
+          }, 2000)
+        }
+      }
+      PhysicsLoader('/lib/moz', () => new Project({ scenes: [MainScene], antialias: true }))
+    </script>
+  </body>
+</html>

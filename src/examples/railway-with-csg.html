@@ -7,7 +7,7 @@
     <title>Railway with CSG and HACD</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
-    <script src="/lib/enable3d.framework.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -74,7 +74,7 @@
           if (this.isRolling) this.wheel.body.setAngularVelocityX(1)
         }
       }
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: true }))
+      PhysicsLoader('/lib/moz', () => new Project({ scenes: [MainScene], antialias: true }))
     </script>
   </body>
 </html>

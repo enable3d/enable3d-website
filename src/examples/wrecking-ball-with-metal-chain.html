@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -21,11 +21,10 @@
         }
 
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension({ gravity: { x: 0, y: -30, z: 0 } })
         }
 
         create() {
-          this.accessThirdDimension({ gravity: { x: 0, y: -30, z: 0 } })
           this.third.warpSpeed()
           this.third.camera.position.set(0, 10, 50)
           this.third.camera.lookAt(0, 8, 0)

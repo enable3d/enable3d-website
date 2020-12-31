@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -36,6 +36,8 @@
 
           this.robot = new ExtendedObject3D()
           const pos = { x: 3, y: 2, z: -7 }
+
+          this.third.physics.debug.enable()
 
           const sensor = this.third.physics.add.box(
             {
@@ -72,7 +74,7 @@
             this.robot.rotation.set(0, -Math.PI / 2, 0)
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'box', width: 1, depth: 1, offset: { y: -0.5 } })
+            this.third.physics.add.existing(this.robot, { shape: 'box', ignoreScale: true, width: 1, depth: 1, offset: { y: -0.5 } })
 
             this.third.physics.add.constraints.lock(this.robot.body, sensor.body)
 

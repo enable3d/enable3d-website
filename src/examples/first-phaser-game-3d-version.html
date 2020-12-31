@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.0"></script>
     <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.20.0.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
   </head>
 
   <body>
@@ -33,18 +33,18 @@
           this.load.html('star', '/assets/svg/star.svg')
         }
 
-        create() {
-          this.third.warpSpeed('-ground', '-sky', '-orbitControls')
-
-          // adjust gamma factor
-          this.third.renderer.gammaFactor = 1.2
+        async create() {
+          const { lights } = await this.third.warpSpeed('-ground', '-sky', '-orbitControls')
+          // const { hemisphericLight, ambientLight } = lights
+          // hemisphericLight.intensity = 1
+          // ambientLight.intensity = 1
 
           // adjust the camera
           this.third.camera.position.set(0, 5, 20)
           this.third.camera.lookAt(0, 0, 0)
 
           // enable physics debugging
-          // this.third.physics.debug.enable()
+          this.third.physics.debug.enable()
 
           // add background image
           this.third.load.texture('sky').then(sky => (this.third.scene.background = sky))
@@ -55,7 +55,7 @@
           this.scoreText.depth = 1
 
           // add platforms
-          const platformMaterial = { phong: { transparent: true, color: 0x21572f } }
+          const platformMaterial = { phong: { transparent: true, color: new THREE.Color(0x21572f).convertSRGBToLinear() } }
           const platforms = [
             this.third.physics.add.box({ name: 'platform-ground', y: -2, width: 30, depth: 5, height: 2, mass: 0 }, platformMaterial),
             this.third.physics.add.box({ name: 'platform-right1', x: 7, y: 4, width: 15, depth: 5, mass: 0 }, platformMaterial),
@@ -88,10 +88,10 @@
             const star = this.third.add.extrude({ shape: starShape[0], depth: 120 })
             star.name = `star-${i}`
             star.scale.set(1 / starScale, 1 / -starScale, 1 / starScale)
-            star.material.color.setHex(0xffd851)
+            star.material.color.setHex(0xffd851).convertSRGBToLinear()
             star.position.setX(pos.x)
             star.position.setY(pos.y)
-            this.third.physics.add.existing(star, { shape: 'box', width: 0.5, height: 0.5, depth: 0.5 })
+            this.third.physics.add.existing(star, { shape: 'box', ignoreScale: true, width: 0.5, height: 0.5, depth: 0.5 })
             star.body.setCollisionFlags(6)
             this.stars.push(star)
           })
@@ -122,7 +122,7 @@
             this.robot.animation.play('Idle')
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'box', width: 0.5, depth: 0.5, offset: { y: -0.5 } })
+            this.third.physics.add.existing(this.robot, { shape: 'box', ignoreScale: true, width: 0.5, depth: 0.5, offset: { y: -0.5 } })
             this.robot.body.setLinearFactor(1, 1, 0)
             this.robot.body.setAngularFactor(0, 0, 0)
             this.robot.body.setFriction(0)
