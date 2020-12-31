@@ -54,8 +54,13 @@
         }
 
         async create() {
-          this.warpSpeed('-ground', '-orbitControls')
-          this.renderer.gammaFactor = 1.5
+          const { lights } = await this.warpSpeed('-ground', '-orbitControls')
+
+          const { hemisphereLight, ambientLight, directionalLight } = lights
+          const intensity = 0.65
+          hemisphereLight.intensity = intensity
+          ambientLight.intensity = intensity
+          directionalLight.intensity = intensity
 
           // this.physics.debug.enable()
 

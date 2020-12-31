@@ -39,7 +39,13 @@ class MainScene extends Scene3D {
   }
 
   async create() {
-    this.warpSpeed('-ground', '-orbitControls')
+    const { lights } = await this.warpSpeed('-ground', '-orbitControls')
+
+    const { hemisphereLight, ambientLight, directionalLight } = lights
+    const intensity = 0.65
+    hemisphereLight.intensity = intensity
+    ambientLight.intensity = intensity
+    directionalLight.intensity = intensity
 
     // this.physics.debug.enable()
 
