@@ -1,15 +1,15 @@
 'use strict'
 
 // non render-blocking way to defer a task
-const task = (task) => setTimeout(task, 0)
+const task = task => setTimeout(task, 0)
 
-const main = function () {
+const main = function() {
   const { jsx, render } = nanoJSX
 
   const addFloatingButton = () => {
     // link to repository
-    const repo = 'https://github.com/enable3d/enable3d-website/tree/master/src'
-    const pathname = window.location.pathname
+    let repo = 'https://github.com/enable3d/enable3d-website/tree/master/src'
+    let pathname = window.location.pathname
 
     // link to .js file if it is a "headless mode" example
     if (/\headless/.test(pathname)) pathname = pathname.replace(/\.html$/, '.js')
@@ -34,7 +34,6 @@ const main = function () {
     })
   }
 
-
   const addGithubCorner = () => {
     task(() => {
       const githubCorner = jsx`
@@ -56,7 +55,7 @@ const main = function () {
 }
 
 // first of all, load Nano JSX, then execute all the rest
-window.addEventListener('load', function () {
+window.addEventListener('load', function() {
   const script = document.createElement('script')
   script.src = 'https://unpkg.com/nano-jsx@0.0.11/bundles/nano.slim.min.js'
   script.type = 'text/javascript'
