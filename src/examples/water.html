@@ -25,7 +25,6 @@
         }
 
         async create() {
-          this.third.renderer.outputEncoding = THREE.LinearEncoding
           await this.third.warpSpeed()
 
           this.third.camera.position.set(0, 3, 2)
@@ -35,10 +34,6 @@
             this.third.load.texture('/assets/water/Water_2_M_Normal.jpg')
           ])
 
-          console.log(textures)
-
-          textures[0].encoding = THREE.sRGBEncoding
-          textures[1].encoding = THREE.sRGBEncoding
           textures[0].needsUpdate = true
           textures[1].needsUpdate = true
 

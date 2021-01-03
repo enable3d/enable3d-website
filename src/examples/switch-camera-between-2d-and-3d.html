@@ -35,9 +35,6 @@
         }
 
         async create() {
-          // change outputEncoding to LinearEncoding
-          this.third.renderer.outputEncoding = THREE.LinearEncoding
-
           const zoom = 70
           const w = this.cameras.main.width / zoom
           const h = this.cameras.main.height / zoom
@@ -52,9 +49,9 @@
           const { lights } = await this.third.warpSpeed('-ground', '-sky', '-orbitControls')
           const { hemisphereLight, ambientLight, directionalLight } = lights
           // adjust lights
-          hemisphereLight.intensity = 0.7
+          hemisphereLight.intensity = 0.5
           ambientLight.intensity = 0.5
-          directionalLight.intensity = 1
+          directionalLight.intensity = 0.5
 
           this.cams.offset = new THREE.Vector3()
 
