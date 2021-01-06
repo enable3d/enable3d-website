@@ -15,32 +15,50 @@
     <script>
       const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
-      class Player {
-        constructor(scene) {
-          this.object = scene.third.physics.add.cylinder({ z: 10, y: 1, radiusSegments: 16, radiusTop: 1, radiusBottom: 1, collisionFlags: 0 })
-          this.object.body.setAngularFactor(0, 0, 0)
-          this.object.body.setRestitution(0.25)
-          // https://docs.panda3d.org/1.10/python/programming/physics/bullet/ccd
-          // https://github.com/chandlerprall/Physijs/wiki/Collisions#motion-clamping
-          this.object.body.setCcdMotionThreshold(1e-2)
-          this.object.body.setCcdSweptSphereRadius(0.8)
-        }
+      const addPlayer = scene => {
+        const player = scene.third.physics.add.cylinder({
+          z: 10,
+          y: 1,
+          radiusSegments: 16,
+          radiusTop: 1,
+          radiusBottom: 1,
+          collisionFlags: 0
+        })
+        player.body.setAngularFactor(0, 0, 0)
+        player.body.setRestitution(0.25)
+        // https://docs.panda3d.org/1.10/python/programming/physics/bullet/ccd
+        // https://github.com/chandlerprall/Physijs/wiki/Collisions#motion-clamping
+        player.body.setCcdMotionThreshold(1e-2)
+        player.body.setCcdSweptSphereRadius(0.8)
+
+        return player
       }
 
       class Goal {
         activate() {
           this.active = true
-          this.object.body.setCollisionFlags(0)
-          this.object.body.setAngularVelocityY(this.speed)
+
+          if (!this.object.body) {
+            this.scene.third.physics.add.existing(this.object, { autoCenter: false })
+
+            this.object.body.setAngularVelocityY(this.speed)
+            this.object.body.setLinearFactor(0, 0, 0)
+            this.object.body.setAngularFactor(0, 1, 0)
+            this.object.body.setFriction(0)
+            this.object.body.setCollisionFlags(2)
+            this.object.body.setRestitution(1)
+            this.object.body.setCollisionFlags(0)
+            this.object.body.setAngularVelocityY(this.speed)
+          }
         }
 
         deactivate() {
           this.active = false
-          this.object.body.setCollisionFlags(1)
-          this.object.body.setAngularVelocityY(0)
+          if (this.object.body) this.scene.third.physics.destroy(this.object.body)
         }
 
         constructor(scene, centerX, centerZ, index) {
+          this.scene = scene
           this.centerX = centerX
           this.centerZ = centerZ
           this.index = index
@@ -60,7 +78,7 @@
               {
                 y: 1,
                 shape: curve,
-                curveSegments: Math.round(length * 3),
+                curveSegments: Math.round(length * 2),
                 depth: depth,
                 bevelEnabled: false
               },
@@ -78,14 +96,6 @@
             object.position.set(x, 0, z)
 
             object.shape = 'concave'
-            scene.third.physics.add.existing(object, { autoCenter: false })
-
-            object.body.setAngularVelocityY(speed)
-            object.body.setLinearFactor(0, 0, 0)
-            object.body.setAngularFactor(0, 1, 0)
-            object.body.setFriction(0)
-            object.body.setCollisionFlags(2)
-            object.body.setRestitution(1)
 
             return object
           }
@@ -112,12 +122,8 @@
       }
 
       class DashAndBlast extends Scene3D {
-        constructor() {
-          super({ key: 'DashAndBlast' })
-        }
-
         init() {
-          this.requestThirdDimension()
+          this.accessThirdDimension()
           this.goals = []
           delete this.player
           this.goalIndex = 0
@@ -125,35 +131,34 @@
         }
 
         create() {
-          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
           this.third.warpSpeed('camera', 'sky', 'light', 'lookAtCenter')
 
-          // this.third.physics.debug.enable()
+          // this.third.physics?.debug?.enable()
 
           for (let i = 0; i < 10; i++) {
             this.goals.push(new Goal(this, Phaser.Math.RND.integerInRange(-6, 6), i * -20, i))
           }
 
-          this.player = new Player(this)
+          this.player = addPlayer(this)
 
           this.third.physics.add.ground({ width: 35, height: 220, y: -1, z: -95 }, { lambert: { color: 0x95a7ef } })
 
           this.input.on('pointerdown', pointer => {
-            const { x: vx, y: vy, z: vz } = this.player.object.body.velocity
+            const { x: vx, y: vy, z: vz } = this.player.body.velocity
             if (Math.abs(vx) > 1 || Math.abs(vy) > 1 || Math.abs(vz) > 1) return
 
-            this.player.object.body.ammo.setMassProps(1, new Ammo.btVector3(1, 1, 1))
+            this.player.body.ammo.setMassProps(1, new Ammo.btVector3(1, 1, 1))
             const speed = 75
             // apply force in direction of the next goal
-            const pos = this.player.object.position
+            const pos = this.player.position
             const goal = this.goals[this.goalIndex]
             const angle = Math.atan2(goal.centerX - pos.x, goal.centerZ - pos.z)
 
             const x = Math.sin(angle) * speed,
-              y = this.player.object.body.velocity.y,
+              y = this.player.body.velocity.y,
               z = Math.cos(angle) * speed
 
-            this.player.object.body.setVelocity(x, y, z)
+            this.player.body.setVelocity(x, y, z)
           })
           this.ready = true
         }
@@ -162,26 +167,26 @@
           if (!this.ready) return
 
           // camera follow
-          const pos = this.player.object.position.clone()
+          const pos = this.player.position.clone()
           this.third.camera.position.set(pos.x, pos.y + 20, pos.z + 20)
           this.third.camera.lookAt(pos.x, pos.y, pos.z - 5)
 
           // update player
-          if (this.player.object.position.y < -10) this.scene.restart()
-          if (this.player.object.position.z <= this.goals[this.goalIndex].centerZ) {
-            this.player.object.body.setVelocity(0, 0, 0)
-            this.player.object.body.ammo.setMassProps(100, new Ammo.btVector3(1, 1, 1))
+          if (this.player.position.y < -10) this.scene.restart()
+          if (this.player.position.z - 1 <= this.goals[this.goalIndex].centerZ) {
+            this.player.body.setVelocity(0, 0, 0)
+            this.player.body.ammo.setMassProps(100, new Ammo.btVector3(1, 1, 1))
 
-            this.player.object.body.setCollisionFlags(2)
+            this.player.body.setCollisionFlags(2)
 
             // set the player at the center of the goal
-            this.player.object.position.x = this.goals[this.goalIndex].centerX
-            this.player.object.position.z = this.goals[this.goalIndex].centerZ
-            this.player.object.body.needUpdate = true
+            this.player.position.x = this.goals[this.goalIndex].centerX
+            this.player.position.z = this.goals[this.goalIndex].centerZ
+            this.player.body.needUpdate = true
 
             this.time.addEvent({
               delay: 50,
-              callback: () => this.player.object.body.setCollisionFlags(0)
+              callback: () => this.player.body.setCollisionFlags(0)
             })
 
             if (this.goalIndex < this.goals.length - 1) {
