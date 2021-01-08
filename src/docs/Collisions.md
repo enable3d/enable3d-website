@@ -1,9 +1,9 @@
 ## Collisions
 
-You can check all collisions on a single body or check for collision between 2 specific bodies. The event will be `start`, `colliding` or `end`.
+You can check all collisions on a single body or check for collision between 2 specific bodies or check all collisions on bodies with checkCollisions set to true. The event will be `start`, `colliding` or `end`.
 
 ```javascript
-// all collision for blueBox
+// all collision for blueBox (will set body.checkCollisions = true, on the blueBox)
 blueBox.body.on.collision((otherObject, event) => {
   if (otherObject.name !== 'ground') {
     console.log('blueBox collided with another object than the ground')
@@ -12,10 +12,21 @@ blueBox.body.on.collision((otherObject, event) => {
 ```
 
 ```javascript
-// collision between blueBox and redBox
+// collision between blueBox and redBox (will set body.checkCollisions = true, on the blueBox and the redBox)
 physics.add.collider(blueBox, redBox, event => {
   console.log(`blueBox and redBox: ${event}`)
 })
+```
+
+```javascript
+// show all collision for object that have { checkCollisions: true }
+physics.collisionEvents.on('collision', data => {
+  const { bodies, event } = data
+  console.log(bodies[0].name, bodies[1].name, event)
+})
+
+const box = physics.add.box({ y: 10 })
+box.body.checkCollisions = true // set checkCollisions to true
 ```
 
 See the [collisions example](https://enable3d.io/examples/collision-detection.html) for details on implementing and using this event.
