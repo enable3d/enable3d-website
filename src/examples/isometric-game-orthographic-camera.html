@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Isometric Game / Orthographic Camera</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js"></script>
+    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        init() {
+          // init third dimension with a custom camera
+          // https://threejs.org/docs/#api/en/cameras/OrthographicCamera
+          const frustumSize = 10
+          const aspect = this.cameras.main.width / this.cameras.main.height
+          this.accessThirdDimension({
+            camera: new THREE.OrthographicCamera((frustumSize * aspect) / -2, (frustumSize * aspect) / 2, frustumSize / 2, frustumSize / -2)
+          })
+        }
+
+        create() {
+          this.third.warpSpeed('-camera')
+          this.third.camera.position.set(10, 10, 10)
+          this.third.camera.lookAt(0, 0, 0)
+
+          this.third.add.box({ x: 1, y: 0.5, z: 0.5, depth: 2 }, { lambert: { color: 'darkviolet' } })
+          this.third.add.box({ z: 1, y: 1, height: 2 }, { lambert: { color: 'darkorange' } })
+          this.third.add.box({ x: 0.5, y: 1.5, width: 2 }, { lambert: { color: 'red' } })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        // we don't need physics in this example
+        enable3d(() => new Phaser.Game(config)) // .withPhysics('/lib')
+      })
+    </script>
+  </body>
+</html>
