@@ -1,4 +1,4 @@
-const { Ammo, Physics, ServerClock } = require('@enable3d/ammo-on-nodejs')
+const { Ammo: ammo, Physics, ServerClock } = require('@enable3d/ammo-on-nodejs')
 
 class ServerScene {
   constructor() {
@@ -7,6 +7,9 @@ class ServerScene {
   }
 
   init() {
+    // test if we have access to Ammo
+    console.log('Ammo', new Ammo.btVector3(1, 2, 3).y() === 2)
+
     // init the Physics
     this.physics = new Physics()
     this.factory = this.physics.factory
@@ -60,11 +63,14 @@ class ServerScene {
     if (y > 1) console.log('y:', y)
 
     // TODO
-    // send new positions to the client (via geckos.io)
+    // send new positions to the client
   }
 }
 
 // wait for Ammo to be loaded
-Ammo().then(() => {
+ammo().then((ammo) => {
+  globalThis.Ammo = ammo
+
+  // start server scene
   new ServerScene()
 })
