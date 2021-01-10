@@ -58,7 +58,35 @@
         // static ground
         physics.add.ground({ width: 20, height: 20 }, { lambert: { color: 'cadetblue' } })
 
-        // add cylinder
+        // ------------------------
+        // add outer cylinder using extrude (https://stackoverflow.com/a/31107090)
+        // ------------------------
+        const extrudeSettings = {
+          depth: 2,
+          steps: 1,
+          bevelEnabled: false,
+          curveSegments: 8
+        }
+
+        const arcShape = new THREE.Shape()
+        arcShape.absarc(0, 0, 4, 0, Math.PI * 2, 0, false)
+
+        const holePath = new THREE.Path()
+        holePath.absarc(0, 0, 3.5, 0, Math.PI * 2, true)
+        arcShape.holes.push(holePath)
+
+        const geo = new THREE.ExtrudeBufferGeometry(arcShape, extrudeSettings)
+        const mat = new THREE.MeshBasicMaterial({ color: 'khaki' })
+        const mesh = new THREE.Mesh(geo, mat)
+        geo.translate(0, 0, -1) // somehow this has an offset as well :/
+        mesh.rotateX(Math.PI / 2)
+        mesh.position.y = 15
+        scene.add(mesh)
+        physics.add.existing(mesh, { shape: 'hacd' })
+
+        // ------------------------
+        // add inner cylinder using "hollow-cylinder.js" (https://discourse.threejs.org/t/problem-to-add-physic-in-a-hollow-cylinder-threejs-ammojs/22063/5)
+        // ------------------------
         const height = 3
         const externalRadius = 3
         const internalRadius = 2.5
@@ -70,11 +98,9 @@
           height,
           segments: 21
         })
-
-        // create a cylinder
         const object = cylinder.createModel(new THREE.Vector3(0, 10, 0), new THREE.Quaternion(0, 0, 0, 1))
 
-        // adjust the strange offset
+        // adjust the strange offset :/
         const offset = {
           x: internalRadius - externalRadius,
           y: -height / 2,
@@ -91,6 +117,8 @@
 
         // add a hacd body to the cylinder
         physics.add.existing(object, { shape: 'hacd' })
+
+        // ------------------------
 
         const clock = new THREE.Clock()
 
