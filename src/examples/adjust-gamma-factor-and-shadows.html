@@ -14,7 +14,7 @@
   <body>
     <div id="info-text">Adjusts randomly the gammaFactor and disables the shadows.</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -26,6 +26,9 @@
         }
 
         async create() {
+          // set outputEncoding to THREE.GammaEncoding (default is THREE.LinearEncoding)
+          this.third.renderer.outputEncoding = THREE.GammaEncoding
+
           const { lights } = await this.third.warpSpeed()
 
           this.third.add.box({ x: -4, y: 2, height: 4 }, { lambert: { color: 0xff0000 } })
