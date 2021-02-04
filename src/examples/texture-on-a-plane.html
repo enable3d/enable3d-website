@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Texture on a Plane</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        preload() {
+          this.load.preload('grass', '/assets/img/grass.jpg')
+        }
+
+        async create() {
+          this.warpSpeed()
+
+          this.physics.debug.enable()
+
+          const texture = await this.load.texture('grass')
+          texture.wrapS = THREE.RepeatWrapping
+          texture.wrapT = THREE.RepeatWrapping
+          texture.repeat.set(2, 2)
+
+          const geometry = new THREE.PlaneGeometry(5, 5, 1, 1)
+          const material = new THREE.MeshLambertMaterial({ map: texture })
+          const plane = new THREE.Mesh(geometry, material)
+
+          plane.material.side = THREE.DoubleSide
+          plane.receiveShadow = true
+          plane.castShadow = true
+          plane.position.set(0, 10, 0)
+          plane.rotation.z = Math.PI / 8
+          plane.rotation.y = Math.PI / 8
+
+          this.add.existing(plane)
+          this.physics.add.existing(plane, { shape: 'convexMesh' }) // see https://github.com/enable3d/enable3d/issues/75
+        }
+      }
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: false }))
+    </script>
+  </body>
+</html>
