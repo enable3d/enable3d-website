@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Objects Recycling</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+    <script src="https://unpkg.com/nano-jsx@0.0.15/bundles/nano.slim.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Improve performance while recycling objects</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+      const { jsx, render } = nanoJSX
+
+      class MainScene extends Scene3D {
+        balls = []
+
+        addStats(total) {
+          const el = jsx`<div style="position: relative; height: 0; top: 96px; text-align: center;" id="stats"></div>`
+          document.getElementById('info-text').after(render(el))
+          this.updateStats(total, 0)
+        }
+
+        updateStats(total, active) {
+          const text = `<p>Total Balls: ${total} / Active: ${active} / Inactive: ${total - active}</p>`
+          const el = jsx([text])
+
+          const needUpdate = document.getElementById('stats')?.innerHTML !== text
+          if (needUpdate) render(el, document.getElementById('stats'))
+        }
+
+        create() {
+          this.warpSpeed()
+
+          const initialBalls = 5
+
+          // create 5 balls at the beginning
+          for (let i = 0; i < initialBalls; i++) {
+            this.addBall()
+          }
+
+          this.addStats(initialBalls)
+
+          window.addEventListener('pointerdown', () => {
+            let ball = this.balls.find(b => !b.active)
+            if (!ball) ball = this.addBall()
+
+            ball.object.position.set(0, 1, 6)
+            ball.object.body.needUpdate = true
+
+            ball.object.body.on.update(() => {
+              if (!ball) return
+              this.activate(ball)
+              ball.object.body.applyForce(0, 5, -8)
+            })
+          })
+        }
+
+        addBall = () => {
+          const options = { y: 100, radius: 0.2 }
+          const object = this.physics.add.sphere(options)
+          object.body.setBounciness(0.75)
+          const ball = { object, active: true }
+          this.balls.push(ball)
+          this.deactivate(ball)
+          return ball
+        }
+
+        activate = ball => {
+          ball.object.body.setVelocity(0, 0, 0)
+          ball.object.body.setCollisionFlags(0)
+          ball.object.visible = true
+          ball.active = true
+        }
+
+        deactivate = ball => {
+          ball.object.body.setCollisionFlags(6)
+          ball.object.visible = false
+          ball.active = false
+        }
+
+        update() {
+          this.balls.forEach(ball => {
+            if (ball.active && ball.object.position.y < -10) {
+              this.deactivate(ball)
+            }
+          })
+
+          this.updateStats(this.balls.length, this.balls.filter(b => b.active).length)
+        }
+      }
+
+      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], antialias: true }))
+    </script>
+  </body>
+</html>
