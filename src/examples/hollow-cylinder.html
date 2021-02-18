@@ -8,18 +8,11 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/three.min.js"></script>
-    <script src="/lib/examples/hollow-cylinder.js"></script>
-    <script src="/lib/enable3d.ammoPhysics.0.21.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.ammoPhysics.0.22.0-dev.0.min.js"></script>
     <script src="/lib/OrbitControls.js"></script>
   </head>
 
   <body>
-    <div id="info-text">
-      <i>
-        Need help improving the Hollow Cylinder class. See
-        <a href="https://discourse.threejs.org/t/problem-to-add-physic-in-a-hollow-cylinder-threejs-ammojs/22063"> this link</a>.
-      </i>
-    </div>
     <script>
       const { AmmoPhysics, PhysicsLoader } = ENABLE3D
 
@@ -85,40 +78,6 @@
         physics.add.existing(mesh, { shape: 'hacd' })
 
         // ------------------------
-        // add inner cylinder using "hollow-cylinder.js" (https://discourse.threejs.org/t/problem-to-add-physic-in-a-hollow-cylinder-threejs-ammojs/22063/5)
-        // ------------------------
-        const height = 3
-        const externalRadius = 3
-        const internalRadius = 2.5
-        const cylinder = new CaveCylinder({
-          color: 'coral',
-          mass: 1,
-          externalRadius,
-          internalRadius,
-          height,
-          segments: 21
-        })
-        const object = cylinder.createModel(new THREE.Vector3(0, 10, 0), new THREE.Quaternion(0, 0, 0, 1))
-
-        // adjust the strange offset :/
-        const offset = {
-          x: internalRadius - externalRadius,
-          y: -height / 2,
-          z: -externalRadius
-        }
-        object.position.x -= offset.x
-        object.position.y += offset.y
-        object.position.z -= offset.z
-        object.geometry.computeBoundingBox()
-        object.geometry.translate(offset.x, offset.y, offset.z)
-
-        // add cylinder to scene
-        scene.add(object)
-
-        // add a hacd body to the cylinder
-        physics.add.existing(object, { shape: 'hacd' })
-
-        // ------------------------
 
         const clock = new THREE.Clock()
 
@@ -131,7 +90,9 @@
         }
         requestAnimationFrame(animate)
       }
-      PhysicsLoader('/lib/moz', () => MainScene())
+      PhysicsLoader('/lib/ammo/moz', () => MainScene())
+
+      console.log(`three.js version "${THREE.REVISION}"`)
     </script>
   </body>
 </html>

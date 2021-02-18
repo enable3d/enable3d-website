@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Matter Physics (Advanced Shapes)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/matter.min.js?ver=0.16.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Shapes created using the <a href="https://www.codeandweb.com/physicseditor">PhysicsEditor</a>.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async preload() {
+          this.atlas = await this.load.textureAtlas('/assets/physics/fruit-sprites.png', '/assets/physics/fruit-sprites.json')
+          this.shapes = await this.load.file('/assets/physics/fruit-shapes.json')
+        }
+
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          this.addMatterElements()
+        }
+
+        addMatterElements() {
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          this.matter = new FLAT.MatterPhysics()
+
+          this.matter.setBounds()
+
+          const file = this.shapes
+          const bodies = this.matter.parsePhysics(file)
+
+          for (const fruit in this.atlas.json.frames) {
+            if (fruit === 'background') continue
+
+            const sprite = new FLAT.TextureAtlas(this.atlas, fruit)
+            this.ui.scene.add(sprite)
+
+            let x = width / 2 + (Math.random() - 0.5) * Math.min(600, width)
+            let y = 50 + Math.random() * 250
+
+            if (fruit === 'ground') {
+              x = width / 2
+              y = height - sprite.currentFrameHeight / 2
+            }
+
+            sprite.body = this.matter.addBodyFromFixtures(x, y, bodies[fruit])
+            this.matter.add.existing(sprite)
+
+            if (fruit === 'ground') Matter.Body.setStatic(sprite.body, true)
+          }
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

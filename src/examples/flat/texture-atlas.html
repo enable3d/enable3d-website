@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>TextureAtlas</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      <p>
+        These ninjas are generated from <br /><a href="/assets/atlas/ninja-texture-atlas.png">ninja-texture-atlas.png</a> and
+        <a href="/assets/atlas/ninja-texture-atlas.json">ninja-texture-atlas.json</a>.
+      </p>
+      <p>
+        Check out
+        <a href="https://www.codeandweb.com/texturepacker">TexturePacker</a> to create your own Texture Atlas.
+      </p>
+    </div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        preload() {
+          /**
+           * GameArt2D (https://www.gameart2d.com/)
+           * https://www.gameart2d.com/ninja-adventure---free-sprites.html
+           * Creative Common Zero (CC0) a.k.a Public Domain (https://www.gameart2d.com/license.html)
+           */
+          this.load.preload('ninja.png', '/assets/atlas/ninja-texture-atlas.png')
+          this.load.preload('ninja.json', '/assets/atlas/ninja-texture-atlas.json')
+        }
+
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // prepare the atlas
+          const atlas = await this.load.textureAtlas('ninja.png', 'ninja.json')
+
+          // add the atlas to the internal cache if you want
+          // this.cache.add('myAtlas', atlas)
+
+          // get the atlas from the interna cache
+          // const atlas = this.cache.get('myAtlas')
+
+          // add ninja to the 3d space
+          const ninja = new FLAT.TextureAtlas(atlas)
+          ninja.setScale(0.01)
+          ninja.position.set(1.5, 3, 5)
+          ninja.flipX(true)
+          this.animate(ninja)
+          this.scene.add(ninja)
+
+          // add ninja to the 2d space
+          const { top, right } = this.ui.camera
+          const ninja2d = new FLAT.TextureAtlas(atlas)
+          this.animate(ninja2d)
+          ninja2d.setPosition(right / 2, top / 2)
+          this.ui.scene.add(ninja2d)
+        }
+
+        animate(textureAtlas) {
+          let index = -1
+          setInterval(() => {
+            index++
+            textureAtlas.setFrame(`Attack__00${index}.png`)
+            if (index === 9) index = 0
+          }, 1000 / 5)
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Matter Physics</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/matter.min.js?ver=0.16.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // matter physics
+          this.matter = new FLAT.MatterPhysics()
+
+          // add bounds
+          this.matter.setBounds()
+
+          // add some balls
+          const MAX_BALLS = 20
+          for (let i = 0; i < MAX_BALLS; i++) {
+            this.addBall()
+          }
+        }
+
+        addBall() {
+          // https://stackoverflow.com/a/12043228
+          const isDarkColor = color => {
+            const c = color.substring(1) // strip #
+            const rgb = parseInt(c, 16) // convert rrggbb to decimal
+            const r = (rgb >> 16) & 0xff // extract red
+            const g = (rgb >> 8) & 0xff // extract green
+            const b = (rgb >> 0) & 0xff // extract blue
+
+            const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b // per ITU-R BT.709
+
+            return luma < 40
+          }
+
+          const getRandomColor = () => {
+            let color = ''
+            while (color.length !== 7) color = '#' + Math.floor(Math.random() * 0xffffff).toString(16)
+            return color
+          }
+
+          const color = getRandomColor()
+          const radius = Math.round(Math.random() * 20 + 40)
+
+          // textures
+          const texture = new FLAT.DrawTexture(radius * 2, radius * 2, ctx => {
+            const circle = new Path2D()
+            circle.arc(radius, radius, radius, 0, 2 * Math.PI)
+
+            ctx.fillStyle = color
+            ctx.fill(circle)
+            ctx.fillStyle = !isDarkColor(color) ? 'black' : 'white'
+            ctx.font = '24px Arial'
+
+            const text = 'Click!'
+            const { width } = ctx.measureText(text) // calc the width of the text
+
+            ctx.fillText(text, radius - width / 2, radius + 8)
+          })
+
+          const x = Math.random() * window.innerWidth
+          const y = (Math.random() * window.innerHeight) / 2
+          const ball = new FLAT.SimpleSprite(texture)
+
+          ball.body = this.matter.add.circle(x, y, radius)
+          ball.body.restitution = 0.5
+          this.matter.add.existing(ball)
+
+          ball.setInteractive()
+          ball.onInputDown = () => {
+            ball.body.force.x = Math.random() * 0.4 - 0.2
+            ball.body.force.y = -0.5
+          }
+          ball.setPosition(100, 100)
+          this.ui.scene.add(ball)
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

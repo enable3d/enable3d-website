@@ -7,7 +7,7 @@
     <title>Car using Physics Constraints</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
   </head>
 
   <body>
@@ -230,7 +230,7 @@
         }
       }
 
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 }))
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 }))
     </script>
   </body>
 </html>

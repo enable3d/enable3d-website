@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/three.min.js"></script>
-    <script src="/lib/enable3d.ammoPhysics.0.21.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.ammoPhysics.0.22.0-dev.0.min.js"></script>
     <!-- <script src="/lib/OrbitControls.js"></script> -->
   </head>
 
@@ -152,7 +152,9 @@
         requestAnimationFrame(animate)
       }
 
-      PhysicsLoader('/lib', () => MainScene())
+      PhysicsLoader('/lib/ammo/kripken', () => MainScene())
+
+      console.log(`three.js version "${THREE.REVISION}"`)
     </script>
   </body>
 </html>

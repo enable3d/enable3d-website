@@ -7,7 +7,7 @@
     <title>SoftBody Cloth</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d.framework.0.21.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
   </head>
 
   <body>
@@ -50,9 +50,9 @@
           this.cloth.receiveShadow = true
           this.scene.add(this.cloth)
 
-          this.load.texture('assets/grid.png').then(texture => {
-            texture.wrapS = RepeatWrapping
-            texture.wrapT = RepeatWrapping
+          this.load.texture('/assets/img/grid.png').then(texture => {
+            texture.wrapS = THREE.RepeatWrapping
+            texture.wrapT = THREE.RepeatWrapping
             texture.repeat.set(clothNumSegmentsZ, clothNumSegmentsY)
             // @ts-ignore
             this.cloth.material.map = texture
@@ -126,7 +126,7 @@
         }
       }
 
-      PhysicsLoader('/lib', () => new Project({ scenes: [MainScene], softBodies: true }))
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene], softBodies: true }))
     </script>
   </body>
 </html>

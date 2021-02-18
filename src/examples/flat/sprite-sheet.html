@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sprite Sheet</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use the <a href="https://www.codeandweb.com/free-sprite-sheet-packer">Free Sprite Sheet Packer</a> to create your own spritesheet.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        preload() {
+          /**
+           * rvros (https://itch.io/profile/rvros)
+           * Animated Pixel Adventurer https://rvros.itch.io/animated-pixel-hero
+           * License: See https://rvros.itch.io/animated-pixel-hero
+           * Adventurer.zip (101 kB) Sprite dimension: 50x37 px
+           */
+          this.load.preload('hero', '/assets/spritesheet/adventurer-Sheet.png')
+        }
+
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // add hero to 2d space
+          const hero2d = await this.createHero()
+          hero2d.setScale(5)
+          hero2d.setPosition(width / 4, height / 2)
+          this.ui.scene.add(hero2d)
+
+          // add hero to 3d space
+          const hero3d = await this.createHero()
+          hero3d.setScale(0.05)
+          hero3d.position.set(2, 2, 1)
+          this.scene.add(hero3d)
+
+          // add hero on a plane
+          const heroPlane = await this.createHero()
+          const geometry = new THREE.PlaneBufferGeometry(heroPlane.width / 100, heroPlane.height / 100)
+          const material = new THREE.MeshLambertMaterial({
+            map: heroPlane.texture,
+            transparent: false,
+            side: THREE.DoubleSide
+          })
+          const plane = new THREE.Mesh(geometry, material)
+          plane.position.set(0, 5, -2)
+          plane.rotateY(Math.PI / 8)
+          plane.rotateZ(Math.PI / 8)
+          this.scene.add(plane)
+          this.physics.add.existing(plane)
+        }
+
+        async createHero() {
+          // add hero
+          const texture = await this.load.texture('hero')
+
+          // for pixel art use NearestFilter (also see https://stackoverflow.com/a/16709631)
+          texture.magFilter = THREE.NearestFilter
+          texture.minFilter = THREE.NearestFilter
+
+          const hero = new FLAT.SpriteSheet(texture, { width: 50, height: 37 })
+
+          hero.anims.add('idle', { start: 0, end: 3, rate: 5 })
+          hero.anims.add('run', { start: 8, end: 13, rate: 10 })
+          hero.anims.add('jump', { timeline: [16, 17, 18, 19, 20, 21, 22, 23, 0], rate: 10, repeat: 1 })
+
+          hero.anims.play('idle')
+
+          setTimeout(() => {
+            hero.anims.play('run')
+          }, 2000)
+
+          setTimeout(() => {
+            hero.anims.play('jump').onComplete(() => {
+              hero.anims.play('idle')
+            })
+          }, 4000)
+
+          let flip = false
+          setInterval(() => {
+            flip = !flip
+            hero.flipX(flip)
+          }, 2500)
+
+          return hero
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

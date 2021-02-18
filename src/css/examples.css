@@ -20,3 +20,7 @@ div#info-text {
   margin: 0px 48px;
   text-align: center;
 }
+
+div#info-text p {
+  margin-bottom: 16px;
+}

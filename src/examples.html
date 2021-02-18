@@ -9,7 +9,7 @@
     <link rel="icon" sizes="96x96" type="image/png" href="/img/icon/logo-96x96.png" />
     <title>enable3d • 3D extension for Phaser 3</title>
     <meta name="description" content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3." />
-    <link rel="stylesheet" href="/css/style.css?ver=1.2.0" />
+    <link rel="stylesheet" href="/css/style.css?ver=1.2.1" />
   </head>
 
   <body>
@@ -47,12 +47,14 @@
     <section class="content">
       <div class="container">
         <h2>Examples</h2>
+
         <h3>Headless Mode (Ammo Physics on Node.js Server)</h3>
         <ul class="examples-list">
           <li><a href="./examples/headless-mode.html">Headless Mode</a></li>
           <li><a href="./examples/headless-gltf-loader.html">Headless GLTFLoader</a></li>
           <li><a href="./examples/headless-fbx-loader.html">Headless FBXLoader</a></li>
         </ul>
+
         <h3>As Physics Extension for three.js</h3>
         <ul class="examples-list">
           <li><a href="./examples/native-three-with-physics.html">Native three.js with Physics</a></li>
@@ -60,6 +62,7 @@
           <li><a href="./examples/point-to-point-constraint.html">Point to Point Constraint</a></li>
           <li><a href="./examples/hollow-cylinder.html">Hollow Cylinder NEW</a></li>
         </ul>
+
         <h3>Standalone Mode</h3>
         <ul class="examples-list">
           <li><a href="./examples/standalone-mode.html">Standalone Mode</a></li>
@@ -87,7 +90,26 @@
           <li><a href="./examples/softbody-cloth.html">SoftBody Cloth NEW</a></li>
           <li><a href="./examples/raycast-vehicle.html">Car (Raycast Vehicle) NEW</a></li>
           <li><a href="./examples/car-using-physics-constraints.html">Car (Physics Constraints) NEW</a></li>
+
+          <h3 id="2d-elements" style="font-style: italic; line-height: 0; padding-top: 24px;">2D Elements (Experimental)</h3>
+          <p>
+            These 2D elements are new and still in development.<br />
+            They are rendered by three.js and<br />
+            do not need any other 3rd party framework<br />
+            like Phaser, PixiJS or Two.js.
+          </p>
+          <ul>
+            <li><a href="./examples/flat/button-spritesheet.html">Button EXP</a></li>
+            <li><a href="./examples/flat/matter-physics.html">2D Physics (matter.js) EXP</a></li>
+            <li><a href="./examples/flat/matter-physics-advanced-shapes.html">Matter Physics (Advanced Shapes) EXP</a></li>
+            <li><a href="./examples/flat/text-sprite.html">Text Sprite EXP</a></li>
+            <li><a href="./examples/flat/texture-atlas.html">Texture Atlas EXP</a></li>
+            <li><a href="./examples/flat/pixel-perfect.html">Pixel Perfect EXP</a></li>
+            <li><a href="./examples/flat/draw-sprite.html">Draw Sprite EXP</a></li>
+            <li><a href="./examples/flat/sprite-sheet.html">Sprite Sheet EXP</a></li>
+          </ul>
         </ul>
+
         <h3>As 3D Extension for Phaser</h3>
         <ul class="examples-list">
           <li><a href="./examples/simple-setup.html">Simple Setup</a></li>
@@ -135,11 +157,13 @@
       <script>
         // highlight all new examples
         const links = document.querySelectorAll('a')
+        const makeBadge = (tag, color, background) => {
+          return `<b style="background-color: ${background}; color:${color}; border-radius: 4px; padding: 2px 8px; font-size: 10px; position: relative; top: -2px;">${tag}</b>`
+        }
+
         links.forEach(link => {
-          link.innerHTML = link.innerHTML.replace(
-            /NEW$/,
-            '<b style="background-color: rgba(0,0,0,0.5); color:white; border-radius: 4px; padding: 2px 8px; font-size: 10px; position: relative; top: -2px;">NEW</b>'
-          )
+          link.innerHTML = link.innerHTML.replace(/NEW$/, makeBadge('NEW', 'white', 'rgba(0,0,0,0.5)'))
+          link.innerHTML = link.innerHTML.replace(/EXP$/, makeBadge('EXPERIMENTAL', 'black', 'rgba(255,128,0,0.5)'))
         })
       </script>
     </section>

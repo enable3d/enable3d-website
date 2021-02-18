@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Button (spritesheet)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async preload() {
+          // load texture and add it to the internal cache (experimental)
+          await this.load.texture('button', '/assets/button/button_sprite_sheet.png')
+        }
+
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // add button
+          const texture = this.cache.get('button')
+          texture.name = 'button'
+
+          const button = new FLAT.Button(texture, { width: 193, height: 71 }, 2, 1, 0)
+          button.setInteractive()
+          button.setPosition(width / 2, height / 2)
+          button.setDepth(1)
+          button.setScale(1)
+
+          button.onInputOut = () => {
+            console.log('Button: onInputOut')
+          }
+          button.onInputDown = () => {
+            console.log('Button: onInputDown')
+          }
+          button.onInputOver = () => {
+            console.log('Button: onInputOver')
+          }
+          this.ui.scene.add(button)
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

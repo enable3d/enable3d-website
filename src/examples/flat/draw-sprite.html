@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>DrawSprite</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          const drawRectangle = ctx => {
+            ctx.beginPath()
+            ctx.strokeStyle = 'red'
+            ctx.fillStyle = 'blue'
+            ctx.lineWidth = 12
+            ctx.rect(0, 0, 100, 100)
+            ctx.fill()
+            ctx.stroke()
+          }
+
+          const sprite = new FLAT.DrawSprite(100, 100, drawRectangle)
+          // is the same as
+          // const texture = new FLAT.DrawTexture(100, 100, drawRectangle)
+          // const sprite = new FLAT.SimpleSprite(texture)
+
+          sprite.setInteractive()
+          sprite.setPosition(width / 2, height / 2)
+          sprite.setScale(2, 3)
+
+          sprite.onInputDown = () => {
+            console.log('You clicked the rectancle')
+          }
+
+          const rotate = () => {
+            sprite.setRotation(sprite.getRotation() - 0.01)
+            requestAnimationFrame(rotate)
+          }
+          requestAnimationFrame(rotate)
+
+          this.ui.scene.add(sprite)
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

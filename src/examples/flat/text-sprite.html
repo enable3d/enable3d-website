@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>TextSprite</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // create text texture
+          const texture = new FLAT.TextTexture('Some Text')
+
+          // texture in 2d space
+          const sprite2d = new FLAT.TextSprite(texture)
+          this.ui.scene.add(sprite2d)
+          sprite2d.setPosition(sprite2d.width / 2 + 10, height - sprite2d.height / 2 - 10)
+
+          // texture in 3d space
+          const sprite3d = new FLAT.TextSprite(texture)
+          this.scene.add(sprite3d)
+          sprite3d.position.set(0, 1, 5)
+          sprite3d.setScale(0.01)
+
+          // texture on a plane
+          const geometry = new THREE.PlaneGeometry(texture.width / 100, texture.height / 100)
+          const material = new THREE.MeshLambertMaterial({
+            map: texture.clone(),
+            transparent: false,
+            side: THREE.DoubleSide
+          })
+          const plane = new THREE.Mesh(geometry, material)
+          plane.position.set(0, 5, 0)
+          plane.rotateX(-0.01)
+          this.scene.add(plane)
+          this.physics.add.existing(plane)
+
+          // texture on a plane (with rainbow color background)
+          const bitmap = await createImageBitmap(texture.image)
+          const planeTexture = new FLAT.DrawTexture(texture.width, texture.height, ctx => {
+            // create rainbow gradient
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200)
+            gradient.addColorStop(0, 'yellow')
+            gradient.addColorStop(0.5, 'red')
+            gradient.addColorStop(1, 'blue')
+            // fill with gradient
+            ctx.fillStyle = gradient
+            // draw the bitmap on top of the rainbow
+            ctx.fillRect(0, 0, texture.width, texture.height)
+            ctx.drawImage(bitmap, 0, 0)
+          })
+          const geo = new THREE.PlaneGeometry(texture.width / 100, texture.height / 100)
+          const mat = new THREE.MeshLambertMaterial({
+            map: planeTexture,
+            transparent: false,
+            side: THREE.DoubleSide
+          })
+          const mesh = new THREE.Mesh(geo, mat)
+          mesh.position.set(0, 10, 2)
+          mesh.rotateX(-0.01)
+          this.scene.add(mesh)
+          this.physics.add.existing(mesh)
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

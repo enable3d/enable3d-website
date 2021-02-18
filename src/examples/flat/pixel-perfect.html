@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pixel Prfect</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Click and hover over the text to see the effect.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // 2d camera
+          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
+          this.ui = {
+            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
+            scene: new THREE.Scene()
+          }
+
+          // add text sprite
+          const text = 'this is\na very\nlong\ntext'
+          const texture = new FLAT.TextTexture(text, '#c4c4c4')
+          const sprite = new FLAT.TextSprite(texture)
+          sprite.setPosition(width / 2, height / 2)
+          sprite.setDepth(1)
+          sprite.setScale(1)
+          sprite.setInteractive({ pixelPerfect: true })
+          this.ui.scene.add(sprite)
+
+          sprite.onInputOver = () => {
+            sprite.setText(sprite.getText(), '#ff00ff')
+          }
+          sprite.onInputOut = () => {
+            sprite.setText(sprite.getText(), '#c4c4c4')
+          }
+          sprite.onInputDown = () => {
+            const newText = 'this is\na long\ntext'
+            sprite.setText(newText, '#000000')
+          }
+        }
+
+        preRender() {
+          // needed for the 2d camera
+          this.renderer.clear()
+        }
+
+        postRender() {
+          // needed for the 2d camera
+          if (this.ui) {
+            this.renderer.clearDepth()
+            this.renderer.render(this.ui.scene, this.ui.camera)
+            FLAT.render(this.ui.camera)
+          }
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

@@ -7,8 +7,8 @@
     <title>Heightmap with Color Scale</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/phaser.min.js"></script>
-    <script src="/lib/enable3d.phaserExtension.0.21.0.min.js"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.22.0-dev.0.min.js"></script>
     <script src="/lib/chroma.min.js"></script>
   </head>
 
@@ -33,6 +33,7 @@
           // we remove the default ground
           this.third.warpSpeed('-ground')
           this.third.camera.position.set(10, 10, 20)
+          this.third.camera.lookAt(0, 0, 0)
 
           // this.third.physics.debug.enable()
 
@@ -73,7 +74,7 @@
       }
 
       window.addEventListener('load', () => {
-        enable3d(() => new Phaser.Game(config)).withPhysics('/lib')
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
       })
     </script>
   </body>
