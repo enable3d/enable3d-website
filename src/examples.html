@@ -61,6 +61,7 @@
           <li><a href="./examples/gltf-loader-with-physics.html">GLTFLoader with Physics</a></li>
           <li><a href="./examples/point-to-point-constraint.html">Point to Point Constraint</a></li>
           <li><a href="./examples/hollow-cylinder.html">Hollow Cylinder NEW</a></li>
+          <li><a href="./examples/convex-objects-breaking.html">Convex Objects Breaking SOON</a></li>
         </ul>
 
         <h3>Standalone Mode</h3>
@@ -88,7 +89,7 @@
           <li><a href="./examples/post-processing.html">Post-Processing NEW</a></li>
           <li><a href="./examples/collisiongroup-and-collisionmask.html">CollisionGroup and CollisionMask NEW</a></li>
           <li><a href="./examples/softbody-cloth.html">SoftBody Cloth NEW</a></li>
-          <li><a href="./examples/raycast-vehicle.html">Car (Raycast Vehicle) NEW</a></li>
+          <li><a href="./examples/raycast-vehicle.html">Car (Raycast Vehicle) SOON</a></li>
           <li><a href="./examples/car-using-physics-constraints.html">Car (Physics Constraints) NEW</a></li>
 
           <h3 id="2d-elements" style="font-style: italic; line-height: 0; padding-top: 24px;">2D Elements (Experimental)</h3>
@@ -136,7 +137,7 @@
           <li><a href="./examples/camera-lerping-and-player-controls.html">Camera Lerping and Player Controls</a></li>
           <li><a href="./examples/3rd-person-camera.html">3rd Person Camera</a></li>
           <li><a href="./examples/virtual-reality-phaser.html">Virtual Reality (with Phaser)</a></li>
-          <li><a href="./examples/convex-objects-breaking.html">Convex Objects Breaking</a></li>
+          <li><a href="./examples/convex-objects-breaking-phaser.html">Convex Objects Breaking</a></li>
           <li><a href="./examples/use-native-three-code.html">Use "native" three.js code</a></li>
           <li><a href="./examples/work-with-objects-factory.html">Work with Objects Factory</a></li>
           <li><a href="./examples/heightmap-with-color-scale.html">Heightmap with Color Scale</a></li>
@@ -162,8 +163,9 @@
         }
 
         links.forEach(link => {
-          link.innerHTML = link.innerHTML.replace(/NEW$/, makeBadge('NEW', 'white', 'rgba(0,0,0,0.5)'))
-          link.innerHTML = link.innerHTML.replace(/EXP$/, makeBadge('EXPERIMENTAL', 'black', 'rgba(255,128,0,0.5)'))
+          link.innerHTML = link.innerHTML.replace(/NEW$/, makeBadge('NEW', 'white', '#607d8b'))
+          link.innerHTML = link.innerHTML.replace(/EXP$/, makeBadge('EXPERIMENTAL', 'white', '#f44336'))
+          link.innerHTML = link.innerHTML.replace(/SOON$/, makeBadge('AVAILABLE SOON', 'black', '#cddc39'))
         })
       </script>
     </section>
