@@ -9,16 +9,18 @@
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.22.0-dev.0.min.js"></script>
+    <script>
+      // this is a temporary fix for 0.22.0-dev.x
+      const { enable3d, Scene3D, Cameras, Third, Canvas, THREE } = ENABLE3D
+    </script>
+    <script src="/lib/OrbitControls.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Cameras, Third, Canvas, THREE } = ENABLE3D
-
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
-          console.log(Cameras)
         }
 
         init() {
