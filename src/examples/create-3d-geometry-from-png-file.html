@@ -47,9 +47,6 @@
           this.third.load.texture('/assets/heightmap/heightmap-simple.png').then(heightmap => {
             const mesh = this.third.heightMap.add(heightmap)
             if (mesh) {
-              // yes, you have to convert it manually :/
-              mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
-
               // add custom material or a texture
               mesh.material = new THREE.MeshPhongMaterial({ map: grass })
 

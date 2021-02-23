@@ -51,8 +51,6 @@
 
           const mesh = this.third.heightMap.add(heightmap, { colorScale })
           if (mesh) {
-            // yes, you have to convert it manually :/
-            mesh.geometry = this.third.transform.geometryToBufferGeometry(mesh.geometry)
             // we position, scale, rotate etc. the mesh before adding physics to it
             mesh.scale.set(2, 2, 2)
             this.third.physics.add.existing(mesh, { mass: 0 })
