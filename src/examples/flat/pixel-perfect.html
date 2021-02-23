@@ -7,7 +7,7 @@
     <title>Pixel Prfect</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.1.min.js"></script>
   </head>
 
   <body>
@@ -30,24 +30,28 @@
           }
 
           // add text sprite
+          const styles = { fontWeight: 'bold', fontSize: 72, fillStyle: '#c4c4c4' }
           const text = 'this is\na very\nlong\ntext'
-          const texture = new FLAT.TextTexture(text, '#c4c4c4')
+
+          const texture = new FLAT.TextTexture(text, styles)
           const sprite = new FLAT.TextSprite(texture)
+
           sprite.setPosition(width / 2, height / 2)
           sprite.setDepth(1)
           sprite.setScale(1)
           sprite.setInteractive({ pixelPerfect: true })
+
           this.ui.scene.add(sprite)
 
           sprite.onInputOver = () => {
-            sprite.setText(sprite.getText(), '#ff00ff')
+            sprite.setStyles({ ...styles, fillStyle: '#ff00ff' })
           }
           sprite.onInputOut = () => {
-            sprite.setText(sprite.getText(), '#c4c4c4')
+            sprite.setStyles({ ...styles, fillStyle: '#c4c4c4' })
           }
           sprite.onInputDown = () => {
-            const newText = 'this is\na long\ntext'
-            sprite.setText(newText, '#000000')
+            sprite.setText('this is\na long\ntext')
+            sprite.setStyles({ ...styles, fillStyle: '#000000' })
           }
         }
 
