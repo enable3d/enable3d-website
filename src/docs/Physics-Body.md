@@ -47,6 +47,6 @@ These bodies do never interact with other bodies. But they fire collision events
 
 ### Body Methods
 
-You can use a lot of method on the body (`object.body.something()`). It does not make send listing them all here.
+You can use a lot of method on the body (`object.body.something()`). It does not make sense listing them all here.
 
 Just take a look the the [physicsBody.ts source code](https://github.com/enable3d/enable3d/blob/master/packages/common/src/physicsBody.ts).
