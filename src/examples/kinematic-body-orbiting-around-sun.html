@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Kinematic Body Orbiting around Sun</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -62,7 +65,11 @@
 
           // make object orbit around a center
           // https://stackoverflow.com/questions/42418958/rotate-an-object-around-an-orbit
-          this.earth.position.set(Math.cos(date) * orbitRadius + this.sun.position.x, y, Math.sin(date) * orbitRadius + this.sun.position.z)
+          this.earth.position.set(
+            Math.cos(date) * orbitRadius + this.sun.position.x,
+            y,
+            Math.sin(date) * orbitRadius + this.sun.position.z
+          )
 
           //https://stackoverflow.com/questions/21483999/using-atan2-to-find-angle-between-two-vectors/21486462
           const angle = Math.atan2(this.sun.position.x - x, this.sun.position.z - z)

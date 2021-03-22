@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>CollisionGroup and CollisionMask</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -44,7 +47,10 @@
             const collisionGroup = 2,
               collisionMask = parseInt('1101')
 
-            const sphere = this.physics.add.sphere({ x, y, z, collisionGroup, collisionMask, radius: 1 }, { lambert: { color: 'red' } })
+            const sphere = this.physics.add.sphere(
+              { x, y, z, collisionGroup, collisionMask, radius: 1 },
+              { lambert: { color: 'red' } }
+            )
             sphere.body.setBounciness(0.5)
           }
 
@@ -58,7 +64,10 @@
               const collisionGroup = 4,
                 collisionMask = 2
 
-              const sphere = this.physics.add.sphere({ x, y, z, collisionGroup, collisionMask, radius: 0.5 }, { lambert: { color: 'blue' } })
+              const sphere = this.physics.add.sphere(
+                { x, y, z, collisionGroup, collisionMask, radius: 0.5 },
+                { lambert: { color: 'blue' } }
+              )
               sphere.body.setBounciness(0.5)
             }
           }, 2000)
@@ -73,7 +82,10 @@
               const collisionGroup = 8,
                 collisionMask = 9 // 1 + 8
 
-              const box = this.physics.add.box({ x, y, z, collisionGroup, collisionMask }, { lambert: { color: 'green' } })
+              const box = this.physics.add.box(
+                { x, y, z, collisionGroup, collisionMask },
+                { lambert: { color: 'green' } }
+              )
               box.body.setBounciness(0.5)
             }
           }, 4000)

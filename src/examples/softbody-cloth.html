@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>SoftBody Cloth</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -40,7 +43,12 @@
           const clothNumSegmentsY = clothHeight * 5
           const clothPos = new THREE.Vector3(0, 2, 2)
 
-          const clothGeometry = new THREE.PlaneBufferGeometry(clothWidth, clothHeight, clothNumSegmentsZ, clothNumSegmentsY)
+          const clothGeometry = new THREE.PlaneBufferGeometry(
+            clothWidth,
+            clothHeight,
+            clothNumSegmentsZ,
+            clothNumSegmentsY
+          )
           clothGeometry.rotateY(Math.PI * 0.5)
           clothGeometry.translate(clothPos.x, clothPos.y + clothHeight * 0.5, clothPos.z - clothWidth * 0.5)
 
@@ -83,9 +91,7 @@
 
           clothSoftBody.setTotalMass(0.9, false)
           // @ts-ignore
-          Ammo.castObject(clothSoftBody, Ammo.btCollisionObject)
-            .getCollisionShape()
-            .setMargin(0.04)
+          Ammo.castObject(clothSoftBody, Ammo.btCollisionObject).getCollisionShape().setMargin(0.04)
           this.physics.physicsWorld.addSoftBody(clothSoftBody, 1, -1)
           this.cloth.userData.physicsBody = clothSoftBody
           // Disable deactivation

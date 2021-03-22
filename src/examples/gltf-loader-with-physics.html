@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>GLTFLoader with Physics</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -44,7 +47,7 @@
         physics.add.ground({ width: 20, height: 20 })
 
         // add suzanne with physics
-        const loader = new THREE.GLTFLoader().load('/assets/glb/suzanne.glb', function(gltf) {
+        const loader = new THREE.GLTFLoader().load('/assets/glb/suzanne.glb', function (gltf) {
           const suzanne = gltf.scene.children[0]
           suzanne.position.setY(5)
 

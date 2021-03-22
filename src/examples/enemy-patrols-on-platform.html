@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Enemy Patrols on Platform</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -75,7 +78,13 @@
             this.robot.rotation.set(0, -Math.PI / 2, 0)
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'box', ignoreScale: true, width: 1, depth: 1, offset: { y: -0.5 } })
+            this.third.physics.add.existing(this.robot, {
+              shape: 'box',
+              ignoreScale: true,
+              width: 1,
+              depth: 1,
+              offset: { y: -0.5 }
+            })
 
             this.third.physics.add.constraints.lock(this.robot.body, sensor.body)
 

@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Camera Lerping and Player Controls</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -12,9 +15,7 @@
   </head>
 
   <body>
-    <div id="info-text">
-      Use WASD to move the player, change the camera with SPACE.
-    </div>
+    <div id="info-text">Use WASD to move the player, change the camera with SPACE.</div>
     <script>
       const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
@@ -42,7 +43,10 @@
           this.player = new THREE.Group()
           this.player.name = 'player' // <-- set a name if you haven't already
           this.player.position.setY(2)
-          const body = this.third.add.box({ height: 0.8, y: 1, width: 0.4, depth: 0.4 }, { lambert: { color: 0xffff00 } })
+          const body = this.third.add.box(
+            { height: 0.8, y: 1, width: 0.4, depth: 0.4 },
+            { lambert: { color: 0xffff00 } }
+          )
           const head = this.third.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
           this.player.add(body, head)
           this.player.position.setY(5)
@@ -92,7 +96,10 @@
         update(time, delta) {
           if (typeof this.player?.body === 'undefined') return
 
-          this.third.camera.position.lerp(this.camerasArr[this.cameraIndex % 3].getWorldPosition(new THREE.Vector3()), 0.05)
+          this.third.camera.position.lerp(
+            this.camerasArr[this.cameraIndex % 3].getWorldPosition(new THREE.Vector3()),
+            0.05
+          )
           const pos = this.player.position.clone()
           this.third.camera.lookAt(pos.x, pos.y + 3, pos.z)
 

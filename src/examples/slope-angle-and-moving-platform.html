@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Slope Angle and Moving Platform</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -158,7 +161,10 @@
         }
       }
 
-      PhysicsLoader('/lib/ammo/kripken', () => new Project({ gravity: { x: 0, y: -9.81 * 2, z: 0 }, scenes: [MainScene] }))
+      PhysicsLoader(
+        '/lib/ammo/kripken',
+        () => new Project({ gravity: { x: 0, y: -9.81 * 2, z: 0 }, scenes: [MainScene] })
+      )
     </script>
   </body>
 </html>

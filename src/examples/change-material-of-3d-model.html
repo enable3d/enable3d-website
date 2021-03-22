@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Change Material of 3d Model</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -74,7 +77,9 @@
                   // lighten color by 10%
                   const newColor = new THREE.Color(LightenDarkenColor(`#${color}`, 10))
                   // add new standard material with metallic look
-                  child.material = this.third.add.material({ standard: { color: newColor, emissive: newColor, roughness: 0.4, metalness: 1, skinning: true } })
+                  child.material = this.third.add.material({
+                    standard: { color: newColor, emissive: newColor, roughness: 0.4, metalness: 1, skinning: true }
+                  })
                   child.material.needsUpdate = true
                 }
               }

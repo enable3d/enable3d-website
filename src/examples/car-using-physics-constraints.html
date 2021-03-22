@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Car using Physics Constraints</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -32,7 +35,10 @@
         }
 
         addPlate() {
-          const plate = this.add.box({ y: 1, width: 1.8, depth: 4.7, mass: 5000, height: 0.25 }, { lambert: { wireframe: true } })
+          const plate = this.add.box(
+            { y: 1, width: 1.8, depth: 4.7, mass: 5000, height: 0.25 },
+            { lambert: { wireframe: true } }
+          )
           this.physics.add.existing(plate)
           return plate
         }
@@ -71,7 +77,10 @@
         }
 
         addAxisRotor(x, y, z) {
-          const axisRotor = this.add.box({ x, y, z, mass: 5, width: 0.25, height: 0.2, depth: 1 }, { lambert: { transparent, opacity: 0.5 } })
+          const axisRotor = this.add.box(
+            { x, y, z, mass: 5, width: 0.25, height: 0.2, depth: 1 },
+            { lambert: { transparent, opacity: 0.5 } }
+          )
           this.physics.add.existing(axisRotor)
           return axisRotor
         }
@@ -119,10 +128,26 @@
 
           // constraint wheel to rotor
           const wheelToRotorConstraint = { axisA: { y: 1 }, axisB: { y: 1 } }
-          this.motorBackLeft = this.physics.add.constraints.hinge(wheelBackLeft.body, rotorBackLeft.body, wheelToRotorConstraint)
-          this.motorBackRight = this.physics.add.constraints.hinge(wheelBackRight.body, rotorBackRight.body, wheelToRotorConstraint)
-          this.motorFrontLeft = this.physics.add.constraints.hinge(wheelFrontLeft.body, rotorFrontLeft.body, wheelToRotorConstraint)
-          this.motorFrontRight = this.physics.add.constraints.hinge(wheelFrontRight.body, rotorFrontRight.body, wheelToRotorConstraint)
+          this.motorBackLeft = this.physics.add.constraints.hinge(
+            wheelBackLeft.body,
+            rotorBackLeft.body,
+            wheelToRotorConstraint
+          )
+          this.motorBackRight = this.physics.add.constraints.hinge(
+            wheelBackRight.body,
+            rotorBackRight.body,
+            wheelToRotorConstraint
+          )
+          this.motorFrontLeft = this.physics.add.constraints.hinge(
+            wheelFrontLeft.body,
+            rotorFrontLeft.body,
+            wheelToRotorConstraint
+          )
+          this.motorFrontRight = this.physics.add.constraints.hinge(
+            wheelFrontRight.body,
+            rotorFrontRight.body,
+            wheelToRotorConstraint
+          )
 
           // constraint axis to rotor
           const axisToRotor = (rotorRight, rotorLeft, axis, z) => {
@@ -230,7 +255,10 @@
         }
       }
 
-      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 }))
+      PhysicsLoader(
+        '/lib/ammo/kripken',
+        () => new Project({ scenes: [MainScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 })
+      )
     </script>
   </body>
 </html>

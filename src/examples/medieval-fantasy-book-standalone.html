@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Medieval Fantasy Book</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -13,7 +16,17 @@
   <body>
     <div id="info-text">Use WASD, SPACE and your Mouse.<br />Try to play it on your mobile device :)</div>
     <script>
-      const { Project, PhysicsLoader, Scene3D, ExtendedObject3D, THREE, JoyStick, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
+      const {
+        Project,
+        PhysicsLoader,
+        Scene3D,
+        ExtendedObject3D,
+        THREE,
+        JoyStick,
+        ThirdPersonControls,
+        PointerLock,
+        PointerDrag
+      } = ENABLE3D
 
       /**
        * Is touch device?
@@ -308,7 +321,12 @@
 
       window.addEventListener('load', () => {
         PhysicsLoader('/lib/ammo/kripken', () => {
-          const project = new Project({ antialias: false, maxSubSteps: 10, fixedTimeStep: 1 / 120, scenes: [MainScene] })
+          const project = new Project({
+            antialias: false,
+            maxSubSteps: 10,
+            fixedTimeStep: 1 / 120,
+            scenes: [MainScene]
+          })
         })
       })
     </script>

@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Switch Camera between 2d and 3d</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -39,7 +42,12 @@
           const w = this.cameras.main.width / zoom
           const h = this.cameras.main.height / zoom
           this.cams = {
-            ortho: this.third.cameras.orthographicCamera(this, { left: w / -2, right: w / 2, top: h / 2, bottom: h / -2 }),
+            ortho: this.third.cameras.orthographicCamera(this, {
+              left: w / -2,
+              right: w / 2,
+              top: h / 2,
+              bottom: h / -2
+            }),
             perspective: this.third.camera,
             active: 'perspective',
             inTransition: false,
@@ -104,17 +112,29 @@
           })
 
           // add score text
-          this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', { fontSize: '32px', fill: '#000' })
+          this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', {
+            fontSize: '32px',
+            fill: '#000'
+          })
           this.scoreText.setOrigin(0, 1)
           this.scoreText.depth = 1
 
           // add platforms
           const platformMaterial = { phong: { transparent: true, color: 0x21572f } }
           const platforms = [
-            this.third.physics.add.box({ name: 'platform-ground', y: -2, width: 30, depth: 10, height: 2, mass: 0 }, platformMaterial),
-            this.third.physics.add.box({ name: 'platform-right1', x: 7, y: 4, width: 15, depth: 10, mass: 0 }, platformMaterial),
+            this.third.physics.add.box(
+              { name: 'platform-ground', y: -2, width: 30, depth: 10, height: 2, mass: 0 },
+              platformMaterial
+            ),
+            this.third.physics.add.box(
+              { name: 'platform-right1', x: 7, y: 4, width: 15, depth: 10, mass: 0 },
+              platformMaterial
+            ),
             // this.third.physics.add.box({ name: 'platform-left', x: -10, y: 7, width: 10, depth: 5, mass: 0 }, platformMaterial),
-            this.third.physics.add.box({ name: 'platform-right2', x: 10, y: 10, width: 10, depth: 10, mass: 0 }, platformMaterial)
+            this.third.physics.add.box(
+              { name: 'platform-right2', x: 10, y: 10, width: 10, depth: 10, mass: 0 },
+              platformMaterial
+            )
           ]
 
           // add stars
@@ -145,7 +165,13 @@
             star.material.color.setHex(0xffd851)
             star.position.setX(pos.x)
             star.position.setY(pos.y)
-            this.third.physics.add.existing(star, { shape: 'box', ignoreScale: true, width: 0.5, height: 0.5, depth: 0.5 })
+            this.third.physics.add.existing(star, {
+              shape: 'box',
+              ignoreScale: true,
+              width: 0.5,
+              height: 0.5,
+              depth: 0.5
+            })
             star.body.setCollisionFlags(6)
             this.stars.push(star)
           })
@@ -177,7 +203,14 @@
             this.robot.animation.play('Idle')
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'box', ignoreScale: true, width: 0.5, height: 1.25, depth: 0.5, offset: { y: -0.625 } })
+            this.third.physics.add.existing(this.robot, {
+              shape: 'box',
+              ignoreScale: true,
+              width: 0.5,
+              height: 1.25,
+              depth: 0.5,
+              offset: { y: -0.625 }
+            })
             this.robot.body.setLinearFactor(1, 1, 1)
             this.robot.body.setAngularFactor(0, 0, 0)
             this.robot.body.setFriction(0)
@@ -253,9 +286,12 @@
 
             this.cams.offset.lerp(cameraOffset, 0.2)
 
-            this.third.camera.position.copy(this.robot.position).add(new THREE.Vector3(this.cams.offset.x, this.cams.offset.y, this.cams.offset.z))
+            this.third.camera.position
+              .copy(this.robot.position)
+              .add(new THREE.Vector3(this.cams.offset.x, this.cams.offset.y, this.cams.offset.z))
 
-            if (withPerspective || inTransition) this.third.camera.lookAt(this.robot.position.clone().add(new THREE.Vector3(0, 2, 0)))
+            if (withPerspective || inTransition)
+              this.third.camera.lookAt(this.robot.position.clone().add(new THREE.Vector3(0, 2, 0)))
             else this.third.camera.lookAt(this.third.camera.position.clone())
 
             // get rotation of robot

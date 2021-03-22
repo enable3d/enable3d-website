@@ -1,4 +1,14 @@
-const { Project, PhysicsLoader, Scene3D, ExtendedObject3D, THREE, JoyStick, ThirdPersonControls, PointerLock, PointerDrag } = ENABLE3D
+const {
+  Project,
+  PhysicsLoader,
+  Scene3D,
+  ExtendedObject3D,
+  THREE,
+  JoyStick,
+  ThirdPersonControls,
+  PointerLock,
+  PointerDrag
+} = ENABLE3D
 
 /**
  * Is touch device?

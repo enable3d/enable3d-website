@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Physics Raycaster</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -11,7 +14,9 @@
   </head>
 
   <body>
-    <div id="info-text">A Raycaster for all Physical Bodies. Check the Console to see the Results of the Raycaster.</div>
+    <div id="info-text">
+      A Raycaster for all Physical Bodies. Check the Console to see the Results of the Raycaster.
+    </div>
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
 
@@ -21,7 +26,10 @@
 
           // draw the line
           const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
-          const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-2, 5, 2), new THREE.Vector3(2, -10, 0)])
+          const geometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-2, 5, 2),
+            new THREE.Vector3(2, -10, 0)
+          ])
           const line = new THREE.Line(geometry, material)
           this.scene.add(line)
 

@@ -75,7 +75,7 @@ class ServerScene {
 }
 
 // wait for Ammo to be loaded
-ammo().then((ammo) => {
+ammo().then(ammo => {
   globalThis.Ammo = ammo
 
   // start server scene

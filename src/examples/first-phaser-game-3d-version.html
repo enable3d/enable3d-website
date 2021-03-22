@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>First Phaser Game (3d version)</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -47,17 +50,32 @@
           this.third.load.texture('sky').then(sky => (this.third.scene.background = sky))
 
           // add score text
-          this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', { fontSize: '32px', fill: '#000' })
+          this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', {
+            fontSize: '32px',
+            fill: '#000'
+          })
           this.scoreText.setOrigin(0, 1)
           this.scoreText.depth = 1
 
           // add platforms
           const platformMaterial = { phong: { transparent: true, color: 0x21572f } }
           const platforms = [
-            this.third.physics.add.box({ name: 'platform-ground', y: -2, width: 30, depth: 5, height: 2, mass: 0 }, platformMaterial),
-            this.third.physics.add.box({ name: 'platform-right1', x: 7, y: 4, width: 15, depth: 5, mass: 0 }, platformMaterial),
-            this.third.physics.add.box({ name: 'platform-left', x: -10, y: 7, width: 10, depth: 5, mass: 0 }, platformMaterial),
-            this.third.physics.add.box({ name: 'platform-right2', x: 10, y: 10, width: 10, depth: 5, mass: 0 }, platformMaterial)
+            this.third.physics.add.box(
+              { name: 'platform-ground', y: -2, width: 30, depth: 5, height: 2, mass: 0 },
+              platformMaterial
+            ),
+            this.third.physics.add.box(
+              { name: 'platform-right1', x: 7, y: 4, width: 15, depth: 5, mass: 0 },
+              platformMaterial
+            ),
+            this.third.physics.add.box(
+              { name: 'platform-left', x: -10, y: 7, width: 10, depth: 5, mass: 0 },
+              platformMaterial
+            ),
+            this.third.physics.add.box(
+              { name: 'platform-right2', x: 10, y: 10, width: 10, depth: 5, mass: 0 },
+              platformMaterial
+            )
           ]
 
           // add stars
@@ -88,7 +106,13 @@
             star.material.color.setHex(0xffd851)
             star.position.setX(pos.x)
             star.position.setY(pos.y)
-            this.third.physics.add.existing(star, { shape: 'box', ignoreScale: true, width: 0.5, height: 0.5, depth: 0.5 })
+            this.third.physics.add.existing(star, {
+              shape: 'box',
+              ignoreScale: true,
+              width: 0.5,
+              height: 0.5,
+              depth: 0.5
+            })
             star.body.setCollisionFlags(6)
             this.stars.push(star)
           })
@@ -119,7 +143,13 @@
             this.robot.animation.play('Idle')
 
             this.third.add.existing(this.robot)
-            this.third.physics.add.existing(this.robot, { shape: 'capsule', ignoreScale: true, height: 0.8, radius: 0.4, offset: { y: -0.8 } })
+            this.third.physics.add.existing(this.robot, {
+              shape: 'capsule',
+              ignoreScale: true,
+              height: 0.8,
+              radius: 0.4,
+              offset: { y: -0.8 }
+            })
             this.robot.body.setLinearFactor(1, 1, 0)
             this.robot.body.setAngularFactor(0, 0, 0)
             this.robot.body.setFriction(0)

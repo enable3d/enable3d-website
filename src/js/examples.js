@@ -3,7 +3,7 @@
 // non render-blocking way to defer a task
 const task = task => setTimeout(task, 0)
 
-const main = function() {
+const main = function () {
   const { jsx, render } = nanoJSX
 
   const addFloatingButton = () => {
@@ -55,7 +55,7 @@ const main = function() {
 }
 
 // first of all, load Nano JSX, then execute all the rest
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
   const script = document.createElement('script')
   script.src = 'https://unpkg.com/nano-jsx@0.0.15/bundles/nano.slim.min.js'
   script.type = 'text/javascript'

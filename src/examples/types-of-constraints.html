@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>All Constraints Types</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
@@ -11,7 +14,10 @@
   </head>
 
   <body>
-    <div id="info-text">From Left to Right:<br />Lock, Fixed, PointToPoint, Hinge, Slider, Spring, ConeTwist, 6DOF (Six degrees of freedom)</div>
+    <div id="info-text">
+      From Left to Right:<br />Lock, Fixed, PointToPoint, Hinge, Slider, Spring, ConeTwist, 6DOF (Six degrees of
+      freedom)
+    </div>
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
 
@@ -82,8 +88,14 @@
           }
 
           const slider = x => {
-            let box1 = this.physics.add.cylinder({ height: 6, y: 2, x: x, radiusTop: 0.6, radiusBottom: 0.6, collisionFlags: 6, mass: 100 }, { custom: mat1 })
-            let box2 = this.physics.add.cylinder({ height: 4, y: 2, x: x, radiusTop: 0.4, radiusBottom: 0.4, collisionFlags: 4, mass: 1 }, { custom: mat2 })
+            let box1 = this.physics.add.cylinder(
+              { height: 6, y: 2, x: x, radiusTop: 0.6, radiusBottom: 0.6, collisionFlags: 6, mass: 100 },
+              { custom: mat1 }
+            )
+            let box2 = this.physics.add.cylinder(
+              { height: 4, y: 2, x: x, radiusTop: 0.4, radiusBottom: 0.4, collisionFlags: 4, mass: 1 },
+              { custom: mat2 }
+            )
             this.physics.add.constraints.slider(box1.body, box2.body, {
               frameA: { x: Math.PI / 2, y: 0, z: 0 },
               frameB: { x: Math.PI / 2, y: 0, z: 0 },
@@ -115,7 +127,10 @@
           const coneTwist = x => {
             let box1 = this.physics.add.box({ y: 2, x: x, collisionFlags: 2, mass: 100 }, { custom: mat1 })
             let box2 = this.physics.add.box({ y: 0, x: x, z: 0 }, { custom: mat2 })
-            this.physics.add.constraints.coneTwist(box1.body, box2.body, { frameA: { x: 1, y: 1, z: 1 }, frameB: { x: 0.5, y: -0.5, z: 0.5 } })
+            this.physics.add.constraints.coneTwist(box1.body, box2.body, {
+              frameA: { x: 1, y: 1, z: 1 },
+              frameB: { x: 0.5, y: -0.5, z: 0.5 }
+            })
           }
 
           const dof = x => {
