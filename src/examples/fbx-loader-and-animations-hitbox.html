@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>FBX Loader and Animations (with Hitbox)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.22.0-dev.1.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">The cube on the left hand has a physics body.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE, ExtendedObject3D } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed()
+          this.third.camera.position.set(20, 20, 40)
+
+          this.third.physics.debug.enable()
+
+          // These assets are from mixamo.com
+          // The the Idle.fbx contains the skin and the idle animation.
+
+          const robot = new ExtendedObject3D()
+          const animations = ['Jumping', 'LookingAround', 'Running', 'BodyJabCross', 'HipHopDancing']
+          const pos = { x: 0, y: 5, z: 0 }
+
+          this.third.load.fbx('/assets/fbx/Idle.fbx').then(object => {
+            robot.add(object)
+
+            console.log(this.third)
+
+            this.third.animationMixers.add(robot.animation.mixer)
+
+            robot.animation.add('Idle', object.animations[0])
+            robot.animation.play('Idle')
+
+            // attach a cube to the left hand
+            robot.traverse(child => {
+              if (child.name === 'mixamorigLeftHandIndex1') {
+                if (!this.box) {
+                  // collisionFlags 2 = kinematic
+                  // collisionFlags 6 = kinematic and ghost
+                  this.box = this.third.physics.add.box({ width: 1, height: 1, depth: 1, collisionFlags: 6 })
+                  this.box.customParams = { child }
+                }
+              }
+            })
+
+            robot.traverse(child => {
+              if (child.isMesh) child.castShadow = child.receiveShadow = true
+            })
+
+            robot.scale.set(0.05, 0.05, 0.05)
+            robot.position.set(pos.x, pos.y, pos.z)
+
+            this.third.add.existing(robot)
+            this.third.physics.add.existing(robot, { shape: 'box', offset: { y: -0.5 } })
+
+            // load more animations
+            animations.forEach(key => {
+              if (key === 'Idle') return
+              this.third.load.fbx(`/assets/fbx/${key}.fbx`).then(object => {
+                robot.animation.add(key, object.animations[0])
+              })
+            })
+
+            this.time.addEvent({
+              delay: 2500,
+              loop: true,
+              callback: () => {
+                const anim = Phaser.Math.RND.pick(animations)
+                console.log(`Set animation ${anim}`)
+                robot.animation.play(anim, 350)
+              }
+            })
+          })
+        }
+
+        update() {
+          if (this.box && this.box.body) {
+            const child = this.box.customParams.child
+            const pos = child.getWorldPosition(new THREE.Vector3())
+            this.box.position.copy(pos)
+            this.box.rotation.copy(child.rotation)
+            this.box.body.needUpdate = true
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
+</html>
