@@ -6,6 +6,12 @@ In this guide, you will learn how to use the Standalone 3D Framework. Most of wh
 
 _Note: Not everything is documented yet, the [examples](https://enable3d.io/examples.html) page helps a lot!_
 
+_Help: Do you know something that is not documented yet? Help improving the documentation on [GitHub](https://github.com/enable3d/enable3d-website/tree/master/src/docs)!_
+
+### Introduction Video
+
+Watch a great introduction video on <a target="_blank" href="https://youtu.be/j6nv3JIAFLk">YouTube</a>
+
 ### Basic Setup
 
 ```ts
