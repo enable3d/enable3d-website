@@ -39,6 +39,23 @@ footer {
   text-align: center;
 }
 
+.footer-buttons {
+  margin: 0 auto;
+  margin-top: 16px;
+  /* max-width: 435px; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-buttons a {
+  margin: 4px 8px;
+}
+
+.footer-padding {
+  min-height: 96px;
+}
+
 .container {
   max-width: 1024px;
   margin: 0 auto;

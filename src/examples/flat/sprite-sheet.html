@@ -2,16 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Sprite Sheet</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.1.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0.min.js"></script>
   </head>
 
   <body>
-    <div id="info-text">Use the <a href="https://www.codeandweb.com/free-sprite-sheet-packer">Free Sprite Sheet Packer</a> to create your own spritesheet.</div>
+    <div id="info-text">
+      Use the <a href="https://www.codeandweb.com/free-sprite-sheet-packer">Free Sprite Sheet Packer</a> to create your
+      own spritesheet.
+    </div>
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
 
@@ -27,10 +33,13 @@
         }
 
         async create() {
-          this.warpSpeed()
+          const { orbitControls } = await this.warpSpeed()
 
           const width = window.innerWidth
           const height = window.innerHeight
+
+          FLAT.initEvents({ orbitControls, canvas: this.renderer.domElement })
+          FLAT.setSize(width, height)
 
           // 2d camera
           this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
@@ -53,7 +62,7 @@
 
           // add hero on a plane
           const heroPlane = await this.createHero()
-          const geometry = new THREE.PlaneBufferGeometry(heroPlane.width / 100, heroPlane.height / 100)
+          const geometry = new THREE.PlaneBufferGeometry(heroPlane.textureWidth / 100, heroPlane.textureHeight / 100)
           const material = new THREE.MeshLambertMaterial({
             map: heroPlane.texture,
             transparent: false,
@@ -112,7 +121,7 @@
           if (this.ui) {
             this.renderer.clearDepth()
             this.renderer.render(this.ui.scene, this.ui.camera)
-            FLAT.render(this.ui.camera)
+            FLAT.updateEvents(this.ui.camera)
           }
         }
       }

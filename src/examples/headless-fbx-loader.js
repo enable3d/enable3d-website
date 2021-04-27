@@ -1,4 +1,5 @@
-const { Ammo: ammo, Physics, ServerClock, Loaders, ExtendedObject3D } = require('@enable3d/ammo-on-nodejs')
+var _ammo = require('@enable3d/ammo-on-nodejs/ammo/ammo.js')
+const { Physics, ServerClock, Loaders, ExtendedObject3D } = require('@enable3d/ammo-on-nodejs')
 const path = require('path')
 
 class ServerScene {
@@ -69,7 +70,7 @@ class ServerScene {
 }
 
 // wait for Ammo to be loaded
-ammo().then(ammo => {
+_ammo().then(ammo => {
   globalThis.Ammo = ammo
 
   // start server scene

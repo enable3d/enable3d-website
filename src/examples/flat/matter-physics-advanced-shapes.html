@@ -2,23 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Matter Physics (Advanced Shapes)</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/matter.min.js?ver=0.16.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.22.0-dev.1.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.22.0.min.js"></script>
   </head>
 
   <body>
-    <div id="info-text">Shapes created using the <a href="https://www.codeandweb.com/physicseditor">PhysicsEditor</a>.</div>
+    <div id="info-text">
+      Shapes created using the <a href="https://www.codeandweb.com/physicseditor">PhysicsEditor</a>.
+    </div>
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
 
       class MainScene extends Scene3D {
         async preload() {
-          this.atlas = await this.load.textureAtlas('/assets/physics/fruit-sprites.png', '/assets/physics/fruit-sprites.json')
+          this.atlas = await this.load.textureAtlas(
+            '/assets/physics/fruit-sprites.png',
+            '/assets/physics/fruit-sprites.json'
+          )
           this.shapes = await this.load.file('/assets/physics/fruit-shapes.json')
         }
 
@@ -80,7 +88,7 @@
           if (this.ui) {
             this.renderer.clearDepth()
             this.renderer.render(this.ui.scene, this.ui.camera)
-            FLAT.render(this.ui.camera)
+            FLAT.updateEvents(this.ui.camera)
           }
         }
       }
