@@ -94,7 +94,7 @@
         }
 
         update(time, delta) {
-          if (typeof this.player?.body === 'undefined') return
+          if (typeof this.player.body === 'undefined') return
 
           this.third.camera.position.lerp(
             this.camerasArr[this.cameraIndex % 3].getWorldPosition(new THREE.Vector3()),
