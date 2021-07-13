@@ -286,3 +286,14 @@ ul.examples-list li a {
   color: #6a6a6a;
   text-decoration: underline;
 }
+
+/** TABLE */
+table {
+  border-collapse: collapse;
+  text-align: left;
+}
+table th,
+table td {
+  padding: 8px 12px;
+  border: 1px #3e4763 solid;
+}
