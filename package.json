@@ -26,12 +26,12 @@
     "three": "~0.127.0"
   },
   "devDependencies": {
-    "@yandeu/prettier-config": "^0.0.1",
+    "@yandeu/prettier-config": "^0.0.2",
     "aws-sdk": "^2.819.0",
     "express": "^4.17.1",
-    "five-server": "^0.0.24",
+    "five-server": "^0.0.26",
     "mime": "^2.4.7",
     "prettier": "^2.2.1",
-    "puppeteer": "^3.3.0"
+    "puppeteer": "^10.1.0"
   }
 }
