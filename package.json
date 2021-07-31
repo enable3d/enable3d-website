@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "directories": {
-    "example": "examples",
-    "lib": "lib"
-  },
   "scripts": {
     "start": "five-server",
     "format": "prettier --write src/*.{html,js} src/{js,css,examples}/*"
