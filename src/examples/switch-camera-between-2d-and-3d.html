@@ -43,7 +43,7 @@
           const w = this.cameras.main.width / zoom
           const h = this.cameras.main.height / zoom
           this.cams = {
-            ortho: this.third.cameras.orthographicCamera(this, {
+            ortho: this.third.cameras.orthographicCamera({
               left: w / -2,
               right: w / 2,
               top: h / 2,
