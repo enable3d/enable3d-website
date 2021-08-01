@@ -18,14 +18,14 @@
   },
   "homepage": "https://github.com/enable3d/enable3d-website#readme",
   "dependencies": {
-    "@enable3d/ammo-on-nodejs": "~0.22.0",
-    "three": "~0.127.0"
+    "@enable3d/ammo-on-nodejs": "~0.23.0",
+    "three": "~0.130"
   },
   "devDependencies": {
     "@yandeu/prettier-config": "^0.0.2",
     "aws-sdk": "^2.819.0",
     "express": "^4.17.1",
-    "five-server": "^0.0.26",
+    "five-server": "^0.0.28",
     "mime": "^2.4.7",
     "prettier": "^2.2.1",
     "puppeteer": "^10.1.0"
