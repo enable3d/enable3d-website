@@ -11,8 +11,12 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.22.0.min.js"></script>
     <script src="/lib/chroma.min.js"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.23.0.min.js"></script>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+    </script>
+    <script src="/lib/ConvexGeometry.js"></script>
   </head>
 
   <body>
@@ -21,8 +25,6 @@
       <a href="/assets/heightmap/heightmap-island.png"> this png file</a>.
     </div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
-
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })

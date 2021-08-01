@@ -10,21 +10,13 @@
     <title>Post-Processing</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.22.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.23.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const {
-        Project,
-        Scene3D,
-        PhysicsLoader,
-        EffectComposer,
-        RenderPass,
-        GlitchPass,
-        DotScreenShader,
-        ShaderPass
-      } = ENABLE3D
+      const { Project, Scene3D, PhysicsLoader, EffectComposer, RenderPass, GlitchPass, DotScreenShader, ShaderPass } =
+        ENABLE3D
 
       class MainScene extends Scene3D {
         create() {
