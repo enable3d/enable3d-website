@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Carousel</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.23.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Carousel with Physics</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        bar
+        added = false
+        speed = 0.01
+        maxSpeed = 4
+
+        addPendant(x, y, z) {
+          const pendant = this.add.box({ y: 0, width: 1, height: 1.5, depth: 0.2 }, { phong: { color: 'yellow' } })
+
+          const group = new THREE.Group()
+
+          const body = [
+            // left
+            { width: 0.2, height: 1.5, depth: 0.15, y: 0, x: -0.42 },
+            // right
+            { width: 0.2, height: 1.5, depth: 0.15, y: 0, x: 0.42 },
+            // top
+            { width: 1, height: 0.2, depth: 0.15, y: 0.66 },
+            // bottom
+            { width: 1, height: 0.2, depth: 0.15, y: -0.75 },
+            // cover
+            { width: 1, height: 1.2, depth: 0.15, y: -0.3 }
+          ]
+
+          body.forEach(b => {
+            group.add(this.make.box(b))
+          })
+
+          group.position.set(x, y, z)
+
+          this.add.existing(group)
+          this.physics.add.existing(group)
+          group.add(pendant)
+        }
+
+        async create() {
+          // this.physics.debug?.enable()
+
+          this.camera.position.set(6, 6, 12)
+          const { orbitControls } = await this.warpSpeed()
+          orbitControls?.target.set(0, 2, 0)
+
+          this.bar = this.add.cylinder({ radiusBottom: 0.1, radiusTop: 0.1, height: 5 })
+          this.bar.position.setY(3)
+          this.bar.rotateX(Math.PI / 2)
+          this.physics.add.existing(this.bar, { collisionFlags: 2 })
+        }
+
+        update(time) {
+          const orbitRadius = 2
+          const date = time * this.speed
+
+          if (this.speed < this.maxSpeed) this.speed += 0.001
+
+          this.bar.position.set(Math.cos(date) * orbitRadius, Math.sin(date) * orbitRadius + 4, 0)
+
+          this.bar.body.needUpdate = true
+
+          if (!this.added) {
+            this.added = true
+            const { x, y } = this.bar.position.clone()
+            this.addPendant(x, y, -1)
+            this.addPendant(x, y, -2)
+            this.addPendant(x, y, 0)
+            this.addPendant(x, y, 1)
+            this.addPendant(x, y, 2)
+          }
+        }
+      }
+
+      PhysicsLoader(
+        '/lib/ammo/kripken',
+        () => new Project({ scenes: [MainScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 })
+      )
+    </script>
+  </body>
+</html>
