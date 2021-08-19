@@ -10,30 +10,31 @@
     <title>Create and Destroy Objects and Physics</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.23.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.23.0.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
-        constructor() {
-          super({ key: 'MainScene' })
-        }
-
-        init() {
-          this.accessThirdDimension()
-        }
-
         async create() {
-          const { ground } = await this.third.warpSpeed()
+          const { ground } = await this.warpSpeed()
 
-          this.third.physics.debug.enable()
+          this.physics.debug.enable()
 
-          let blueBox = this.third.add.box({ y: 3 }, { lambert: { color: 'cornflowerblue' } })
-          let redBox = this.third.add.box({ y: 4.5 }, { lambert: { color: 'tomato' } })
+          const newBox = (y, color) => {
+            const geometry = new THREE.BoxGeometry(1, 1, 1)
+            const material = new THREE.MeshLambertMaterial({ color })
+            const mesh = new THREE.Mesh(geometry, material)
+            mesh.position.set(0, y, 0)
+
+            this.add.existing(mesh)
+            return mesh
+          }
+
+          const blueBox = newBox(3, 'cornflowerblue')
+          const redBox = newBox(4.5, 'tomato')
 
           const hasBody = () => {
             console.log('blueBox:', typeof blueBox.body, blueBox.hasBody)
@@ -42,38 +43,23 @@
 
           hasBody()
 
-          setTimeout(() => this.third.physics.add.existing(redBox), 1000) // add physics body to redBox
+          setTimeout(() => this.physics.add.existing(redBox), 1000) // add physics body to redBox
 
-          setTimeout(() => this.third.physics.add.existing(blueBox), 2000) // add physics body to blueBox
+          setTimeout(() => this.physics.add.existing(blueBox), 2000) // add physics body to blueBox
 
           setTimeout(() => hasBody(), 3000)
 
-          setTimeout(() => this.third.destroy(redBox), 4000) // destroy object and its physics body
+          setTimeout(() => this.destroy(redBox), 4000) // destroy object and its physics body
 
-          setTimeout(() => this.third.physics.destroy(blueBox), 5000) // destroy only the physics body
+          setTimeout(() => this.physics.destroy(blueBox), 5000) // destroy only the physics body
 
-          setTimeout(() => this.third.destroy(ground), 6000) // destroy object and its physics body
+          setTimeout(() => this.destroy(ground), 6000) // destroy object and its physics body
 
-          setTimeout(() => this.third.physics.add.existing(blueBox), 7000) // add physics body to blueBox
+          setTimeout(() => this.physics.add.existing(blueBox), 7000) // add physics body to blueBox
         }
       }
 
-      const config = {
-        type: Phaser.WEBGL,
-        transparent: true,
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
-        },
-        scene: [MainScene],
-        ...Canvas()
-      }
-
-      window.addEventListener('load', () => {
-        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
-      })
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
     </script>
   </body>
 </html>
