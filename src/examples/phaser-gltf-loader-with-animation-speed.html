@@ -28,9 +28,11 @@
           this.accessThirdDimension()
         }
 
-        create() {
-          this.third.warpSpeed()
-          this.third.camera.position.set(20, 20, 40)
+        async create() {
+          const { camera, orbitControls } = await this.third.warpSpeed()
+          camera.position.set(3, 10, 6)
+          camera.lookAt(0, 5, 0)
+          orbitControls.target.set(0, 5, 0)
 
           // These assets are from sketchfab.com
           // They are published under CC license by akiko_yoshino
@@ -43,9 +45,7 @@
           this.third.load.gltf('/assets/gltf/drone/drone.gltf').then(object => {
             drone.add(object.scene)
 
-            console.log(this.third)
-
-            this.third.animationMixers.add(drone.animation.mixer)
+            this.third.animationMixers.add(drone.anims.mixer)
 
             // change the timescale of animation
             // [0-1] reduce the animation speed

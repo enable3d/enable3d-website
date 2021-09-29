@@ -1,8 +1,9 @@
 ## Warp Speed
 
-When building your projects, you need to set up the  *third-dimension* most of the time. For instance, you need a basic setup with at least one camera, lights, orbit controls, and so on. To design all these things takes a long time.
+When building your projects, you need to set up the _third-dimension_ most of the time. For instance, you need a basic setup with at least one camera, lights, orbit controls, and so on. To design all these things takes a long time.
 
 You can shorten that time by using Enable3d `warpSpeed()` function. The function supports the following features:
+
 - light
 - camera
 - lookAtCenter
@@ -16,27 +17,37 @@ By default, the function enables all the features.
 
 ```js
 class MainScene extends Scene3D {
-  
-  ...
 
   async create() {
     // set up scene (light, ground, grid, sky, orbitControls)
-    this.warpSpeed()
+    await this.warpSpeed()
+
+    // additionally warpSpeed() returns the camera, ground, lights, orbitControls.
+    const { camera, ground, lights, orbitControls } = await this.warpSpeed()
+
+    // now modify the features (if needed)
+    // example:
+    camera.position.set(10, 10, 10)
+    camera.lookAt(0, 5, 0)
+
+    const { hemisphereLight, ambientLight, directionalLight } = lights
+    hemisphereLight.intensity = 0.65
+
+    orbitControls.target.set(0, 5, 0)
   }
 ```
 
 If you only want to set up particular features, you can call the function passing the feature name.
 
 ```js
-this.warpSpeed('light', 'ground', 'sky');
+this.warpSpeed('light', 'ground', 'sky')
 ```
 
 Also, if you want to enable all the features but some, you can specify the feature name with the minus sign.
 
-
 ```js
 // enable all the features but the orbit controls
-this.warpSpeed('-orbitControls');
+this.warpSpeed('-orbitControls')
 ```
 
 The following sections provide some details on all features.
@@ -44,6 +55,7 @@ The following sections provide some details on all features.
 ### Light
 
 Including 'light' among the features in `warpSpeed()`, Enable3D will place three lights in the scene:
+
 - a hemisphere light
 - an ambient light
 - a directional light
