@@ -185,7 +185,7 @@
           this.camera.lookAt(0, 0, 0)
           // this.physics.debug?.enable()
 
-          const grass = await this.load.texture('/assets/img/grass.jpg');
+          const grass = await this.load.texture('/assets/img/grass.jpg')
           const grassGround = grass.clone()
           grassGround.needsUpdate = true
           grassGround.wrapS = grassGround.wrapT = 1000 // RepeatWrapping
@@ -196,7 +196,7 @@
 
           const ramp = this.add.box({ width: 5, height: 10, z: -20 }, { lambert: { map: grass } })
           ramp.rotateX(-Math.PI / 3)
-          this.physics.add.existing(ramp, { collisionFlags: 1, mass: 0 });
+          this.physics.add.existing(ramp, { collisionFlags: 1, mass: 0 })
 
           const gltf = await this.load.gltf('/assets/glb/car.glb')
           const scene = gltf.scenes[0]

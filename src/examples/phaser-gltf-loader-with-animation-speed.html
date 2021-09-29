@@ -1,102 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>GLTF Loader and Animations</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.23.0.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>GLTF Loader and Animations</title>
-  <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
-  <script src="/js/examples.js?ver=1.1.1"></script>
-  <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-  <script src="/lib/enable3d/enable3d.phaserExtension.0.23.0.min.js"></script>
-</head>
+  <body>
+    <div id="info-text">Loads the drone and play all of its animation at the same time.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D, LinearEncoding } = ENABLE3D
 
-<body>
-  <div id="info-text">Loads the drone and play all of its animation at the same time.</div>
-  <script>
-    const { enable3d, Scene3D, Canvas, ExtendedObject3D, LinearEncoding } = ENABLE3D
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
 
-    class MainScene extends Scene3D {
-      constructor() {
-        super({ key: 'MainScene' })
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed()
+          this.third.camera.position.set(20, 20, 40)
+
+          // These assets are from sketchfab.com
+          // They are published under CC license by akiko_yoshino
+          // https://sketchfab.com/3d-models/drone-b9488d95b5a94d758be209f7cf44e447
+          // @gabriserra added the propeller (ugly) animation and the pillow (do not ask why.....)
+
+          const drone = new ExtendedObject3D()
+          const pos = { x: 0, y: 5, z: 0 }
+
+          this.third.load.gltf('/assets/gltf/drone/drone.gltf').then(object => {
+            drone.add(object.scene)
+
+            console.log(this.third)
+
+            this.third.animationMixers.add(drone.animation.mixer)
+
+            // change the timescale of animation
+            // [0-1] reduce the animation speed
+            // > 1 allows to playback the animation faster
+            drone.anims.mixer.timeScale = 4
+
+            // play all animations together
+            object.animations.forEach(clip => {
+              drone.anims.mixer.clipAction(clip).reset().play()
+            })
+
+            // traverse the object and add roughness to materials
+            drone.traverse(child => {
+              if (!child.isMesh) return
+
+              child.castShadow = false
+              child.receiveShadow = false
+              child.material.metalness = 0
+              child.material.roughness = 1
+
+              if (child.material.map) child.material.map.encoding = LinearEncoding
+            })
+
+            drone.scale.set(0.05, 0.05, 0.05)
+            drone.position.set(pos.x, pos.y, pos.z)
+
+            this.third.add.existing(drone)
+          })
+        }
       }
 
-      init() {
-        this.accessThirdDimension()
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
       }
 
-      create() {
-        this.third.warpSpeed()
-        this.third.camera.position.set(20, 20, 40)
-
-        // These assets are from sketchfab.com
-        // They are published under CC license by akiko_yoshino
-        // https://sketchfab.com/3d-models/drone-b9488d95b5a94d758be209f7cf44e447
-        // @gabriserra added the propeller (ugly) animation and the pillow (do not ask why.....)
-
-        const drone = new ExtendedObject3D()
-        const pos = { x: 0, y: 5, z: 0 }
-
-        this.third.load.gltf('/assets/gltf/drone/drone.gltf').then(object => {
-          drone.add(object.scene)
-
-          console.log(this.third)
-
-          this.third.animationMixers.add(drone.animation.mixer)
-
-          // change the timescale of animation
-          // [0-1] reduce the animation speed
-          // > 1 allows to playback the animation faster
-          drone.anims.mixer.timeScale = 4
-
-          // play all animations together
-          object.animations.forEach((clip) => {
-            drone.anims.mixer.clipAction(clip).reset().play();
-          });
-
-          // traverse the object and add roughness to materials
-          drone.traverse((child) => {
-
-            if (!child.isMesh)
-              return
-
-            child.castShadow = false;
-            child.receiveShadow = false;
-            child.material.metalness = 0;
-            child.material.roughness = 1;
-
-            if (child.material.map)
-              child.material.map.encoding = LinearEncoding;
-          });
-
-
-          drone.scale.set(0.05, 0.05, 0.05)
-          drone.position.set(pos.x, pos.y, pos.z)
-
-          this.third.add.existing(drone)
-        })
-      }
-    }
-
-    const config = {
-      type: Phaser.WEBGL,
-      transparent: true,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
-        height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
-      },
-      scene: [MainScene],
-      ...Canvas()
-    }
-
-    window.addEventListener('load', () => {
-      enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
-    })
-  </script>
-</body>
-
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
 </html>
