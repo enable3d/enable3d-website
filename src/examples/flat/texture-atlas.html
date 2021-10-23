@@ -79,7 +79,10 @@
         }
 
         animate(textureAtlas) {
-          let index = -1
+          let index = 0
+          // set initial frame
+          textureAtlas.setFrame(`Attack__00${index}.png`)
+          // update the frame 5 times per second
           setInterval(() => {
             index++
             textureAtlas.setFrame(`Attack__00${index}.png`)
