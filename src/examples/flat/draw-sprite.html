@@ -10,7 +10,7 @@
     <title>DrawSprite</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.23.0.min.js"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.24.0.min.js"></script>
   </head>
 
   <body>
@@ -24,15 +24,17 @@
           const width = window.innerWidth
           const height = window.innerHeight
 
-          FLAT.initEvents({ orbitControls, canvas: this.renderer.domElement })
-          FLAT.setSize(width, height)
+          // Initialize the flat elements
+          this.ui = FLAT.init(this.renderer)
 
-          // 2d camera
-          this.renderer.autoClear = false // To allow render overlay on top of the 3d camera
-          this.ui = {
-            camera: this.cameras.orthographicCamera({ left: 0, right: width, bottom: 0, top: height }),
-            scene: new THREE.Scene()
-          }
+          // Use this if you need events on the 2D elements.
+          // If you are using orbitControls, pass it to initEvents().
+          // This makes sure orbitControls is not messing with the mouse move.
+          FLAT.initEvents({ canvas: this.renderer.domElement, orbitControls })
+
+          // Call Flat.destroy() on scene restart or stop
+          // or simply add FLAT to the deconstructor
+          this.deconstructor.add(FLAT /* same effect as FLAT.destroy */, orbitControls)
 
           const drawRectangle = ctx => {
             ctx.beginPath()
@@ -67,17 +69,11 @@
         }
 
         preRender() {
-          // needed for the 2d camera
-          this.renderer.clear()
+          FLAT.preRender(this.renderer)
         }
 
         postRender() {
-          // needed for the 2d camera
-          if (this.ui) {
-            this.renderer.clearDepth()
-            this.renderer.render(this.ui.scene, this.ui.camera)
-            FLAT.updateEvents(this.ui.camera)
-          }
+          FLAT.postRender(this.renderer, this.ui)
         }
       }
 
