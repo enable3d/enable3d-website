@@ -21,7 +21,7 @@ const ssr = async url => {
   await page.setRequestInterception(true)
 
   page.on('request', req => {
-    const blacklist = ['buttons.github.io/buttons.js']
+    const blacklist = ['buttons.github.io/buttons.js', 'img.shields.io']
     if (blacklist.find(regex => req.url().match(regex))) {
       return req.abort()
     }
@@ -29,7 +29,20 @@ const ssr = async url => {
     req.continue()
   })
 
-  await page.goto(url, { waitUntil: 'networkidle0' })
+  await page.goto(url, { waitUntil: 'networkidle2' })
+
+  // https://github.com/lichtquelle/generate-static-site/blob/main/src/crawl.ts
+  await page
+    .evaluate(() => {
+      const ssr = document.querySelectorAll('[SSROnly]')
+      for (let i = 0; i < ssr.length; i++) {
+        ssr[i].remove()
+      }
+    })
+    .catch(err => {
+      console.log('[evaluate] remove SSROnly', err.message)
+    })
+
   const html = await page.content() // serialized HTML of page DOM.
   await browser.close()
   return html
