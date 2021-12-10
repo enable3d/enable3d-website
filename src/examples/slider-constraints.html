@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>All Constraints Types</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.24.0.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Slider Constraints</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          await this.warpSpeed('-ground')
+
+          this.physics.debug?.enable()
+          this.physics.debug?.mode(2048 + 4096)
+
+          const cylinderShape = { radiusTop: 0.4, radiusBottom: 0.4, height: 0.25, radiusSegments: 16 }
+
+          this.box = this.physics.add.box(
+            { collisionFlags: 2, mass: 25 },
+            { lambert: { color: 'black', transparent: true, opacity: 0.9 } }
+          )
+
+          const arm1 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'orange' } })
+          this.physics.add.constraints.slider(this.box.body, arm1.body, {
+            frameA: {},
+            frameB: { x: Math.PI / 2, y: 0, z: 0 },
+            linearLowerLimit: 0.5,
+            linearUpperLimit: 1.5
+          })
+
+          const arm2 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'red' } })
+          this.physics.add.constraints.slider(this.box.body, arm2.body, {
+            frameA: {},
+            frameB: { x: Math.PI / 2 },
+            linearLowerLimit: -1.5,
+            linearUpperLimit: -0.5
+          })
+
+          const arm3 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'green' } })
+          this.physics.add.constraints.slider(this.box.body, arm3.body, {
+            frameA: { x: Math.PI / 2 },
+            frameB: { x: Math.PI / 2 },
+            linearLowerLimit: 0.5,
+            linearUpperLimit: 1.5
+          })
+
+          const arm4 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'blue' } })
+          this.physics.add.constraints.slider(this.box.body, arm4.body, {
+            frameA: { x: Math.PI / 2 },
+            frameB: { x: Math.PI / 2 },
+            linearLowerLimit: -1.5,
+            linearUpperLimit: -0.5
+          })
+
+          const arm5 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'black' } })
+          this.physics.add.constraints.slider(this.box.body, arm5.body, {
+            frameA: { y: Math.PI / 2 },
+            frameB: { x: Math.PI / 2 },
+            linearLowerLimit: 0.5,
+            linearUpperLimit: 1.5
+          })
+
+          const arm6 = this.physics.add.cylinder(cylinderShape, { lambert: { color: 'yellow' } })
+          this.physics.add.constraints.slider(this.box.body, arm6.body, {
+            frameA: { y: Math.PI / 2 },
+            frameB: { x: Math.PI / 2 },
+            linearLowerLimit: -1.5,
+            linearUpperLimit: -0.5
+          })
+        }
+
+        update() {
+          this.box.rotation.x += 0.006
+          this.box.rotation.y += 0.01
+          this.box.rotation.z += 0.014
+          this.box.body.needUpdate = true
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
