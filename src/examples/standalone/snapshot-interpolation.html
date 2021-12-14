@@ -15,13 +15,14 @@
   </head>
 
   <body>
-    <div id="info-text">The red cube is interpolated with a delay of 100ms and @ 10FPS.</div>
+    <div id="info-text">The red cube is interpolated with a delay of 250ms and @ 10FPS.</div>
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
       const { SnapshotInterpolation, Vault } = Snap
 
       const FPS = 10
-      const SI = new SnapshotInterpolation(FPS)
+      const SI_Server = new SnapshotInterpolation()
+      const SI_Client = new SnapshotInterpolation(FPS)
 
       class MainScene extends Scene3D {
         tick = 0
@@ -46,29 +47,35 @@
           const quaternion = new THREE.Quaternion().setFromEuler(this.ghost.rotation)
           const pos = this.ghost.position
 
-          const { _x: x, _y: y, _z: z, _z: w } = quaternion
+          const { _x: x, _y: y, _z: z, _w: w } = quaternion
 
-          const state = [{ id: 'cube', x: pos.x, y: pos.y, quat: { x, y, z, w } }]
+          const state = [
+            {
+              id: 'cube',
+              x: pos.x,
+              y: pos.y,
+              z: pos.z,
+              q: { x, y, z, w }
+            }
+          ]
 
-          const snapshot = SI.snapshot.create(state)
+          const snapshot = SI_Server.snapshot.create(state)
 
           return snapshot
         }
 
         // later (over the wire) receives a new snapshot @10FPS
         clientSide(snap) {
-          if (snap) SI.addSnapshot(snap)
+          if (snap) SI_Client.addSnapshot(snap)
 
-          const snapshot = SI.calcInterpolation('x quat(quat)')
+          const snapshot = SI_Client.calcInterpolation('x y z q(quat)')
           if (!snapshot) return
 
           const { state } = snapshot
-
-          const { id, quat: q, x, y } = state[0]
+          const { id, q, x, y, z } = state[0]
 
           if (id === 'cube') {
-            this.cube.position.x = x + 2 // a bit more to the right
-            this.cube.position.y = y
+            this.cube.position.set(x + 2, y, z)
             this.cube.quaternion.set(q.x, q.y, q.z, q.w)
           }
         }
@@ -80,9 +87,9 @@
 
           // send only at every 6th frame (10 FPS)
           setTimeout(() => {
-            if ((this.tick % 60) / FPS !== 0) this.clientSide(snapshot)
+            if (this.tick % (60 / FPS) === 0) this.clientSide(snapshot)
             else this.clientSide()
-          }, 100)
+          }, 250)
         }
       }
 
