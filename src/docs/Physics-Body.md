@@ -34,7 +34,7 @@ These bodies do NOT react to force or gravity. You can only move them by adjusti
 
 update() {
   kinematicObject.position.set(0,5,0)
-  kinematicObject.rotation.x =+ 0.01
+  kinematicObject.rotation.x += 0.01
   // set needUpdate to true, every time you want
   // to adjust the position or rotation of a kinematic body
   kinematicObject.body.needUpdate = true
