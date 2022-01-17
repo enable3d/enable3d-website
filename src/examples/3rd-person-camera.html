@@ -110,7 +110,7 @@
             /**
              * Animations
              */
-            this.third.animationMixers.add(this.man.animation.mixer)
+            this.third.animationMixers.add(this.man.anims.mixer)
             object.animations.forEach(animation => {
               if (animation.name) {
                 /**
@@ -124,10 +124,10 @@
                   }
                 })
 
-                this.man.animation.add(animation.name, animation)
+                this.man.anims.add(animation.name, animation)
               }
             })
-            this.man.animation.play('idle')
+            this.man.anims.play('idle')
             this.man.position.set(0, 2, 8)
 
             /**
@@ -137,7 +137,7 @@
             this.third.physics.add.existing(this.man, {
               shape: 'capsule',
               radius: 0.2,
-              height: 0.75,
+              height: 0.6,
               offset: { y: -0.55 }
             })
             this.man.body.setFriction(0.8)
@@ -189,8 +189,8 @@
                * Update Camera
                */
               const { top, right } = event
-              this.moveTop = top
-              this.moveRight = right
+              this.moveTop = top * 3
+              this.moveRight = right * 3
             })
             const buttonA = joystick.add.button({
               letter: 'A',
@@ -210,7 +210,7 @@
           if (!this.man) return
           this.canJump = false
           this.isJumping = true
-          this.man.animation.play('jump_running')
+          this.man.anims.play('jump_running')
           this.time.addEvent({
             delay: 750,
             callback: () => (this.canJump = true)
@@ -218,7 +218,7 @@
           this.time.addEvent({
             delay: 750,
             callback: () => {
-              this.man.animation.play('idle')
+              this.man.anims.play('idle')
               this.isJumping = false
             }
           })
@@ -242,17 +242,23 @@
             const theta = Math.atan2(rotation.x, rotation.z)
             const rotationMan = this.man.getWorldDirection(v3)
             const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
+            this.man.body.setAngularVelocityY(0)
 
             const l = Math.abs(theta - thetaMan)
-            if (theta > thetaMan && l > 0.05) this.man.body.setAngularVelocityY(2)
-            else if (theta < thetaMan && l > 0.05) this.man.body.setAngularVelocityY(-2)
-            else this.man.body.setAngularVelocityY(0)
+            let rotationSpeed = isTouchDevice ? 2 : 4
+            let d = Math.PI / 24
+
+            if (l > d) {
+              if (l > Math.PI - d) rotationSpeed *= -1
+              if (theta < thetaMan) rotationSpeed *= -1
+              this.man.body.setAngularVelocityY(rotationSpeed)
+            }
 
             /**
              * Player Move
              */
             if (this.keys.w.isDown || this.move) {
-              if (this.man.animation.current === 'idle' && !this.isJumping) this.man.animation.play('run')
+              if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run')
 
               const x = Math.sin(theta) * speed,
                 y = this.man.body.velocity.y,
@@ -260,7 +266,7 @@
 
               this.man.body.setVelocity(x, y, z)
             } else {
-              if (this.man.animation.current === 'run' && !this.isJumping) this.man.animation.play('idle')
+              if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle')
             }
 
             /**

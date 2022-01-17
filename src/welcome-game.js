@@ -218,8 +218,8 @@ class MainScene extends Scene3D {
          * Update Camera
          */
         const { top, right } = event
-        this.moveTop = top
-        this.moveRight = right
+        this.moveTop = top * 3
+        this.moveRight = right * 3
       })
       const buttonA = joystick.add.button({
         letter: 'A',
