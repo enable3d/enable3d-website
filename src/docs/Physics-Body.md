@@ -45,6 +45,10 @@ update() {
 
 These bodies do never interact with other bodies. But they fire collision events. Use them as sensory in your game. Ghost can be dynamic (4), static (5) or kinematic (6), by settings the `collisionFlags` accordingly.
 
+### Headless Physics
+
+In headless mode, make sure you call `transform` and `refresh` on the body when updating the position or rotation. See [#242](https://github.com/enable3d/enable3d/issues/242).
+
 ### Body Methods
 
 You can use a lot of method on the body (`object.body.something()`). It does not make sense listing them all here.
