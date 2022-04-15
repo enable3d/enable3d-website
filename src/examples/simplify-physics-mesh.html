@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Simplify Physics Mesh</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.1.min.js"></script>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+    </script>
+    <script src="/lib/BufferGeometryUtils.js"></script>
+    <script src="/lib/SimplifyModifier.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">The Physics Body on the left has fewer polygons than the one to the right.</div>
+    <script>
+      class MainScene extends Scene3D {
+        async create() {
+          this.warpSpeed()
+          this.camera.position.set(3, 3, 6)
+          this.physics.debug.enable()
+
+          const opacity = 0.8
+          const transparent = true
+
+          // normal duck
+          this.load.gltf('/assets/glb/Duck.glb').then(gltf => {
+            const object = gltf.scene.children[0]
+            object.position.x = 1
+            object.position.y = 1
+            object.rotation.y = -Math.PI / 2
+
+            object.traverse(child => {
+              if (child.isMesh && child.geometry) {
+                child.material.opacity = opacity
+                child.material.transparent = transparent
+              }
+            })
+
+            this.add.existing(object)
+            this.physics.add.existing(object, { shape: 'mesh' })
+          })
+
+          // duck with fewer polygons
+          this.load.gltf('/assets/glb/Duck.glb').then(gltf => {
+            const object = gltf.scene.children[0]
+            object.position.x = -1
+            object.position.y = 1
+            object.rotation.y = -Math.PI / 2
+
+            object.traverse(child => {
+              if (child.isMesh) {
+                const clone = child.clone(true)
+                clone.material.opacity = opacity
+                clone.material.transparent = transparent
+
+                child.material = child.material.clone()
+                child.material.visible = false
+
+                const modifier = new THREE.SimplifyModifier()
+                const count = Math.floor(child.geometry.attributes.position.count * 0.8) // number of vertices to remove
+                child.geometry = modifier.modify(child.geometry, count)
+
+                Promise.resolve().then(() => object.add(clone))
+              }
+            })
+
+            this.add.existing(object)
+            this.physics.add.existing(object, { shape: 'mesh' })
+          })
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
