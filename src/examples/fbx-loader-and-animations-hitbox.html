@@ -15,7 +15,9 @@
   </head>
 
   <body>
-    <div id="info-text">The cube on the left hand has a physics body.</div>
+    <div id="info-text">
+      The cube on the left hand has a physics body.<br />The cube on the right hand has no physics body.
+    </div>
     <script>
       const { enable3d, Scene3D, Canvas, THREE, ExtendedObject3D } = ENABLE3D
 
@@ -41,24 +43,42 @@
           const animations = ['Jumping', 'LookingAround', 'Running', 'BodyJabCross', 'HipHopDancing']
           const pos = { x: 0, y: 5, z: 0 }
 
+          let boxWithoutPhysics
+
           this.third.load.fbx('/assets/fbx/Idle.fbx').then(object => {
             robot.add(object)
 
-            console.log(this.third)
+            this.third.animationMixers.add(robot.anims.mixer)
 
-            this.third.animationMixers.add(robot.animation.mixer)
-
-            robot.animation.add('Idle', object.animations[0])
-            robot.animation.play('Idle')
+            robot.anims.add('Idle', object.animations[0])
+            robot.anims.play('Idle')
 
             // attach a cube to the left hand
             robot.traverse(child => {
               if (child.name === 'mixamorigLeftHandIndex1') {
+                // box with physics
                 if (!this.box) {
                   // collisionFlags 2 = kinematic
                   // collisionFlags 6 = kinematic and ghost
                   this.box = this.third.physics.add.box({ width: 1, height: 1, depth: 1, collisionFlags: 6 })
                   this.box.customParams = { child }
+                }
+              }
+              if (child.name === 'mixamorigRightHandIndex1') {
+                // box without physics
+                if (!boxWithoutPhysics) {
+                  boxWithoutPhysics = this.third.add.box({ width: 1, height: 1, depth: 1 })
+
+                  // execute this later
+                  Promise.resolve().then(() => {
+                    // get bone position
+                    const pos = new THREE.Vector3()
+                    child.getWorldPosition(pos)
+                    // copy bone position to box
+                    boxWithoutPhysics.position.copy(pos)
+                    // Attach box to bone
+                    child.attach(boxWithoutPhysics)
+                  })
                 }
               }
             })
@@ -77,7 +97,7 @@
             animations.forEach(key => {
               if (key === 'Idle') return
               this.third.load.fbx(`/assets/fbx/${key}.fbx`).then(object => {
-                robot.animation.add(key, object.animations[0])
+                robot.anims.add(key, object.animations[0])
               })
             })
 
@@ -87,7 +107,7 @@
               callback: () => {
                 const anim = Phaser.Math.RND.pick(animations)
                 console.log(`Set animation ${anim}`)
-                robot.animation.play(anim, 350)
+                robot.anims.play(anim, 350)
               }
             })
           })
