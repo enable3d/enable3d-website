@@ -16,7 +16,7 @@
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas, ExtendedObject3D } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -106,7 +106,9 @@
         update() {
           if (this.robot && this.robot.body) {
             const speed = 4
-            const rotation = this.robot.getWorldDirection(this.robot.rotation.toVector3())
+            const rotation = this.robot.getWorldDirection(
+              new THREE.Vector3()?.setFromEuler?.(this.robot.rotation) || this.robot.rotation.toVector3()
+            )
             const theta = Math.atan2(rotation.x, rotation.z)
 
             const x = Math.sin(theta) * speed,

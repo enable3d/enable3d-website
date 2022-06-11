@@ -117,7 +117,9 @@
           }
           if (this.keys.w.isDown) {
             const speed = 4
-            const rotation = this.player.getWorldDirection(this.player.rotation.toVector3())
+            const rotation = this.player.getWorldDirection(
+              new THREE.Vector3()?.setFromEuler?.(this.player.rotation) || this.player.rotation.toVector3()
+            )
             const theta = Math.atan2(rotation.x, rotation.z)
 
             const x = Math.sin(theta) * speed,
