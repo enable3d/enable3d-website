@@ -1,10 +1,8 @@
 // https://github.com/mrdoob/three.js/blob/dev/examples/js/geometries/ConvexGeometry.js
 
-// ConvexGeometry
-
 ;(function () {
   class ConvexGeometry extends THREE.BufferGeometry {
-    constructor(points) {
+    constructor(points = []) {
       super() // buffers
 
       const vertices = []
