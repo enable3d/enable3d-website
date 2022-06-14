@@ -87,9 +87,9 @@ To have more functionalities and a better compatibility, use `new ExtendedMesh()
 ```ts
 import { THREE, ExtendedMesh, ExtendedObject3D } from 'enable3d'
 
-const cube = new THREE.Mesh(geometry, material)
-// instead of
 const cube = new ExtendedMesh(geometry, material)
+// instead of
+const cube = new THREE.Mesh(geometry, material)
 
 const object = new ExtendedObject3D()
 // instead of
