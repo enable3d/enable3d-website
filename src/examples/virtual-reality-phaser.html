@@ -10,6 +10,8 @@
     <title>Virtual Reality (with Phaser)</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
+    <!-- https://github.com/immersive-web/webxr-polyfill -->
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
   </head>
@@ -36,12 +38,18 @@
         // Use updateXR as update loop in WebXR mode.
         updateXR() {
           if (this.third.webXR.isPresenting && this.move) {
-            // move in the direction of the view
-            const cam = this.third.webXR.camera
+            // move 0.02 units toward view
             const v3 = new THREE.Vector3()
             const distance = 0.02
-            cam.getWorldDirection(v3)
-            cam.position.add(v3.multiplyScalar(distance))
+            this.third.renderer.xr.getCamera().getWorldDirection(v3)
+            const pos = v3.multiplyScalar(distance)
+
+            // move xr camera
+            const offsetPosition = new THREE.Quaternion(-pos.x, -pos.y, -pos.z, 1)
+            const offsetRotation = new THREE.Quaternion()
+            const transform = new XRRigidTransform(offsetPosition, offsetRotation)
+            const teleportSpaceOffset = this.third.renderer.xr.getReferenceSpace()?.getOffsetReferenceSpace(transform)
+            if (teleportSpaceOffset) this.third.renderer.xr.setReferenceSpace(teleportSpaceOffset)
           }
         }
 

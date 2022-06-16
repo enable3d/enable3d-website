@@ -9,6 +9,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Virtual Reality</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <!-- https://github.com/immersive-web/webxr-polyfill -->
+    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js"></script>
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/enable3d/enable3d.framework.0.25.2.min.js"></script>
   </head>
@@ -27,12 +29,18 @@
 
         update() {
           if (this.webXR.isPresenting && this.move) {
-            // move in the direction of the view
-            const cam = this.webXR.camera
+            // move 0.02 units toward view
             const v3 = new THREE.Vector3()
             const distance = 0.02
-            cam.getWorldDirection(v3)
-            cam.position.add(v3.multiplyScalar(distance))
+            this.renderer.xr.getCamera().getWorldDirection(v3)
+            const pos = v3.multiplyScalar(distance)
+
+            // move xr camera
+            const offsetPosition = new THREE.Quaternion(-pos.x, -pos.y, -pos.z, 1)
+            const offsetRotation = new THREE.Quaternion()
+            const transform = new XRRigidTransform(offsetPosition, offsetRotation)
+            const teleportSpaceOffset = this.renderer.xr.getReferenceSpace()?.getOffsetReferenceSpace(transform)
+            if (teleportSpaceOffset) this.renderer.xr.setReferenceSpace(teleportSpaceOffset)
           }
         }
 
@@ -53,14 +61,21 @@
           }, 2000)
 
           const onSelectStart = () => {
+            console.log('select start')
             this.move = true
           }
 
           const onSelectEnd = () => {
+            console.log('select end')
             this.move = false
           }
 
-          const controller = this.webXR.getController(0)
+          // const controller1 = this.renderer.xr.getController(0)
+          // controller1.addEventListener('selectstart', onSelectStart)
+          // controller1.addEventListener('selectend', onSelectEnd)
+          // this.scene.add(controller1)
+
+          const controller = this.renderer.xr.getController(0)
           const controllerGrip = this.webXR.getControllerGrip ? this.webXR.getControllerGrip(0) : null
 
           controller.addEventListener('select', () => {})
