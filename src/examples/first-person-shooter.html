@@ -27,11 +27,40 @@
           this.move = { x: 0, y: 0, z: 0 }
         }
 
+        postRender() {
+          this.third.renderer.setViewport(0, 0, window.innerHeight, window.innerWidth)
+          this.third.renderer.render(this.third.scene, this.third.camera)
+
+          this.third.renderer.clearDepth()
+
+          this.third.renderer.setScissorTest(true)
+          this.third.renderer.setScissor(50, 50, 150, 100)
+          this.third.renderer.setViewport(50, 50, 150, 100)
+
+          this.third.renderer.render(this.third.scene, this.secondCamera)
+
+          this.third.renderer.setScissorTest(false)
+        }
+
         create() {
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
+
           this.third.warpSpeed('-orbitControls')
           this.third.haveSomeFun(50)
           this.third.renderer.gammaFactor = 1.5
+          this.third.camera.layers.enable(1) // enable layer 1
+
+          // second camera
+          const { width, height } = window.screen
+          console.log(width, height)
+          this.secondCamera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
+          this.third.add.existing(this.secondCamera)
+          this.third.camera.add(this.secondCamera)
+          // this.secondCamera.layers.set(1)
+
+          this.scene.scene.game.events.on('postrender', (renderer, time, delta) => {
+            this.postRender()
+          })
 
           /**
            * hashtag3d (https://www.cgtrader.com/hashtag3d)
@@ -49,6 +78,7 @@
 
             this.rifle.traverse(child => {
               if (child.isMesh) {
+                child.layers.set(1) // mesh is in layer 1
                 child.castShadow = child.receiveShadow = true
                 if (child.material) child.material.metalness = 0
               }
