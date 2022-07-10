@@ -28,7 +28,7 @@
         }
 
         postRender() {
-          this.third.renderer.setViewport(0, 0, window.innerHeight, window.innerWidth)
+          this.third.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight)
           this.third.renderer.render(this.third.scene, this.third.camera)
 
           this.third.renderer.clearDepth()
@@ -51,9 +51,7 @@
           this.third.camera.layers.enable(1) // enable layer 1
 
           // second camera
-          const { width, height } = window.screen
-          console.log(width, height)
-          this.secondCamera = new THREE.PerspectiveCamera(45, width / height, 1, 1000)
+          this.secondCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000)
           this.third.add.existing(this.secondCamera)
           this.third.camera.add(this.secondCamera)
           // this.secondCamera.layers.set(1)
