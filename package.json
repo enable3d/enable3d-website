@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/enable3d/enable3d-website#readme",
   "dependencies": {
-    "@enable3d/ammo-on-nodejs": "0.25.1",
-    "three": "0.137.4"
+    "@enable3d/ammo-on-nodejs": "^0.25.3",
+    "three": "^0.144.0"
   },
   "devDependencies": {
     "@yandeu/prettier-config": "^0.0.3",
