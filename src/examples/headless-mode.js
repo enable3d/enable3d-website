@@ -1,3 +1,7 @@
+/**
+ * TypeScript Example: https://github.com/enable3d/ammo-on-nodejs-example
+ */
+
 var _ammo = require('@enable3d/ammo-on-nodejs/ammo/ammo.js')
 const { Physics, ServerClock } = require('@enable3d/ammo-on-nodejs')
 
