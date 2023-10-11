@@ -34,7 +34,7 @@
           this.third.physics.debug.enable()
 
           // Some "native" three.js code
-          const geometry = new THREE.BoxBufferGeometry(1, 1, 1)
+          const geometry = new THREE.BoxGeometry(1, 1, 1)
           const material = new THREE.MeshLambertMaterial({ color: 0x2194ce })
           const cube = new THREE.Mesh(geometry, material)
           cube.position.set(0, 5, 0)

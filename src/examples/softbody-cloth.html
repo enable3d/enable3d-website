@@ -43,12 +43,7 @@
           const clothNumSegmentsY = clothHeight * 5
           const clothPos = new THREE.Vector3(0, 2, 2)
 
-          const clothGeometry = new THREE.PlaneBufferGeometry(
-            clothWidth,
-            clothHeight,
-            clothNumSegmentsZ,
-            clothNumSegmentsY
-          )
+          const clothGeometry = new THREE.PlaneGeometry(clothWidth, clothHeight, clothNumSegmentsZ, clothNumSegmentsY)
           clothGeometry.rotateY(Math.PI * 0.5)
           clothGeometry.translate(clothPos.x, clothPos.y + clothHeight * 0.5, clothPos.z - clothWidth * 0.5)
 

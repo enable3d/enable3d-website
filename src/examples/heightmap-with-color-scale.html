@@ -54,7 +54,7 @@
             .scale(['#003eb2', '#0952c6', '#a49463', '#867645', '#3c6114', '#5a7f32', '#8c8e7b', '#a0a28f', '#ebebeb'])
             .domain([0, 0.025, 0.1, 0.2, 0.25, 0.8, 1.3, 1.45, 1.6])
 
-          const mesh = this.third.heightMap.add(heightmap, { colorScale })
+          const mesh = this.third.heightMap.add(heightmap, { colorScale, colorSpace: 'srgb' })
           if (mesh) {
             // we position, scale, rotate etc. the mesh before adding physics to it
             mesh.scale.set(2, 2, 2)
