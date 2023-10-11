@@ -11,13 +11,13 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.3.min.js"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">(scene restarts every 5 seconds)</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -36,11 +36,17 @@
 
           // create the texture cube
           const leftRight = await this.third.load.texture('side')
+          leftRight.encoding = THREE.sRGBEncoding
+          leftRight.needUpdate = true
           // if we clone a texture, we have to manually set needsUpdate to true
           const backFront = leftRight.clone()
           backFront.needsUpdate = true
           const top = await this.third.load.texture('top')
+          top.encoding = THREE.sRGBEncoding
+          top.needUpdate = true
           const bottom = await this.third.load.texture('bottom')
+          bottom.encoding = THREE.sRGBEncoding
+          bottom.needUpdate = true
 
           const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
 

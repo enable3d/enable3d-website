@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.3.min.js"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
 
   <body>
@@ -56,10 +56,6 @@
 
           const { lights } = await this.third.warpSpeed('-ground', '-sky', '-orbitControls')
           const { hemisphereLight, ambientLight, directionalLight } = lights
-          // adjust lights
-          hemisphereLight.intensity = 0.5
-          ambientLight.intensity = 0.5
-          directionalLight.intensity = 0.5
 
           this.cams.offset = new THREE.Vector3()
 
@@ -105,8 +101,7 @@
 
           // add background image
           this.third.load.texture('sky').then(sky => {
-            // change encoding to LinearEncoding
-            sky.encoding = THREE.LinearEncoding
+            sky.encoding = THREE.sRGBEncoding
             sky.needUpdate = true
             this.third.scene.background = sky
           })
@@ -192,6 +187,8 @@
             this.robot.traverse(child => {
               if (child.isMesh) {
                 child.castShadow = child.receiveShadow = true
+                child.material.metalness = 0
+                child.material.roughness = 1
               }
             })
 

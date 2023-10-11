@@ -52,7 +52,7 @@ class MainScene extends Scene3D {
     const { lights } = await this.warpSpeed('-ground', '-orbitControls')
 
     const { hemisphereLight, ambientLight, directionalLight } = lights
-    const intensity = 0.65
+    const intensity = 1
     hemisphereLight.intensity = intensity
     ambientLight.intensity = intensity
     directionalLight.intensity = intensity

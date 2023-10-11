@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.3.min.js"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
 
   <body>
@@ -25,7 +25,6 @@
 
         init() {
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
-          this.third.renderer.outputEncoding = THREE.LinearEncoding
 
           this.selected = null
           this.mousePosition = new THREE.Vector3()
@@ -41,7 +40,7 @@
           const { hemisphereLight, ambientLight, directionalLight } = lights
           console.log(hemisphereLight.intensity, ambientLight.intensity, directionalLight.intensity)
 
-          const intensity = 0.4
+          const intensity = 1
           hemisphereLight.intensity = intensity
           ambientLight.intensity = intensity
           directionalLight.intensity = intensity

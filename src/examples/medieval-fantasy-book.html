@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
-    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.3.min.js"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
 
   <body>
@@ -42,7 +42,7 @@
 
         init() {
           this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 120 })
-          this.third.renderer.outputEncoding = THREE.LinearEncoding
+
           this.canJump = true
           this.move = false
 
@@ -54,7 +54,7 @@
           const { lights } = await this.third.warpSpeed('-ground', '-orbitControls')
 
           const { hemisphereLight, ambientLight, directionalLight } = lights
-          const intensity = 0.65
+          const intensity = 1
           hemisphereLight.intensity = intensity
           ambientLight.intensity = intensity
           directionalLight.intensity = intensity
