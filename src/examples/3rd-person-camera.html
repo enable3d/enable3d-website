@@ -41,7 +41,7 @@
         }
 
         preload() {
-          this.load.html('shelf', '/assets/glb/shelf.glb')
+          //this.load.html('shelf', '/assets/glb/shelf.glb')
         }
 
         init() {
@@ -154,7 +154,10 @@
               targetRadius: 3
             })
           })
+          
 
+
+          //load shelf
 
           this.third.load.gltf('/assets/glb/shelf.glb').then(object => {
             const shelf = object.scene.children[0]
@@ -174,28 +177,8 @@
               }
             })
 
-            /**
-             * Animations
-             */
-            this.third.animationMixers.add(this.shelf.anims.mixer)
-            object.animations.forEach(animation => {
-              if (animation.name) {
-                /**
-                 * This is a hack, because I could not adjust the scale with this.shelf.scale.set()
-                 * This is not a bug from enable3d, this is how the assets a made :/
-                 */
-                animation.tracks.forEach(track => {
-                  if (/(scale|position)/.test(track.name)) {
-                    const newValues = track.values.map(v => v * 1)
-                    track.values = newValues
-                  }
-                })
-
-                this.shelf.anims.add(animation.name, animation)
-              }
-            })
             this.shelf.anims.play('idle')
-            this.shelf.position.set(0, 2, 8)
+            this.shelf.position.set(0, 1, 0)
 
             /**
              * Add the player to the scene with a body
