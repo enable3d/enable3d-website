@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
+    <script src="/lib/OrbitControls.js"></script>
+
   </head>
 
   <body>
@@ -40,21 +42,111 @@
           super({ key: 'MainScene' })
         }
 
+        
+
         preload() {
           //this.load.html('shelf', '/assets/glb/shelf.glb')
         }
 
         init() {
-          this.accessThirdDimension()
+
+          // initialize physics
+      
+
           this.canJump = true
           this.isJumping = false
           this.move = false
 
           this.moveTop = 0
           this.moveRight = 0
+
+
+          //jenga game
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
+          this.third.renderer.outputEncoding = THREE.LinearEncoding
+
+          this.selected = null
+          this.mousePosition = new THREE.Vector3()
+          this.blockOffset = new THREE.Vector3()
+          this.prev == { x: 0, y: 0 }
         }
 
-        create() {
+        async create() {
+
+
+          //jenga game
+
+
+          const { lights } = await this.third.warpSpeed('-orbitControls')
+
+          const { hemisphereLight, ambientLight, directionalLight } = lights
+          console.log(hemisphereLight.intensity, ambientLight.intensity, directionalLight.intensity)
+
+          const intensity = 0.4
+          hemisphereLight.intensity = intensity
+          ambientLight.intensity = intensity
+          directionalLight.intensity = intensity
+
+          this.third.camera.position.set(-8, 8, 8)
+          this.third.camera.lookAt(0, 2, 0)
+
+          const blocks = []
+
+          const addTower = () => {
+            const material = this.third.add.material({ lambert: { color: 0xa04000 } })
+
+            // for (let i = 0; i < 1; i++) {
+            //   if (i % 2 == 0) {
+                blocks.push(
+                  this.third.physics.add.box({ y: 0.85, z: -1.3, width: 1, height: 1 }, { custom: material })
+                )
+              // } else {
+                blocks.push(
+                  this.third.physics.add.box({ y: 0.85, x: -1.3, depth: 0.2, height: 0.2, width: 0.2 }, { custom: material })
+                 
+                )
+              // }
+            // }
+            blocks.forEach(block => {
+              block.body.setFriction(0.8)
+            })
+          }
+          addTower()
+
+          const raycaster = new THREE.Raycaster()
+
+          this.input.on('pointerdown', () => {
+            const { x, y } = this.getPointer()
+
+            raycaster.setFromCamera({ x, y }, this.third.camera)
+
+            const intersection = raycaster.intersectObjects(blocks)
+
+            if (intersection.length > 0) {
+              const block = intersection[0].object
+              this.selected = block
+              this.selected?.body.setCollisionFlags(2)
+
+              this.mousePosition.copy(intersection[0].point)
+              this.blockOffset.subVectors(this.selected.position, this.mousePosition)
+            }
+
+            this.prev = { x, y }
+          })
+
+          this.input.on('pointerup', () => {
+            this.selected?.body.setCollisionFlags(0)
+            this.selected = null
+          })
+
+
+
+
+
+
+
+
+
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
           // this.third.ground.body.setFriction(1)
 
@@ -314,9 +406,43 @@
           
         }
 
+        getPointer() {
+          // calculate mouse position in normalized device coordinates
+          // (-1 to +1) for both components
+          const pointer = this.input.activePointer
+          const x = (pointer.x / this.cameras.main.width) * 2 - 1
+          const y = -(pointer.y / this.cameras.main.height) * 2 + 1
+          return { x, y }
+        }
+
         
 
         update(time, delta) {
+
+          //jenga
+
+          if (this.selected?.body.getCollisionFlags() === 2) {
+            const { x, y } = this.getPointer()
+
+            const speed = 5
+            const movementX = (x - this.prev.x) * speed
+            const movementZ = (y - this.prev.y) * -speed
+
+            // since the scene has a rotation of -Math.PI / 4,
+            // we adjust the movement by -Math.PI / 4
+            const v3 = new THREE.Vector3(movementX, 0, movementZ)
+            v3.applyAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4)
+
+            this.selected.position.x = this.cart.position.x
+            this.selected.position.y = this.cart.position.y + 5
+            this.selected.position.z = this.cart.position.z
+
+            
+
+            this.selected.body.needUpdate = true
+
+            this.prev = { x, y }
+          }
 
 
 
