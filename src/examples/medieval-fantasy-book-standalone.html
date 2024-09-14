@@ -176,15 +176,7 @@
             /**
              * Add Pointer Lock and Pointer Drag
              */
-            if (!isTouchDevice) {
-              let pl = new PointerLock(this.canvas)
-              let pd = new PointerDrag(this.canvas)
-              pd.onMove(delta => {
-                if (pl.isLocked()) {
-                  this.controls.update(delta.x * 2, delta.y * 2)
-                }
-              })
-            }
+          
           }
 
           addBook()
@@ -223,7 +215,7 @@
           /**
            * Add joystick
            */
-          if (isTouchDevice) {
+          
             const joystick = new JoyStick()
             const axis = joystick.add.axis({
               styles: { left: 35, bottom: 35, size: 100 }
@@ -247,7 +239,7 @@
             })
             buttonB.onClick(() => (this.move = true))
             buttonB.onRelease(() => (this.move = false))
-          }
+          
 
           setTimeout(() => {
             const placeholder = document.getElementById('welcome-game-placeholder')
