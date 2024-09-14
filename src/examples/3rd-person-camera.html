@@ -41,7 +41,7 @@
         }
 
         preload() {
-          //this.load.html('bridge', '/assets/svg/bridge.svg')
+          this.load.html('shelf', '/assets/glb/shelf.glb')
         }
 
         init() {
@@ -77,6 +77,12 @@
           bridge.body.setAngularFactor(0, 0, 0)
           bridge.body.setLinearFactor(0, 0, 0)
           bridge.body.setFriction(0.8)
+
+
+
+
+          //shelf
+          
 
           /**
            * Create Player
@@ -150,6 +156,69 @@
           })
 
 
+          this.third.load.gltf('/assets/glb/shelf.glb').then(object => {
+            const shelf = object.scene.children[0]
+
+            this.shelf = new ExtendedObject3D()
+            this.shelf.name = 'shelf'
+            this.shelf.rotateY(Math.PI + 0.1) // a hack
+            this.shelf.add(shelf)
+            // add shadow
+            this.shelf.traverse(child => {
+              if (child.isMesh) {
+                child.shape = 'convex'
+                child.castShadow = child.receiveShadow = true
+                // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
+                child.material.roughness = 1
+                child.material.metalness = 0
+              }
+            })
+
+            /**
+             * Animations
+             */
+            this.third.animationMixers.add(this.shelf.anims.mixer)
+            object.animations.forEach(animation => {
+              if (animation.name) {
+                /**
+                 * This is a hack, because I could not adjust the scale with this.shelf.scale.set()
+                 * This is not a bug from enable3d, this is how the assets a made :/
+                 */
+                animation.tracks.forEach(track => {
+                  if (/(scale|position)/.test(track.name)) {
+                    const newValues = track.values.map(v => v * 1)
+                    track.values = newValues
+                  }
+                })
+
+                this.shelf.anims.add(animation.name, animation)
+              }
+            })
+            this.shelf.anims.play('idle')
+            this.shelf.position.set(0, 2, 8)
+
+            /**
+             * Add the player to the scene with a body
+             */
+            this.third.add.existing(this.shelf)
+            this.third.physics.add.existing(this.shelf, {
+              shape: 'capsule',
+              radius: 0.2,
+              height: 0.6,
+              offset: { y: -0.55 }
+            })
+            this.shelf.body.setFriction(0.8)
+            this.shelf.body.setAngularFactor(0, 0, 0)
+
+          })
+
+
+
+
+
+
+
+
           this.third.load.gltf('/assets/glb/shopping_cart.glb').then(object => {
             const cart = object.scene.children[0]
 
@@ -204,7 +273,7 @@
             this.cart.body.setFriction(0.8)
             this.cart.body.setAngularFactor(0, 0, 0)
 
-            
+
             /**
              * Add 3rd Person Controls
              */
