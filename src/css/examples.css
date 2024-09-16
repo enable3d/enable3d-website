@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -23,4 +26,27 @@ div#info-text {
 
 div#info-text p {
   margin-bottom: 16px;
+}
+
+.popup {
+  width: 400px;
+  background: #ffffff;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  text-align: center;
+  padding: 0 30px 60px;
+  color:#333;
+  visibility: hidden;
+  transition: all 0.4s ease-in-out;
+}
+
+.open-popup{
+  visibility: visible;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(1);
 }
