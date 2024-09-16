@@ -81,12 +81,12 @@
 
 
           const redBox = this.third.physics.add.box(
-            { name: 'redBox', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
+            { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
             { lambert: { color: 0xff0000 } }
           )
           redBox.body.setFriction(10)
           redBox.body.setCollisionFlags(2)
-
+          console.log(redBox.name)
          
 
           //jenga game
@@ -113,11 +113,11 @@
             // for (let i = 0; i < 1; i++) {
             //   if (i % 2 == 0) {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.85, z: -1.3, width: 1, height: 1 }, { custom: material })
+                  this.third.physics.add.box({ y: 0.8 , x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
                 )
               // } else {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material }, {name: "Cereal"})
+                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
                  
                 )
               // }
@@ -125,7 +125,7 @@
             blocks.forEach(block => {
               block.body.setFriction(0.8)
               block.body.setCollisionFlags(2)
-              console.log(block)
+              console.log(block.name)
             })
           }
           addTower()
