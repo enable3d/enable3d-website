@@ -19,22 +19,7 @@
 
     <script>
       //let popup = document.getElementById("popup");
-      function openPopup(){
-          popup.classList.add('open-popup')
-        }
-
-        function closePopup(){
-          popup.classList.remove('open-popup')
-          popup.classList.add('close-popup')
-
-          // this.selected.position.x = this.cart.position.x
-          //   this.selected.position.y = this.cart.position.y + 5
-          //   this.selected.position.z = this.cart.position.z
-
-        
-
-            
-        }
+      
       const {
         enable3d,
         Scene3D,
@@ -132,7 +117,7 @@
                 )
               // } else {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
+                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material }, {name: "Cereal"})
                  
                 )
               // }
@@ -140,10 +125,11 @@
             blocks.forEach(block => {
               block.body.setFriction(0.8)
               block.body.setCollisionFlags(2)
+              console.log(block)
             })
           }
           addTower()
-
+          
           const raycaster = new THREE.Raycaster()
 
           this.input.on('pointerdown', () => {
@@ -419,6 +405,8 @@
             // this.selected.position.y = this.cart.position.y + 5
             // this.selected.position.z = this.cart.position.z
 
+            console.log(this.selected.body)
+
             
 
             this.selected.body.needUpdate = true
@@ -557,12 +545,39 @@
       window.addEventListener('load', () => {
         enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
       })
+
+
+      function openPopup(){
+        console.log("open button")
+
+          popup.classList.add('open-popup')
+        }
+
+        function closePopup(){
+          console.log("close button")
+
+          popup.classList.remove('open-popup')
+          //popup.classList.add('close-popup')
+
+          // this.selected.position.x = this.cart.position.x
+          //   this.selected.position.y = this.cart.position.y + 5
+          //   this.selected.position.z = this.cart.position.z
+            
+        }
+
+        // const closeButton = document.querySelector('.close-btn')
+
+        //  closeButton.onClick = () => {
+        //   popup.classList.remove('open-popup')
+        // }
     </script>
+
+
 
 <div class="popup" id="popup">
   <h2>Apples</h2>
   <p>Cost: $5</p>
-  <button type="button" onclick="closePopup">Add to cart</button>
+  <button class="close-btn" type="button" onclick="closePopup">Add to cart</button>
   </div>
   </body>
 </html>
