@@ -25,9 +25,11 @@
 
         function closePopup(){
           popup.classList.remove('open-popup')
-          this.selected.position.x = this.cart.position.x
-            this.selected.position.y = this.cart.position.y + 5
-            this.selected.position.z = this.cart.position.z
+          popup.classList.add('close-popup')
+
+          // this.selected.position.x = this.cart.position.x
+          //   this.selected.position.y = this.cart.position.y + 5
+          //   this.selected.position.z = this.cart.position.z
 
         
 
@@ -92,15 +94,15 @@
 
         async create() {
 
-          const box1 = this.third.add.box({x: 10, y: 1 }, { lambert: { color: 0xff0000 } })
-
-          this.third.physics.add.existing(box1)
 
           const redBox = this.third.physics.add.box(
-            { name: 'redBox', y: 10, z: 15, width: 2, height: 2 },
+            { name: 'redBox', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
             { lambert: { color: 0xff0000 } }
           )
           redBox.body.setFriction(10)
+          redBox.body.setCollisionFlags(2)
+
+         
 
           //jenga game
 
@@ -130,13 +132,14 @@
                 )
               // } else {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.85, x: -1.3, depth: 0.1, height: 0.1, width: 0.1 }, { custom: material })
+                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
                  
                 )
               // }
             // }
             blocks.forEach(block => {
               block.body.setFriction(0.8)
+              block.body.setCollisionFlags(2)
             })
           }
           addTower()
@@ -178,25 +181,10 @@
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
           // this.third.ground.body.setFriction(1)
 
+
+
           // this.third.physics.debug.enable()
 
-          /**
-           * Create bridge
-           */
-          const svg = this.cache.html.get('bridge')
-          const bridgeShape = this.third.transform.fromSVGtoShape(svg)
-          const scale = 35
-          const bridge = this.third.add.extrude({
-            shape: bridgeShape[0],
-            depth: 120
-          })
-          bridge.scale.set(1 / scale, 1 / -scale, 1 / scale)
-          bridge.shape = 'concave'
-          bridge.position.setY(bridge.geometry.boundingBox.max.y / scale)
-          this.third.physics.add.existing(bridge)
-          bridge.body.setAngularFactor(0, 0, 0)
-          bridge.body.setLinearFactor(0, 0, 0)
-          bridge.body.setFriction(0.8)
 
 
 
@@ -277,43 +265,7 @@
           
 
 
-          //load shelf
-
-          this.third.load.gltf('/assets/glb/shelf.glb').then(object => {
-            const shelf = object.scene.children[0]
-
-            this.shelf = new ExtendedObject3D()
-            this.shelf.name = 'shelf'
-            this.shelf.rotateY(Math.PI + 0.1) // a hack
-            this.shelf.add(shelf)
-            // add shadow
-            this.shelf.traverse(child => {
-              if (child.isMesh) {
-                child.shape = 'convex'
-                child.castShadow = child.receiveShadow = true
-                // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
-                child.material.roughness = 1
-                child.material.metalness = 0
-              }
-            })
-
-            this.shelf.anims.play('idle')
-            this.shelf.position.set(0, 1, 0)
-
-            /**
-             * Add the player to the scene with a body
-             */
-            this.third.add.existing(this.shelf)
-            this.third.physics.add.existing(this.shelf, {
-              shape: 'capsule',
-              radius: 0.2,
-              height: 0.6,
-              offset: { y: -0.55 }
-            })
-            this.shelf.body.setFriction(0.8)
-            this.shelf.body.setAngularFactor(0, 0, 0)
-
-          })
+          
 
 
 
