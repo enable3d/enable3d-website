@@ -86,6 +86,7 @@
 
 
 
+         
           
           // create the texture cube
           const leftRight = await this.third.load.texture('side')
@@ -108,7 +109,10 @@
 
 
           
-
+ // simple sphere
+ const sphere0 = this.third.physics.add.sphere({ x: -9, y: 1 })
+ sphere0.body.setFriction(10)
+          sphere0.body.setCollisionFlags(2)
 
           const redBox = this.third.physics.add.box(
             { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
@@ -188,7 +192,10 @@
               this.mousePosition.copy(intersection[0].point)
               this.blockOffset.subVectors(this.selected.position, this.mousePosition)
 
-              console.log(block)
+              
+
+              console.log(block.name)
+              //openPopup()
             }
 
             this.prev = { x, y }
@@ -441,12 +448,10 @@
             // we adjust the movement by -Math.PI / 4
             const v3 = new THREE.Vector3(movementX, 0, movementZ)
             v3.applyAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4)
-            openPopup()
-            // this.selected.position.x = this.cart.position.x
-            // this.selected.position.y = this.cart.position.y + 5
-            // this.selected.position.z = this.cart.position.z
+            this.selected.position.x = this.cart.position.x
+            this.selected.position.y = this.cart.position.y + 2
+            this.selected.position.z = this.cart.position.z
 
-            console.log(this.selected.body.name)
 
             
 
