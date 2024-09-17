@@ -54,7 +54,13 @@
 
         init() {
 
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
 
+
+          this.third.load.preload('grass', '/assets/img/grass.jpg')
+          this.third.load.preload('side', '/assets/img/box-side.png')
+          this.third.load.preload('top', '/assets/img/box-top.png')
+          this.third.load.preload('bottom', '/assets/img/box-bottom.png')
 
           // initialize physics
       
@@ -68,7 +74,6 @@
 
 
           //jenga game
-          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
           this.third.renderer.outputEncoding = THREE.LinearEncoding
 
           this.selected = null
@@ -78,6 +83,31 @@
         }
 
         async create() {
+
+
+
+          
+          // create the texture cube
+          const leftRight = await this.third.load.texture('side')
+          // if we clone a texture, we have to manually set needsUpdate to true
+          const backFront = leftRight.clone()
+          backFront.needsUpdate = true
+          const top = await this.third.load.texture('top')
+          const bottom = await this.third.load.texture('bottom')
+
+          const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
+
+          textureCube.texture.front.repeat.set(4, 1)
+          textureCube.texture.back.repeat.set(4, 1)
+
+          textureCube.texture.left.repeat.set(1, 1)
+          textureCube.texture.right.repeat.set(1, 1)
+
+          // add the texture cube's materials as a custom material
+          this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
+
+
+          
 
 
           const redBox = this.third.physics.add.box(
@@ -117,15 +147,26 @@
                 )
               // } else {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
+
+               
+
+          this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
+
+        
+
                  
                 )
               // }
             // }
+
+            
+
             blocks.forEach(block => {
               block.body.setFriction(0.8)
               block.body.setCollisionFlags(2)
               console.log(block.name)
+
+             
             })
           }
           addTower()
