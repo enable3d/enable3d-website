@@ -97,14 +97,14 @@
 
           const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
 
-          textureCube.texture.front.repeat.set(4, 1)
-          textureCube.texture.back.repeat.set(4, 1)
+          // textureCube.texture.front.repeat.set(4, 1)
+          // textureCube.texture.back.repeat.set(4, 1)
 
-          textureCube.texture.left.repeat.set(1, 1)
-          textureCube.texture.right.repeat.set(1, 1)
+          // textureCube.texture.left.repeat.set(1, 1)
+          // textureCube.texture.right.repeat.set(1, 1)
 
           // add the texture cube's materials as a custom material
-          this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
+          //this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
 
 
           
@@ -143,14 +143,14 @@
             // for (let i = 0; i < 1; i++) {
             //   if (i % 2 == 0) {
                 blocks.push(
-                  this.third.physics.add.box({ y: 0.8 , x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
+                  this.third.physics.add.box({ y: 0.8 , x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: textureCube.materials })
                 )
               // } else {
                 blocks.push(
 
                
 
-          this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: material })
+          this.third.physics.add.box({ y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: textureCube.materials })
 
         
 
