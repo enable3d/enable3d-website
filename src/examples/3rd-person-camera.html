@@ -109,10 +109,7 @@
 
 
           
- // simple sphere
- const sphere0 = this.third.physics.add.sphere({ x: -9, y: 1 })
- sphere0.body.setFriction(10)
-          sphere0.body.setCollisionFlags(2)
+ 
 
           const redBox = this.third.physics.add.box(
             { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
@@ -152,7 +149,9 @@
               // } else {
                 blocks.push(
 
-               
+               // simple sphere
+ this.third.physics.add.sphere({name: 'Watermellon', x: -0.5, y: 0.65, z:1, radius: 0.1 }),
+ 
 
           this.third.physics.add.box({name: 'Cereal box', y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: textureCube.materials })
 
@@ -195,7 +194,7 @@
               
 
               console.log(block.name)
-              //openPopup()
+              openPopup()
             }
 
             this.prev = { x, y }
@@ -599,8 +598,8 @@
           popup.classList.add('open-popup')
         }
 
-        function closePopup(){
-          console.log("close button")
+        function addToCart(){
+          console.log("Add to cart")
 
           popup.classList.remove('open-popup')
           //popup.classList.add('close-popup')
@@ -623,7 +622,9 @@
 <div class="popup" id="popup">
   <h2>Apples</h2>
   <p>Cost: $5</p>
-  <button class="close-btn" type="button" onclick="closePopup">Add to cart</button>
+  <button type="button" onclick="addToCart">Add to cart</button>
+  <button class="close-btn" type="button" onclick="closePopup">Cancel</button>
+
   </div>
   </body>
 </html>
