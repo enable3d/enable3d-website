@@ -8,18 +8,19 @@
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <link rel="stylesheet" href="/css/cart.css?ver=1.0.0" />
+
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
     <script src="/lib/OrbitControls.js"></script>
-
   </head>
 
   <body>
-
+    
 
     <script>
       //let popup = document.getElementById("popup");
-      
+
       const {
         enable3d,
         Scene3D,
@@ -46,16 +47,12 @@
           super({ key: 'MainScene' })
         }
 
-        
-
         preload() {
           //this.load.html('shelf', '/assets/glb/shelf.glb')
         }
 
         init() {
-
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
-
 
           this.third.load.preload('grass', '/assets/img/grass.jpg')
           this.third.load.preload('side', '/assets/img/box-side.png')
@@ -63,7 +60,6 @@
           this.third.load.preload('bottom', '/assets/img/box-bottom.png')
 
           // initialize physics
-      
 
           this.canJump = true
           this.isJumping = false
@@ -71,7 +67,6 @@
 
           this.moveTop = 0
           this.moveRight = 0
-
 
           //jenga game
           this.third.renderer.outputEncoding = THREE.LinearEncoding
@@ -83,11 +78,6 @@
         }
 
         async create() {
-
-
-
-         
-          
           // create the texture cube
           const leftRight = await this.third.load.texture('side')
           // if we clone a texture, we have to manually set needsUpdate to true
@@ -107,21 +97,15 @@
           // add the texture cube's materials as a custom material
           //this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
 
-
-          
- 
-
           const redBox = this.third.physics.add.box(
-            { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1},
+            { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1 },
             { lambert: { color: 0xff0000 } }
           )
           redBox.body.setFriction(10)
           redBox.body.setCollisionFlags(2)
           console.log(redBox.name)
-         
 
           //jenga game
-
 
           const { lights } = await this.third.warpSpeed('-orbitControls')
 
@@ -143,37 +127,33 @@
 
             // for (let i = 0; i < 1; i++) {
             //   if (i % 2 == 0) {
-                blocks.push(
-                  this.third.physics.add.box({name: 'redBox1', y: 0.8 , x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: textureCube.materials })
-                )
-              // } else {
-                blocks.push(
+            blocks.push(
+              this.third.physics.add.box(
+                { name: 'redBox1', y: 0.8, x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
+                { custom: textureCube.materials }
+              )
+            )
+            // } else {
+            blocks.push(
+              // simple sphere
+              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }),
 
-               // simple sphere
- this.third.physics.add.sphere({name: 'Watermellon', x: -0.5, y: 0.65, z:1, radius: 0.1 }),
- 
-
-          this.third.physics.add.box({name: 'Cereal box', y: 0.8 , x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 }, { custom: textureCube.materials })
-
-        
-
-                 
-                )
-              // }
+              this.third.physics.add.box(
+                { name: 'Cereal box', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
+                { custom: textureCube.materials }
+              )
+            )
             // }
-
-            
+            // }
 
             blocks.forEach(block => {
               block.body.setFriction(0.8)
               block.body.setCollisionFlags(2)
               console.log(block.name)
-
-             
             })
           }
           addTower()
-          
+          const cart = []
           const raycaster = new THREE.Raycaster()
 
           this.input.on('pointerdown', () => {
@@ -191,9 +171,9 @@
               this.mousePosition.copy(intersection[0].point)
               this.blockOffset.subVectors(this.selected.position, this.mousePosition)
 
-              
+              cart.push(block.name)
+              console.log(cart)
 
-              console.log(block.name)
               openPopup()
             }
 
@@ -205,27 +185,12 @@
             this.selected = null
           })
 
-
-
-
-
-
-
-
-
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
           // this.third.ground.body.setFriction(1)
 
-
-
           this.third.physics.debug.enable()
 
-
-
-
-
           //shelf
-          
 
           /**
            * Create Player
@@ -297,17 +262,6 @@
               targetRadius: 3
             })
           })
-          
-
-
-          
-
-
-
-
-
-
-
 
           this.third.load.gltf('/assets/glb/shopping_cart.glb').then(object => {
             const cart = object.scene.children[0]
@@ -361,7 +315,6 @@
             this.cart.body.setFriction(0.8)
             this.cart.body.setAngularFactor(0, 0, 0)
 
-
             /**
              * Add 3rd Person Controls
              */
@@ -396,27 +349,26 @@
           /**
            * Add joystick
            */
-        
-            const joystick = new JoyStick()
-            const axis = joystick.add.axis({
-              styles: { left: 150, bottom: 150, size: 100 }
-            })
-            axis.onMove(event => {
-              /**
-               * Update Camera
-               */
-              const { top, right } = event
-              this.moveTop = top * 3
-              this.moveRight = right * 3
-            })
-           
-            const buttonB = joystick.add.button({
-              letter: '',
-              styles: { right: 10, bottom: 35, size: 80 }
-            })
-            buttonB.onClick(() => (this.move = true))
-            buttonB.onRelease(() => (this.move = false))
-          
+
+          const joystick = new JoyStick()
+          const axis = joystick.add.axis({
+            styles: { left: 150, bottom: 150, size: 100 }
+          })
+          axis.onMove(event => {
+            /**
+             * Update Camera
+             */
+            const { top, right } = event
+            this.moveTop = top * 3
+            this.moveRight = right * 3
+          })
+
+          const buttonB = joystick.add.button({
+            letter: '',
+            styles: { right: 10, bottom: 35, size: 80 }
+          })
+          buttonB.onClick(() => (this.move = true))
+          buttonB.onRelease(() => (this.move = false))
         }
 
         getPointer() {
@@ -428,12 +380,7 @@
           return { x, y }
         }
 
-        
-
-        
-
         update(time, delta) {
-
           //jenga
 
           if (this.selected?.body.getCollisionFlags() === 2) {
@@ -451,18 +398,10 @@
             this.selected.position.y = this.cart.position.y + 2
             this.selected.position.z = this.cart.position.z
 
-
-            
-
             this.selected.body.needUpdate = true
 
             this.prev = { x, y }
           }
-
-
-
-
-
 
           if (this.man && this.man.body && this.controls && this.controls.update) {
             /**
@@ -515,7 +454,6 @@
             }
           }
 
-
           if (this.cart && this.cart.body && this.controls && this.controls.update) {
             /**
              * Update Controls
@@ -566,11 +504,6 @@
               this.jump()
             }
           }
-
-
-
-
-
         }
       }
 
@@ -591,40 +524,85 @@
         enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
       })
 
+      function openPopup() {
+        console.log('open button')
 
-      function openPopup(){
-        console.log("open button")
+        popup.classList.add('open-popup')
+      }
 
-          popup.classList.add('open-popup')
-        }
+      function addToCart() {
+        console.log('Add to cart')
 
-        function addToCart(){
-          console.log("Add to cart")
+        popup.classList.remove('open-popup')
+        //popup.classList.add('close-popup')
 
-          popup.classList.remove('open-popup')
-          //popup.classList.add('close-popup')
+        // this.selected.position.x = this.cart.position.x
+        //   this.selected.position.y = this.cart.position.y + 5
+        //   this.selected.position.z = this.cart.position.z
+      }
 
-          // this.selected.position.x = this.cart.position.x
-          //   this.selected.position.y = this.cart.position.y + 5
-          //   this.selected.position.z = this.cart.position.z
-            
-        }
+      // const closeButton = document.querySelector('.close-btn')
 
-        // const closeButton = document.querySelector('.close-btn')
-
-        //  closeButton.onClick = () => {
-        //   popup.classList.remove('open-popup')
-        // }
+      //  closeButton.onClick = () => {
+      //   popup.classList.remove('open-popup')
+      // }
     </script>
 
+    <div class="popup" id="popup">
+      <h2>Apples</h2>
+      <p>Cost: $5</p>
+      <button type="button" onclick="addToCart">Add to cart</button>
+      <button class="close-btn" type="button" onclick="closePopup">Cancel</button>
+    </div>
 
 
-<div class="popup" id="popup">
-  <h2>Apples</h2>
-  <p>Cost: $5</p>
-  <button type="button" onclick="addToCart">Add to cart</button>
-  <button class="close-btn" type="button" onclick="closePopup">Cancel</button>
 
-  </div>
+
+
+
+    <div class="container"></div>
+      <header>
+        <div class="icon-cart">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span>0</span>
+        </div>
+      </header>
+
+      <div class="listProduct">
+        <div class="item">
+          <img src="" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <div class="cartTab">
+
+      <h1>Shopping Cart</h1>
+      <div class="listCart">
+
+
+      </div>
+
+      <div class="btn">
+        <button class="close">Close</button>
+        <button class="checkOut"> Check Out</button>
+
+      </div>
+    </div>
+
+    <script src="/src/js/cart.js"></script>
   </body>
 </html>

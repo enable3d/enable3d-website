@@ -56,3 +56,14 @@ div#info-text p {
   top: 50%;
   transform: translate(-50%, -50%) scale(0.1);
 }
+
+.cart {
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  position: absolute;
+  top: 10%;
+  left: 95%;
+  text-align: center;
+  transition: all 0.4s ease-in-out;
+}

@@ -1,0 +1,55 @@
+body{
+    font-family:'Courier New', Courier, monospace;
+    margin: 0;
+}
+
+.container{
+    width: 900px;
+    max-width: 90vw;
+    margin: auto;
+    text-align: center;
+    position: fixed;
+    
+}
+
+svg{
+    width: 30px;
+    position: fixed;
+}
+
+header{
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding: 20px 0;
+    position: fixed;
+
+}
+
+header .icon-cart span{
+    display: flex;
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    justify-content: center;
+    align-items: center;
+    color:#fff;
+    border-radius: 50%;
+    position: fixed;
+    top: 4%;
+    right: 2px;
+}
+
+.cartTab{
+    width: 400px;
+    background-color: #353432;
+    color: #eee;
+    position: fixed;
+    inset: 0 0 0 auto;
+    display: grid;
+    grid-template-rows: 70px 1fr 70px;
+
+
+}
+
+
