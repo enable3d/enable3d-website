@@ -14,17 +14,12 @@ body{
 
 svg{
     width: 30px;
+    left: 90%;
+    top:1.5%;
     position: fixed;
 }
 
-header{
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    padding: 20px 0;
-    position: fixed;
 
-}
 
 header .icon-cart span{
     display: flex;
@@ -42,34 +37,47 @@ header .icon-cart span{
 
 .cartTab{
     width: 300px;
-    background-color: #353432;
+    background-color: #35343200;
     color: #eee;
     position: fixed;
+    inset: 0 -400px 0 auto;
+
+
+}
+
+body .showCart .cartTab{
     inset: 0 0 0 auto;
-    display: grid;
-    grid-template-rows: 70px 1fr 70px;
-
-
 }
 
-.cartTab h1{
-    padding: 20px;
-    margin: 0;
-    font-weight: 300;
+body.showCart
+
+.cartTab .listCart .item img{
+    width: 100%;
 }
 
-.cartTab .btn{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-
+.cartTab .listCart .item{
+    align-items: center;
 }
 
-.cartTab .btn button{
-    background-color: aqua;
-    border: none;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 500;
-    cursor: pointer;
+.listCart .quantity span{
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-color: #eee;
+    color: #555;
+    border-radius: 50%;
 }
+
+.listCart{
+    overflow: auto;
+}
+
+.listCart::-webkit-scrollbar{
+    width: 0;
+}
+
+
+
+
 
 

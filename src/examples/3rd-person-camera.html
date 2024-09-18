@@ -13,6 +13,7 @@
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
     <script src="/lib/OrbitControls.js"></script>
+    <script src="/src/js/cart.js"></script>
   </head>
 
   <body>
@@ -590,19 +591,36 @@
 
     <div class="cartTab">
 
-      <h1>Shopping Cart</h1>
+      <p>Shopping Cart</p>
       <div class="listCart">
+<div class="item">
+  <div class="image">
+    <img src="/src/img/enable3d-logo-square.png" alt="">
 
+  </div>
+  <div class="name">
+    Name
+  </div>
+
+  <div class="totalPrice">
+    $0
+  </div>
+
+  <div class="quantity">
+    <span class="minus">-</span>
+    <span>1</span>
+    <span class="plus">+</span>
+  </div>
+</div>
 
       </div>
 
       <div class="btn">
         <button class="close">Close</button>
-        <button class="checkOut"> Check Out</button>
 
       </div>
     </div>
 
-    <script src="/src/js/cart.js"></script>
+   
   </body>
 </html>
