@@ -41,7 +41,7 @@ header .icon-cart span{
 }
 
 .cartTab{
-    width: 400px;
+    width: 300px;
     background-color: #353432;
     color: #eee;
     position: fixed;
@@ -50,6 +50,26 @@ header .icon-cart span{
     grid-template-rows: 70px 1fr 70px;
 
 
+}
+
+.cartTab h1{
+    padding: 20px;
+    margin: 0;
+    font-weight: 300;
+}
+
+.cartTab .btn{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+}
+
+.cartTab .btn button{
+    background-color: aqua;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 500;
+    cursor: pointer;
 }
 
 
