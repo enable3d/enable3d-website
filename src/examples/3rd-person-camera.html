@@ -60,6 +60,8 @@
           this.third.load.preload('top', '/assets/img/box-top.png')
           this.third.load.preload('bottom', '/assets/img/box-bottom.png')
 
+          this.third.load.preload('watermellon', '/assets/img/watermellontexture.jpg')
+
           // initialize physics
 
           this.canJump = true
@@ -79,6 +81,9 @@
         }
 
         async create() {
+
+          //create texture watermellon
+          const watermellonTexture = await this.third.load.texture('watermellon')
           // create the texture cube
           const leftRight = await this.third.load.texture('side')
           // if we clone a texture, we have to manually set needsUpdate to true
@@ -88,6 +93,9 @@
           const bottom = await this.third.load.texture('bottom')
 
           const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
+
+          const textureWatermellon = this.third.misc.textureCube([watermellonTexture])
+
 
           // textureCube.texture.front.repeat.set(4, 1)
           // textureCube.texture.back.repeat.set(4, 1)
@@ -137,7 +145,7 @@
             // } else {
             blocks.push(
               // simple sphere
-              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }),
+              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }, {custom: textureWatermellon.materials}),
 
               this.third.physics.add.box(
                 { name: 'Cereal box', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
@@ -183,6 +191,8 @@
 
           this.input.on('pointerup', () => {
             this.selected?.body.setCollisionFlags(0)
+            this.selected?.body.setGravity(0, -5, 0)
+
             this.selected = null
           })
 
@@ -303,14 +313,14 @@
               }
             })
             this.cart.anims.play('idle')
-            this.cart.position.set(0, 2, 8)
+            this.cart.position.set(0.5, 2, 8)
 
             /**
              * Add the player to the scene with a body
              */
             this.third.add.existing(this.cart)
             this.third.physics.add.existing(this.cart, {
-              shape: 'convex',
+              shape: 'concave',
               offset: { y: 0 }
             })
             this.cart.body.setFriction(0.8)

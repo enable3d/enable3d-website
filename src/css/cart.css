@@ -40,8 +40,8 @@ header .icon-cart span{
     background-color: #35343200;
     color: #eee;
     position: fixed;
-    inset: 0 -400px 0 auto;
-
+    inset: 0 0 0 auto;
+    left: 80%;
 
 }
 

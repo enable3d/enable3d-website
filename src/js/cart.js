@@ -6,3 +6,9 @@ iconCart.addEventListener('click', ()=> {
     body.classList.toggle('showCart')
     console.log("clicked")
 })
+
+closeCart.addEventListener('click', () =>{
+    body.classList.toggle('showCart')
+    console.log("clicked")
+
+})
