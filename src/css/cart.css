@@ -4,28 +4,22 @@ body{
 }
 
 .container{
-    width: 900px;
-    max-width: 90vw;
     margin: auto;
     text-align: center;
     position: fixed;
+    left: 70%;
+    top: 5%;
    
     
 }
 
 .container h1{
     left: 70%;
-    top: 5%;
+    top: 0.5%;
     position: fixed;
 
 }
 
-.container ul li{
-    left: 70%;
-    top: 5%;
-    position: fixed;
-
-}
 
 svg{
     width: 30px;

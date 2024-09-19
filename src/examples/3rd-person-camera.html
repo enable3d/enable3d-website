@@ -200,9 +200,9 @@
               console.log(cart)
 
               let items = document.getElementById("productlist");
-              for(let i = 0; i < cart.length; i++){
+              for(let i = 0; i < 1; i++){
                 let li = document.createElement('li');
-                li.innerText = cart[i]
+                li.innerText = cart.slice(-1)
                 items.appendChild(li);  
               }        
                
