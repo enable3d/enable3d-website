@@ -28,18 +28,32 @@ div#info-text p {
   margin-bottom: 16px;
 }
 
-.popup{
+.popup {
   position: fixed;
-  top:100px;
+  top:0px;
   left: 0px;
   width:100vw;
   height: 100vw;
-  background: rgba(0,0,0,0.7);
+  background: rgb(255, 255, 255);
   z-index: 1;
 }
 
-.popup .content {
+.popup  {
   position: absolute;
   top: 50%;
-  left: 50%
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: #fff;
+width: 450px;
+height: 220px;
+z-index: 2;
+text-align: center;
+padding: 20px;
+box-sizing: border-box;
 }
+
+.popup .active .content{
+  transform: translate(-50%, -50%) scale(1);
+}
+
+

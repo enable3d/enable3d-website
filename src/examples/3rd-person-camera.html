@@ -7,9 +7,9 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="/src/css/addtocart.css" />
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <link rel="stylesheet" href="/css/cart.css?ver=1.0.0" />
-    <link rel="stylesheet" href="/src/css/addtocart.css" />
 
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
@@ -60,7 +60,7 @@
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
 
           this.third.load.preload('grass', '/assets/img/grass.jpg')
-          this.third.load.preload('side', '/assets/img/box-side.png')
+          this.third.load.preload('side', '/assets/img/luckycharms.jpeg')
           this.third.load.preload('top', '/assets/img/box-top.png')
           this.third.load.preload('bottom', '/assets/img/box-bottom.png')
 
@@ -206,9 +206,9 @@
                 li.innerText = cart.slice(-1)
                 items.appendChild(li);  
               }        
-               
 
-              openPopup()
+
+              togglePopup();
             }
 
             this.prev = { x, y }
@@ -216,7 +216,7 @@
 
           this.input.on('pointerup', () => {
             this.selected?.body.setCollisionFlags(0)
-            this.selected?.body.setGravity(0, -5, 0)
+            this.selected?.body.setGravity(0, -10, 0)
 
             this.selected = null
           })
@@ -417,6 +417,7 @@
         }
 
         update(time, delta) {
+
           //jenga
 
           if (this.selected?.body.getCollisionFlags() === 2) {
@@ -582,13 +583,17 @@
       //  closeButton.onClick = () => {
       //   popup.classList.remove('open-popup')
       // }
+
+      function togglePopup(){
+        document.getElementById("popup-1").classList.toggle("active");
+      }
     </script>
 
     <div class="popup" id="popup-1">
       <h2>Apples</h2>
       <p>Cost: $5</p>
       <button type="button" onclick="addToCart">Add to cart</button>
-      <button class="close-btn" type="button" onclick="closePopup">Cancel</button>
+      <button class="close-btn" type="button" onclick="togglePopup()">Cancel</button>
     </div>
 
 
