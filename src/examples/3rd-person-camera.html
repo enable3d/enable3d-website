@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <link rel="stylesheet" href="/css/cart.css?ver=1.0.0" />
+    <link rel="stylesheet" href="/src/css/addtocart.css" />
 
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
@@ -154,7 +155,7 @@
             //   if (i % 2 == 0) {
             blocks.push(
               this.third.physics.add.box(
-                { name: 'redBox1', y: 0.8, x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
+                { name: 'Honney Nut', y: 0.8, x: 0.5, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
                 { custom: textureCube.materials }
               )
             )
@@ -164,7 +165,7 @@
               this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }, {custom: textureCube.materials}),
 
               this.third.physics.add.box(
-                { name: 'Cereal box', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
+                { name: 'Apple Crumble', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
                 { custom: textureCube.materials }
               )
             )
@@ -583,7 +584,7 @@
       // }
     </script>
 
-    <div class="popup" id="popup">
+    <div class="popup" id="popup-1">
       <h2>Apples</h2>
       <p>Cost: $5</p>
       <button type="button" onclick="addToCart">Add to cart</button>
