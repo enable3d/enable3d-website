@@ -9,7 +9,22 @@ body{
     margin: auto;
     text-align: center;
     position: fixed;
+   
     
+}
+
+.container h1{
+    left: 70%;
+    top: 5%;
+    position: fixed;
+
+}
+
+.container ul li{
+    left: 70%;
+    top: 5%;
+    position: fixed;
+
 }
 
 svg{

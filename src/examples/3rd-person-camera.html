@@ -13,6 +13,7 @@
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.2.min.js"></script>
     <script src="/lib/OrbitControls.js"></script>
+    <script src="/lib/enable3d/enable3d.ammoPhysics.0.25.2.min.js"></script>
     <script src="/src/js/cart.js"></script>
   </head>
 
@@ -48,6 +49,8 @@
           super({ key: 'MainScene' })
         }
 
+        
+
         preload() {
           //this.load.html('shelf', '/assets/glb/shelf.glb')
         }
@@ -60,7 +63,7 @@
           this.third.load.preload('top', '/assets/img/box-top.png')
           this.third.load.preload('bottom', '/assets/img/box-bottom.png')
 
-          this.third.load.preload('watermellon', '/assets/img/watermellontexture.jpg')
+          this.third.load.preload('watermellon', '/assets/img/appletexture.jpg')
 
           // initialize physics
 
@@ -94,7 +97,7 @@
 
           const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
 
-          const textureWatermellon = this.third.misc.textureCube([watermellonTexture])
+          const textureWatermellon = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
 
 
           // textureCube.texture.front.repeat.set(4, 1)
@@ -105,6 +108,19 @@
 
           // add the texture cube's materials as a custom material
           //this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
+
+
+
+       
+
+          const geometry = new THREE.BoxBufferGeometry()
+        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+        const cube = new THREE.Mesh(geometry, material)
+        cube.position.set(0, 0, 0)
+        this.third.add.existing(cube)
+
+
+
 
           const redBox = this.third.physics.add.box(
             { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1 },
@@ -145,7 +161,7 @@
             // } else {
             blocks.push(
               // simple sphere
-              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }, {custom: textureWatermellon.materials}),
+              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }, {custom: textureCube.materials}),
 
               this.third.physics.add.box(
                 { name: 'Cereal box', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
@@ -182,6 +198,14 @@
 
               cart.push(block.name)
               console.log(cart)
+
+              let items = document.getElementById("productlist");
+              for(let i = 0; i < cart.length; i++){
+                let li = document.createElement('li');
+                li.innerText = cart[i]
+                items.appendChild(li);  
+              }        
+               
 
               openPopup()
             }
@@ -567,70 +591,17 @@
     </div>
 
 
-
-
-
-
-    <div class="container"></div>
-      <header>
-        <div class="icon-cart">
-          <svg
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4 4a1 1 0 0 1 1-1h1.5a1 1 0 0 1 .979.796L7.939 6H19a1 1 0 0 1 .979 1.204l-1.25 6a1 1 0 0 1-.979.796H9.605l.208 1H17a3 3 0 1 1-2.83 2h-2.34a3 3 0 1 1-4.009-1.76L5.686 5H5a1 1 0 0 1-1-1Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span>0</span>
-        </div>
-      </header>
-
-      <div class="listProduct">
-        <div class="item">
-          <img src="" alt="" />
-        </div>
-      </div>
+    <div id="container" class="container">
+      <h1>Items</h1>
+      <ul id="productlist"></ul>
     </div>
 
-    <div class="cartTab">
 
-      <p>Shopping Cart</p>
-      <div class="listCart">
-<div class="item">
-  <div class="image">
-    <img src="/src/img/enable3d-logo-square.png" alt="">
 
-  </div>
-  <div class="name">
-    Name
-  </div>
 
-  <div class="totalPrice">
-    $0
-  </div>
 
-  <div class="quantity">
-    <span class="minus">-</span>
-    <span>1</span>
-    <span class="plus">+</span>
-  </div>
-</div>
 
-      </div>
-
-      <div class="btn">
-        <button class="close">Close</button>
-
-      </div>
-    </div>
-
+    
    
   </body>
 </html>
