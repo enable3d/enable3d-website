@@ -21,7 +21,7 @@
   <body>
     <script>
       //let popup = document.getElementById("popup");
-
+      const flagg = 0;
       const {
         enable3d,
         Scene3D,
@@ -40,6 +40,9 @@
        */
       const isTouchDevice = 'ontouchstart' in window
 
+      
+     
+
       /**
        * MainScene
        */
@@ -47,6 +50,8 @@
         constructor() {
           super({ key: 'MainScene' })
         }
+
+         
 
         preload() {
           //this.load.html('shelf', '/assets/glb/shelf.glb')
@@ -81,9 +86,20 @@
         }
 
         async create() {
+
+          
+
+
+
+
+
           // Some "native" three.js code
           const material1 = new THREE.MeshBasicMaterial({
             map: new THREE.TextureLoader().load('/assets/img/watermellontexture.jpg')
+          })
+
+          const material2 = new THREE.MeshBasicMaterial({
+            map: new THREE.TextureLoader().load('/assets/img/appletexture.jpg')
           })
          
 
@@ -145,6 +161,15 @@
 
           const blocks = []
 
+          const  openPopup = () => {
+        console.log('open button')
+
+        popup.classList.add('open-popup')
+
+      }
+
+ 
+
           const addTower = () => {
             const material = this.third.add.material({ lambert: { color: 0xa04000 } })
 
@@ -162,6 +187,11 @@
               this.third.physics.add.sphere(
                 {id: '1', name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 },
                 { custom: material1 }
+              ),
+
+              this.third.physics.add.sphere(
+                {id: '1', name: 'Apple', x: -0.9, y: 0.65, z: 1, radius: 0.05 },
+                { custom: material2 }
               ),
               
 
@@ -208,7 +238,7 @@
                 items.appendChild(li)
               }
 
-              togglePopup()
+              openPopup()            
             }
 
             this.prev = { x, y }
@@ -419,6 +449,10 @@
         update(time, delta) {
           //jenga
 
+          const closePopup = () => {
+
+          }
+
           if (this.selected?.body.getCollisionFlags() === 2) {
             const { x, y } = this.getPointer()
 
@@ -430,6 +464,7 @@
             // we adjust the movement by -Math.PI / 4
             const v3 = new THREE.Vector3(movementX, 0, movementZ)
             v3.applyAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4)
+            
             this.selected.position.x = this.cart.position.x
             this.selected.position.y = this.cart.position.y + 2
             this.selected.position.z = this.cart.position.z
@@ -560,11 +595,7 @@
         enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
       })
 
-      function openPopup() {
-        console.log('open button')
-
-        popup.classList.add('open-popup')
-      }
+     
 
       function addToCart() {
         console.log('Add to cart')
@@ -586,18 +617,36 @@
       function togglePopup() {
         document.getElementById('popup-1').classList.toggle('active')
       }
+
+      
     </script>
 
-    <div class="popup" id="popup-1">
-      <h2>Apples</h2>
-      <p>Cost: $5</p>
-      <button type="button" onclick="addToCart">Add to cart</button>
-      <button class="close-btn" type="button" onclick="togglePopup()">Cancel</button>
-    </div>
+<div class="container">
+  <div class="popup" id="popup">
+    <img src="img/tick.png" alt="">
+    <h2>Thank You!</h2>
+    <p>Your Details has been Succesfully Submitted.Thanks!</p>
+    <button type="button" onclick="closePopup()">OK</button>
+  </div>  
+
 
     <div id="container" class="container">
       <h1>Items</h1>
       <ul id="productlist"></ul>
     </div>
+
+    <script>
+
+let popup = document.getElementById('popup')
+
+// function openPopup(){
+//   popup.classList.add('open-popup')
+// }
+
+function closePopup(){
+  popup.classList.remove('open-popup')
+   
+}
+    </script>
   </body>
 </html>

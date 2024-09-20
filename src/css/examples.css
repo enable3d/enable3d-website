@@ -28,32 +28,76 @@ div#info-text p {
   margin-bottom: 16px;
 }
 
-.popup {
-  position: fixed;
-  top:0px;
-  left: 0px;
-  width:100vw;
-  height: 100vw;
-  background: rgb(255, 255, 255);
-  z-index: 1;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+
+
+
+
+.btn{
+    padding: 10px 60px;
+    background: #fff;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: transform 0.2s;
 }
 
-.popup  {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
+.btn:active{
+  transform: scale(0.95);
+}
+
+.popup{
+  width: 400px;
   background: #fff;
-width: 450px;
-height: 220px;
-z-index: 2;
-text-align: center;
-padding: 20px;
-box-sizing: border-box;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  text-align: center;
+  padding: 0 30px 60px;
+  color: #333;
+  visibility: hidden;
+  transition: all 0.4s ease-in-out;
 }
 
-.popup .active .content{
+.open-popup{
+  visibility: visible;
+  top: 50%;
   transform: translate(-50%, -50%) scale(1);
 }
 
+.popup img{
+  width: 100px;
+  margin-top: -50px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.popup h2{
+  font-size: 38px;
+  font-weight: 500;
+  margin: 30px 0 10px;
+}
+
+.popup button{
+  width: 100%;
+  margin-top: 50px;
+  padding: 10px 0;
+  background-color: #e02189;
+  color: #fff;
+  border: 0;
+  outline: none;
+  font-size: 18px;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+}
 
