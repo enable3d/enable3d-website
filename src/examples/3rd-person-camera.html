@@ -19,8 +19,6 @@
   </head>
 
   <body>
-    
-
     <script>
       //let popup = document.getElementById("popup");
 
@@ -50,8 +48,6 @@
           super({ key: 'MainScene' })
         }
 
-        
-
         preload() {
           //this.load.html('shelf', '/assets/glb/shelf.glb')
         }
@@ -61,8 +57,8 @@
 
           this.third.load.preload('grass', '/assets/img/grass.jpg')
           this.third.load.preload('side', '/assets/img/luckycharms.jpeg')
-          this.third.load.preload('top', '/assets/img/box-top.png')
-          this.third.load.preload('bottom', '/assets/img/box-bottom.png')
+          this.third.load.preload('top', '/assets/img/luckycharms.jpeg')
+          this.third.load.preload('bottom', '/assets/img/luckycharms.jpeg')
 
           this.third.load.preload('watermellon', '/assets/img/appletexture.jpg')
 
@@ -85,7 +81,15 @@
         }
 
         async create() {
+          // Some "native" three.js code
+          const material1 = new THREE.MeshBasicMaterial({
+            map: new THREE.TextureLoader().load('/assets/img/watermellontexture.jpg')
+          })
+         
 
+
+
+          
           //create texture watermellon
           const watermellonTexture = await this.third.load.texture('watermellon')
           // create the texture cube
@@ -98,8 +102,14 @@
 
           const textureCube = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
 
-          const textureWatermellon = this.third.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
-
+          const textureWatermellon = this.third.misc.textureCube([
+            leftRight,
+            leftRight,
+            top,
+            bottom,
+            backFront,
+            backFront
+          ])
 
           // textureCube.texture.front.repeat.set(4, 1)
           // textureCube.texture.back.repeat.set(4, 1)
@@ -109,19 +119,6 @@
 
           // add the texture cube's materials as a custom material
           //this.third.physics.add.box({ width: 4 }, { custom: textureCube.materials })
-
-
-
-       
-
-          const geometry = new THREE.BoxBufferGeometry()
-        const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 })
-        const cube = new THREE.Mesh(geometry, material)
-        cube.position.set(0, 0, 0)
-        this.third.add.existing(cube)
-
-
-
 
           const redBox = this.third.physics.add.box(
             { name: 'redBox1', y: 0.5, z: 1, width: 2, height: 0.05, depth: 1 },
@@ -162,7 +159,11 @@
             // } else {
             blocks.push(
               // simple sphere
-              this.third.physics.add.sphere({ name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 }, {custom: textureCube.materials}),
+              this.third.physics.add.sphere(
+                {id: '1', name: 'Watermellon', x: -0.5, y: 0.65, z: 1, radius: 0.1 },
+                { custom: material1 }
+              ),
+              
 
               this.third.physics.add.box(
                 { name: 'Apple Crumble', y: 0.8, x: 0, z: 1, depth: 0.1, height: 0.5, width: 0.3 },
@@ -200,15 +201,14 @@
               cart.push(block.name)
               console.log(cart)
 
-              let items = document.getElementById("productlist");
-              for(let i = 0; i < 1; i++){
-                let li = document.createElement('li');
+              let items = document.getElementById('productlist')
+              for (let i = 0; i < 1; i++) {
+                let li = document.createElement('li')
                 li.innerText = cart.slice(-1)
-                items.appendChild(li);  
-              }        
+                items.appendChild(li)
+              }
 
-
-              togglePopup();
+              togglePopup()
             }
 
             this.prev = { x, y }
@@ -417,7 +417,6 @@
         }
 
         update(time, delta) {
-
           //jenga
 
           if (this.selected?.body.getCollisionFlags() === 2) {
@@ -584,8 +583,8 @@
       //   popup.classList.remove('open-popup')
       // }
 
-      function togglePopup(){
-        document.getElementById("popup-1").classList.toggle("active");
+      function togglePopup() {
+        document.getElementById('popup-1').classList.toggle('active')
       }
     </script>
 
@@ -596,18 +595,9 @@
       <button class="close-btn" type="button" onclick="togglePopup()">Cancel</button>
     </div>
 
-
     <div id="container" class="container">
       <h1>Items</h1>
       <ul id="productlist"></ul>
     </div>
-
-
-
-
-
-
-    
-   
   </body>
 </html>
