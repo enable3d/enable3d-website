@@ -456,14 +456,14 @@
           if (this.selected?.body.getCollisionFlags() === 2) {
             const { x, y } = this.getPointer()
 
-            const speed = 5
-            const movementX = (x - this.prev.x) * speed
-            const movementZ = (y - this.prev.y) * -speed
+            // const speed = 5
+            // const movementX = (x - this.prev.x) * speed
+            // const movementZ = (y - this.prev.y) * -speed
 
-            // since the scene has a rotation of -Math.PI / 4,
-            // we adjust the movement by -Math.PI / 4
-            const v3 = new THREE.Vector3(movementX, 0, movementZ)
-            v3.applyAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4)
+            // // since the scene has a rotation of -Math.PI / 4,
+            // // we adjust the movement by -Math.PI / 4
+            // const v3 = new THREE.Vector3(movementX, 0, movementZ)
+            // v3.applyAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4)
             
             this.selected.position.x = this.cart.position.x
             this.selected.position.y = this.cart.position.y + 2
@@ -471,7 +471,7 @@
 
             this.selected.body.needUpdate = true
 
-            this.prev = { x, y }
+            //this.prev = { x, y }
           }
 
           if (this.man && this.man.body && this.controls && this.controls.update) {
