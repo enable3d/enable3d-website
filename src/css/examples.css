@@ -75,11 +75,6 @@ div#info-text p {
 
 .popup img{
   width: 100px;
-  margin-top: -50px;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .popup h2{

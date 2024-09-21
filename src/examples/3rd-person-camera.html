@@ -58,6 +58,8 @@
         }
 
         init() {
+
+          
           this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } })
 
           this.third.load.preload('grass', '/assets/img/grass.jpg')
@@ -89,6 +91,23 @@
 
           
 
+
+         
+          
+          const blueBox = this.third.physics.add.box(
+            { name: 'blueBox', x: 4, y: 0, z: 2, depth: 3 }
+          )
+        blueBox.body.setCollisionFlags(1)
+
+          blueBox.body.on.collision((otherObject, event) => {
+            if (otherObject.name !== 'ground') console.log(`blueBox and ${otherObject.name}: ${event}`)
+
+            if (otherObject.name == 'Man'){
+              console.log("Man")
+            }
+
+            
+          })
 
 
 
@@ -227,7 +246,8 @@
 
               this.mousePosition.copy(intersection[0].point)
               this.blockOffset.subVectors(this.selected.position, this.mousePosition)
-
+              document.getElementById('product').innerText = block.name + " X 1";
+              //document.getElementById('popup').innerHTML = "<img src=\"/assets/img/appletexture.jpg\" width=\"400px\" height=\"150px\">";
               cart.push(block.name)
               console.log(cart)
 
@@ -449,9 +469,7 @@
         update(time, delta) {
           //jenga
 
-          const closePopup = () => {
-
-          }
+          
 
           if (this.selected?.body.getCollisionFlags() === 2) {
             const { x, y } = this.getPointer()
@@ -623,9 +641,9 @@
 
 <div class="container">
   <div class="popup" id="popup">
-    <img src="img/tick.png" alt="">
+    <img id="productimage" src="/assets/img/luckycharms.jpeg" alt="">
     <h2>Thank You!</h2>
-    <p>Your Details has been Succesfully Submitted.Thanks!</p>
+    <p id="product">Product</p>
     <button type="button" onclick="closePopup()">OK</button>
   </div>  
 
@@ -633,6 +651,7 @@
     <div id="container" class="container">
       <h1>Items</h1>
       <ul id="productlist"></ul>
+      <button>Checkout</button>
     </div>
 
     <script>
