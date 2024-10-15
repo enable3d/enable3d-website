@@ -24,6 +24,7 @@
         "listitem": "off"
       }
     ],
-    "no-inline-styles": "off"
+    "no-inline-styles": "off",
+    "highest-available-document-mode": "off"
   }
 }
