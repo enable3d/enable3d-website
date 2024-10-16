@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeeball Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="lib/three.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/ammo/ammo.js"></script>
+    <script>
+        // Initialize scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add lighting
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
+
+        // Create skeeball track
+        const trackGeometry = new THREE.BoxGeometry(10, 0.5, 30);
+        const trackMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+        const track = new THREE.Mesh(trackGeometry, trackMaterial);
+        track.position.set(0, 0, -15);
+        scene.add(track);
+
+        // Create ramp
+        const rampGeometry = new THREE.BoxGeometry(10, 0.5, 5);
+        const rampMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+        const ramp = new THREE.Mesh(rampGeometry, rampMaterial);
+        ramp.position.set(0, 0.25, -30);
+        ramp.rotation.x = -Math.PI / 12;
+        scene.add(ramp);
+
+        // Create rings
+        const ringGeometry = new THREE.TorusGeometry(1, 0.1, 16, 100);
+        const ringMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
+        for (let i = 0; i < 3; i++) {
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.position.set(0, 1, -35 - i * 2);
+            ring.rotation.x = Math.PI / 2;
+            scene.add(ring);
+        }
+
+        // Initialize physics
+        let physicsWorld;
+        Ammo().then(() => {
+            const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
+            const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
+            const broadphase = new Ammo.btDbvtBroadphase();
+            const solver = new Ammo.btSequentialImpulseConstraintSolver();
+            physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+            physicsWorld.setGravity(new Ammo.btVector3(0, -9.81, 0));
+
+            // Add ball mechanics
+            const ballRadius = 0.5;
+            const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
+            const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+            const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+            ball.position.set(0, ballRadius, 0);
+            scene.add(ball);
+
+            // Add physics to ball
+            const ballShape = new Ammo.btSphereShape(ballRadius);
+            const ballMass = 1;
+            const ballTransform = new Ammo.btTransform();
+            ballTransform.setIdentity();
+            ballTransform.setOrigin(new Ammo.btVector3(0, ballRadius, 0));
+            const ballMotionState = new Ammo.btDefaultMotionState(ballTransform);
+            const ballInertia = new Ammo.btVector3(0, 0, 0);
+            ballShape.calculateLocalInertia(ballMass, ballInertia);
+            const ballRigidBodyInfo = new Ammo.btRigidBodyConstructionInfo(ballMass, ballMotionState, ballShape, ballInertia);
+            const ballRigidBody = new Ammo.btRigidBody(ballRigidBodyInfo);
+            physicsWorld.addRigidBody(ballRigidBody);
+
+            // Mouse controls
+            window.addEventListener('mousedown', (event) => {
+                const force = new Ammo.btVector3(0, 0, -10);
+                ballRigidBody.applyCentralImpulse(force);
+            });
+
+            // Update physics
+            function updatePhysics(deltaTime) {
+                physicsWorld.stepSimulation(deltaTime, 10);
+                const ms = ballRigidBody.getMotionState();
+                if (ms) {
+                    ms.getWorldTransform(ballTransform);
+                    const p = ballTransform.getOrigin();
+                    ball.position.set(p.x(), p.y(), p.z());
+                }
+            }
+
+            // Render loop
+            function animate() {
+                requestAnimationFrame(animate);
+                updatePhysics(1 / 60);
+                renderer.render(scene, camera);
+            }
+            animate();
+        });
+    </script>
+</body>
+</html>

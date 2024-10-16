@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frame Builder</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0">
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+    <script src="/lib/three.min.js"></script>
+    <script src="/lib/GLTFLoader.js"></script>
+</head>
+<body>
+    <div id="frame-builder">
+        <h1>Custom Frame Builder</h1>
+        <button id="sports-car">Sports Car</button>
+        <button id="truck">Truck</button>
+        <button id="race-car">Race Car</button>
+    </div>
+
+    <script>
+        const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D;
+
+        class FrameBuilderScene extends Scene3D {
+            constructor() {
+                super({ key: 'FrameBuilderScene' });
+            }
+
+            preload() {
+                this.load.preload('grass', '/assets/img/grass.jpg');
+            }
+
+            create() {
+                this.warpSpeed('-ground');
+
+                const grass = this.load.texture('grass');
+                grass.wrapS = grass.wrapT = 1000;
+                grass.offset.set(0, 0);
+                grass.repeat.set(50, 50);
+
+                let ground = this.physics.add.ground({ width: 500, height: 500, y: 0 }, { phong: { map: grass } });
+                ground.body.setFriction(1);
+
+                this.camera.position.set(10, 10, 10);
+
+                document.getElementById('sports-car').addEventListener('click', () => this.createSportsCar());
+                document.getElementById('truck').addEventListener('click', () => this.createTruck());
+                document.getElementById('race-car').addEventListener('click', () => this.createRaceCar());
+            }
+
+            createSportsCar() {
+                this.clearScene();
+                const shape = new THREE.Shape();
+                shape.moveTo(0, 0);
+                shape.bezierCurveTo(0, 1, 1, 1, 1, 0);
+                shape.bezierCurveTo(1, -1, 0, -1, 0, 0);
+                const geometry = new THREE.ExtrudeGeometry(shape, { depth: 2, bevelEnabled: false });
+                const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.rotation.x = Math.PI / 2;
+                this.scene.add(mesh);
+            }
+
+            createTruck() {
+                this.clearScene();
+                const box = this.add.box({ width: 2, height: 1, depth: 4 }, { lambert: { color: 0x00ff00 } });
+                box.position.set(0, 0.5, 0);
+                this.physics.add.existing(box);
+            }
+
+            createRaceCar() {
+                this.clearScene();
+                const shape = new THREE.Shape();
+                shape.moveTo(0, 0);
+                shape.bezierCurveTo(0, 1, 1, 1, 1, 0);
+                shape.bezierCurveTo(1, -1, 0, -1, 0, 0);
+                const geometry = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
+                const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.rotation.x = Math.PI / 2;
+                this.scene.add(mesh);
+            }
+
+            clearScene() {
+                while (this.scene.children.length > 0) {
+                    this.scene.remove(this.scene.children[0]);
+                }
+            }
+        }
+
+        PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [FrameBuilderScene], maxSubSteps: 4, fixedTimeStep: 1 / 120 }));
+    </script>
+</body>
+</html>

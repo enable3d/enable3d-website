@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeeball Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+    <script>
+        // Initialize scene, camera, and renderer
+        const config = { scenes: [MainScene], antialias: true };
+        const game = new Enable3D.Scene3D(config);
+
+        class MainScene extends Enable3D.Scene3D {
+            constructor() {
+                super({ key: 'MainScene' });
+            }
+
+            init() {
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            create() {
+                // Add lighting
+                this.warpSpeed();
+
+                // Create skeeball track
+                const track = this.add.box({ width: 10, height: 0.5, depth: 30, y: 0, z: -15, collisionFlags: 1 });
+                track.material.color.setHex(0x8B4513);
+
+                // Create ramp
+                const ramp = this.add.box({ width: 10, height: 0.5, depth: 5, y: 0.25, z: -30, collisionFlags: 1 });
+                ramp.rotation.x = -Math.PI / 12;
+                ramp.material.color.setHex(0x8B4513);
+
+                // Create rings
+                for (let i = 0; i < 3; i++) {
+                    const ring = this.add.torus({ radius: 1, tube: 0.1, y: 1, z: -35 - i * 2, collisionFlags: 1 });
+                    ring.rotation.x = Math.PI / 2;
+                    ring.material.color.setHex(0xFFFFFF);
+                }
+
+                // Add ball mechanics
+                const ball = this.add.sphere({ radius: 0.5, y: 0.5, z: 0, mass: 1 });
+
+                // Mouse controls
+                this.input.on('pointerdown', () => {
+                    ball.body.applyForceY(10);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

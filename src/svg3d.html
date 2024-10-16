@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Create 3D Geometry from SVG file</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      This bridge has been created from
+      <a href="/assets/svg/bridge.svg"> this svg file</a>.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        preload() {
+          // preload the svg file with this.load.html
+          // (not this.load.svg)
+          this.load.html('boxer', '/assets/svg/boxer2.svg')
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed()
+          this.third.camera.position.set(20, 20, 40)
+
+          // this.third.physics.debug.enable()
+
+          // get the shape from the sve file
+          const svg = this.cache.html.get('boxer')
+          const bridgeShape = this.third.transform.fromSVGtoShape(svg)
+
+          // set scaling variable
+          const scale = 25
+
+          // extrude the shape to a 3d object
+          const bridge = this.third.add.extrude({
+            shape: bridgeShape[0],
+            depth: 120
+          })
+
+          // scale the shape
+          bridge.scale.set(1 / scale, 1 / -scale, 1 / scale)
+
+          // add the desired shape (in this case, concave, which is always static)
+          bridge.shape = 'concave'
+
+          // offset the position by the half of the shape's size
+          bridge.position.setY(bridge.geometry.boundingBox.max.y / scale)
+
+          // add a physics body
+          this.third.physics.add.existing(bridge)
+
+          // set some body properties
+          bridge.body.setAngularFactor(0, 0, 0)
+          bridge.body.setLinearFactor(0, 0, 0)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
+</html>
