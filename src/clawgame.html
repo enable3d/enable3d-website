@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pick up Objects (with Robot Hand)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.physics.debug?.enable()
+
+          const { orbitControls } = await this.warpSpeed()
+          orbitControls?.target.set(0, 2, 0)
+          this.camera.lookAt(0, 2, 0)
+
+          const box = this.make.box({ x: 0.2, y: 5, name: 'heavy_box' })
+          box.rotateY(1)
+          box.rotateX(1)
+          this.add.existing(box)
+          this.physics.add.existing(box)
+
+          const armParams = {
+            mass: 100,
+            y: 1,
+            height: 2,
+            width: 0.2,
+            depth: 2,
+            collisionFlags: 2
+          }
+
+          const addArm = x => {
+            const arm = this.physics.add.box({
+              ...armParams,
+              x
+            })
+            arm.body.setFriction(1)
+            arm.userData.touched = 0
+            arm.body.on.collision((object, event) => {
+              if (object.name !== 'heavy_box') return
+              arm.userData.touched = event === 'start' || event === 'collision'
+            })
+            return arm
+          }
+
+          this.leftArm = addArm(-2)
+          this.rightArm = addArm(2)
+        }
+
+        update(time) {
+          if (time < 2) return
+
+          if (time > 2 && time < 8) {
+            const readyToLiftUp = this.leftArm.userData.touched && this.rightArm.userData.touched
+
+            if (!readyToLiftUp) {
+              this.leftArm.position.x += 0.01
+              this.rightArm.position.x -= 0.01
+            }
+
+            if (readyToLiftUp) {
+              this.rightArm.position.y += 0.01
+              this.leftArm.position.y += 0.01
+            }
+          }
+
+          if (time > 10 && time < 11) {
+            this.leftArm.position.x -= 0.01
+            this.rightArm.position.x += 0.01
+          }
+
+          this.rightArm.body.needUpdate = true
+          this.leftArm.body.needUpdate = true
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
