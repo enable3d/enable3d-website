@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Pick up Objects (with Robot Hand)</title>
+    <title>Enhanced Claw Game</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
@@ -17,7 +17,7 @@
     <script>
       const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
 
-      class MainScene extends Scene3D {
+      class EnhancedScene extends Scene3D {
         async create() {
           this.physics.debug?.enable()
 
@@ -25,12 +25,15 @@
           orbitControls?.target.set(0, 2, 0)
           this.camera.lookAt(0, 2, 0)
 
-          const box = this.make.box({ x: 0.2, y: 5, name: 'heavy_box' })
+          // Add a textured box
+          const texture = new THREE.TextureLoader().load('/assets/img/box-top.png')
+          const box = this.make.box({ x: 0.2, y: 5, name: 'textured_box', material: { map: texture } })
           box.rotateY(1)
           box.rotateX(1)
           this.add.existing(box)
           this.physics.add.existing(box)
 
+          // Add robot arms
           const armParams = {
             mass: 100,
             y: 1,
@@ -48,7 +51,7 @@
             arm.body.setFriction(1)
             arm.userData.touched = 0
             arm.body.on.collision((object, event) => {
-              if (object.name !== 'heavy_box') return
+              if (object.name !== 'textured_box') return
               arm.userData.touched = event === 'start' || event === 'collision'
             })
             return arm
@@ -85,7 +88,7 @@
         }
       }
 
-      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [EnhancedScene] }))
     </script>
   </body>
 </html>
