@@ -25,6 +25,14 @@
       }
     ],
     "no-inline-styles": "off",
-    "highest-available-document-mode": "off"
+    "highest-available-document-mode": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "script[type=importmap]"
+        ]
+      }
+    ]
   }
 }
