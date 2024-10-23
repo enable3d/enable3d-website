@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Convex Objects Breaking (with Phaser)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed('-orbitControls')
+          this.third.camera.position.set(15, 30, 30)
+          this.third.camera.lookAt(0, 0, 0)
+
+          // this.third.physics.debug.enable()
+
+          this.addHouse()
+
+          this.third.physics.add.box({ y: 1, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.box({ y: 2, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.box({ y: 3, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.box({ y: 4, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.box({ y: 5, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.box({ y: 6, x: 6, z: 8, breakable: true, fractureImpulse: 5 })
+
+          this.third.physics.add.box({
+            y: 1,
+            x: -8,
+            z: 8,
+            width: 2,
+            height: 2,
+            depth: 2,
+            breakable: true,
+            fractureImpulse: 5
+          })
+
+          this.third.physics.add.cylinder({ y: 1, x: 4, z: -5, height: 5, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.cylinder({ y: 1, x: 6.5, z: -5, height: 5, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.cylinder({ y: 1, x: 9, z: -5, height: 5, breakable: true, fractureImpulse: 5 })
+
+          const raycaster = new THREE.Raycaster()
+          const force = 30
+
+          this.input.on('pointerdown', pointer => {
+            // calculate mouse position in normalized device coordinates
+            // (-1 to +1) for both components
+            const x = (pointer.x / this.cameras.main.width) * 2 - 1
+            const y = -(pointer.y / this.cameras.main.height) * 2 + 1
+            raycaster.setFromCamera({ x, y }, this.third.camera)
+
+            const pos = new THREE.Vector3()
+
+            pos.copy(raycaster.ray.direction)
+            pos.add(raycaster.ray.origin)
+
+            const sphere = this.third.physics.add.sphere(
+              {
+                radius: 0.15,
+                x: pos.x,
+                y: pos.y,
+                z: pos.z,
+                mass: 20,
+                bufferGeometry: true
+              },
+              { phong: { color: 0x202020 } }
+            )
+            sphere.body.setBounciness(0.2)
+
+            pos.copy(raycaster.ray.direction)
+            pos.multiplyScalar(24)
+
+            sphere.body.applyForce(pos.x * force, pos.y * force, pos.z * force)
+          })
+        }
+
+        addHouse() {
+          const commonSetting = {
+            depth: 0.4,
+            breakable: true,
+            fractureImpulse: 5,
+            collisionFlags: 3
+          }
+
+          // front
+          this.third.physics.add.box({ y: 3, x: 2, z: 4, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 1, x: 2, z: 4, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 1, x: -2, z: 4, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 3, x: -2, z: 4, width: 4, height: 2, ...commonSetting })
+
+          // back
+          this.third.physics.add.box({ y: 1, x: -2, z: 0, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 3, x: -2, z: 0, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 1, x: 2, z: 0, width: 4, height: 2, ...commonSetting })
+          this.third.physics.add.box({ y: 3, x: 2, z: 0, width: 4, height: 2, ...commonSetting })
+
+          // left and right
+          this.third.physics.add.box({ ...commonSetting, y: 2, x: -4, z: 2, depth: 4, height: 4, width: 1 })
+          this.third.physics.add.box({ ...commonSetting, y: 2, x: 4, z: 2, depth: 4, height: 4, width: 1 })
+
+          // roof
+          let r1 = this.third.add.box({ y: 4.75, x: 0, z: 0.5, width: 8, height: 4, ...commonSetting })
+          let r2 = this.third.add.box({ y: 4.75, x: 0, z: 3.5, width: 8, height: 4, ...commonSetting })
+          r1.rotateX(Math.PI / 4)
+          r2.rotateX(-Math.PI / 4)
+          this.third.physics.add.existing(r1, { collisionFlags: 3, breakable: true, fractureImpulse: 5 })
+          this.third.physics.add.existing(r2, { collisionFlags: 3, breakable: true, fractureImpulse: 5 })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
+</html>
