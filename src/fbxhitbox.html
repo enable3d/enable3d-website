@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>FBX Loader and Animations (with Hitbox)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      The cube on the left hand has a physics body.<br />The cube on the right hand has no physics body.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE, ExtendedObject3D, ThirdPersonControls } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+          this.canJump = true
+          this.move = false
+          this.moveTop = 0
+          this.moveRight = 0
+        }
+
+        async preload() {
+          await this.third.load.preload('man', '/assets/glb/box_man.glb')
+        }
+
+        create() {
+          this.third.warpSpeed()
+          this.third.camera.position.set(20, 20, 40)
+
+          this.third.physics.debug.enable()
+
+          const addMan = async () => {
+            const object = await this.third.load.gltf('man')
+            const man = object.scene.children[0]
+
+            this.man = new ExtendedObject3D()
+            this.man.name = 'man'
+            this.man.add(man)
+            this.man.rotation.set(0, Math.PI * 1.5, 0)
+            this.man.position.set(0, 0, 0)
+
+            this.man.traverse(child => {
+              if (child.isMesh) {
+                child.castShadow = child.receiveShadow = false
+                child.material.roughness = 1
+                child.material.metalness = 0
+              }
+            })
+
+            this.third.animationMixers.add(this.man.animation.mixer)
+
+            object.animations.forEach(animation => {
+              if (animation.name) {
+                this.man.animation.add(animation.name, animation)
+              }
+            })
+            this.man.animation.play('idle')
+
+            this.third.add.existing(this.man)
+            this.third.physics.add.existing(this.man, {
+              shape: 'sphere',
+              radius: 0.25,
+              width: 0.5,
+              offset: { y: -0.25 }
+            })
+            this.man.body.setFriction(0.8)
+            this.man.body.setAngularFactor(0, 0, 0)
+
+            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+              offset: new THREE.Vector3(0, 1, 0),
+              targetRadius: 3
+            })
+            this.controls.theta = 90
+
+            this.keys = {
+              w: { isDown: false },
+              a: { isDown: false },
+              s: { isDown: false },
+              d: { isDown: false },
+              space: { isDown: false }
+            }
+
+            const press = (e, isDown) => {
+              e.preventDefault()
+              const { keyCode } = e
+              switch (keyCode) {
+                case 87: // w
+                  this.keys.w.isDown = isDown
+                  break
+                case 38: // arrow up
+                  this.keys.w.isDown = isDown
+                  break
+                case 32: // space
+                  this.keys.space.isDown = isDown
+                  break
+              }
+            }
+
+            document.addEventListener('keydown', e => press(e, true))
+            document.addEventListener('keyup', e => press(e, false))
+          }
+
+          addMan()
+        }
+
+        update() {
+          if (this.man && this.man.body) {
+            this.controls.update(this.moveRight * 3, -this.moveTop * 3)
+            this.moveRight = this.moveTop = 0
+
+            const speed = 4
+            const v3 = new THREE.Vector3()
+
+            const rotation = this.third.camera.getWorldDirection(v3)
+            const theta = Math.atan2(rotation.x, rotation.z)
+            const rotationMan = this.man.getWorldDirection(v3)
+            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
+            this.man.body.setAngularVelocityY(0)
+
+            const l = Math.abs(theta - thetaMan)
+            let rotationSpeed = 4
+            let d = Math.PI / 24
+
+            if (l > d) {
+              if (l > Math.PI - d) rotationSpeed *= -1
+              if (theta < thetaMan) rotationSpeed *= -1
+              this.man.body.setAngularVelocityY(rotationSpeed)
+            }
+
+            if (this.keys.w.isDown || this.move) {
+              if (this.man.animation.current !== 'run' && this.canJump) this.man.animation.play('run')
+
+              const x = Math.sin(theta) * speed,
+                y = this.man.body.velocity.y,
+                z = Math.cos(theta) * speed
+
+              this.man.body.setVelocity(x, y, z)
+            } else {
+              if (this.man.animation.current !== 'idle' && this.canJump) this.man.animation.play('idle')
+            }
+
+            if (this.keys.space.isDown && this.canJump) {
+              this.jump()
+            }
+          }
+        }
+
+        jump() {
+          if (!this.man || !this.canJump) return
+          this.canJump = false
+          this.man.animation.play('jump_running', 500, false)
+          setTimeout(() => {
+            this.canJump = true
+            this.man.animation.play('idle', 500)
+          }, 500)
+          this.man.body.applyForceY(6)
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
+</html>
