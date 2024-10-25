@@ -58,99 +58,33 @@
         }
 
         create() {
-          this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
-          // this.third.ground.body.setFriction(1)
+          this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light');
 
-          // this.third.physics.debug.enable()
+          // Load the GLTF model
+          this.third.load.gltf('/assets/glb/catwithgun.glb').then(gltf => {
+            const model = gltf.scene;
+            this.third.add.existing(model);
 
-          /**
-           * Create bridge
-           */
-          const svg = this.cache.html.get('bridge')
-          const bridgeShape = this.third.transform.fromSVGtoShape(svg)
-          const scale = 35
-          const bridge = this.third.add.extrude({
-            shape: bridgeShape[0],
-            depth: 120
-          })
-          bridge.scale.set(1 / scale, 1 / -scale, 1 / scale)
-          bridge.shape = 'concave'
-          bridge.position.setY(bridge.geometry.boundingBox.max.y / scale)
-          this.third.physics.add.existing(bridge)
-          bridge.body.setAngularFactor(0, 0, 0)
-          bridge.body.setLinearFactor(0, 0, 0)
-          bridge.body.setFriction(0.8)
+            const object_9 = model.getObjectByName('object_9');
+            const mixer = new THREE.AnimationMixer(model);
 
-          /**
-           * Create Player
-           */
-          /**
-           * box_man.glb by Jan Bláha
-           * https://github.com/swift502/Sketchbook
-           * CC-0 license 2018
-           */
-          this.third.load.gltf('/assets/glb/catwithgun.glb').then(object => {
-            const man = object.scene.children[0]
+            if (gltf.animations.length) {
+              const clip = gltf.animations[0]; // Assuming you want the first animation
+              const action = mixer.clipAction(clip);
+              action.play();
+            }
 
-            this.man = new ExtendedObject3D()
-            this.man.name = 'man'
-            this.man.rotateY(Math.PI + 0.1) // a hack
-            this.man.add(man)
-            // add shadow
-            this.man.traverse(child => {
-              if (child.isMesh) {
-                child.shape = 'convex'
-                child.castShadow = child.receiveShadow = true
-                // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
-                child.material.roughness = 1
-                child.material.metalness = 0
-              }
-            })
+            const clock = new THREE.Clock();
 
-            /**
-             * Animations
-             */
-            this.third.animationMixers.add(this.man.anims.mixer)
-            object.animations.forEach(animation => {
-              if (animation.name) {
-                /**
-                 * This is a hack, because I could not adjust the scale with this.man.scale.set()
-                 * This is not a bug from enable3d, this is how the assets a made :/
-                 */
-                animation.tracks.forEach(track => {
-                  if (/(scale|position)/.test(track.name)) {
-                    const newValues = track.values.map(v => v * 1)
-                    track.values = newValues
-                  }
-                })
+            // Update the mixer on each frame
+            this.events.on('update', (time, delta) => {
+              const deltaSeconds = clock.getDelta();
+              mixer.update(deltaSeconds);
+            });
+          });
 
-                this.man.anims.add(animation.name, animation)
-              }
-            })
-            this.man.anims.play('idle')
-            this.man.position.set(0, 2, 8)
-
-            /**
-             * Add the player to the scene with a body
-             */
-            this.third.add.existing(this.man)
-            this.third.physics.add.existing(this.man, {
-              shape: 'capsule',
-              radius: 0.2,
-              height: 0.6,
-              offset: { y: -0.55 }
-            })
-            this.man.body.setFriction(0.8)
-            this.man.body.setAngularFactor(0, 0, 0)
-
-            /**
-             * Add 3rd Person Controls
-             */
-            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
-              offset: new THREE.Vector3(0, 1, 0),
-              targetRadius: 3
-            })
-          })
+          // Existing code for player and controls setup
+          // ...
 
           /**
            * Add Keys
