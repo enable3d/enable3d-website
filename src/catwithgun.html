@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>3rd Person Camera</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Use W, SPACE and your Mouse.<br />Works on mobile and desktop.</div>
+    <script>
+      const {
+        enable3d,
+        Scene3D,
+        Canvas,
+        ThirdDimension,
+        THREE,
+        JoyStick,
+        PointerLock,
+        PointerDrag,
+        ExtendedObject3D,
+        ThirdPersonControls
+      } = ENABLE3D
+
+      /**
+       * Is touch device?
+       */
+      const isTouchDevice = 'ontouchstart' in window
+
+      /**
+       * MainScene
+       */
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        preload() {
+          this.load.html('bridge', '/assets/svg/bridge.svg')
+        }
+
+        init() {
+          this.accessThirdDimension()
+          this.canJump = true
+          this.isJumping = false
+          this.move = false
+
+          this.moveTop = 0
+          this.moveRight = 0
+        }
+
+        create() {
+          this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light')
+          // this.third.ground.body.setFriction(1)
+
+          // this.third.physics.debug.enable()
+
+          /**
+           * Create bridge
+           */
+          const svg = this.cache.html.get('bridge')
+          const bridgeShape = this.third.transform.fromSVGtoShape(svg)
+          const scale = 35
+          const bridge = this.third.add.extrude({
+            shape: bridgeShape[0],
+            depth: 120
+          })
+          bridge.scale.set(1 / scale, 1 / -scale, 1 / scale)
+          bridge.shape = 'concave'
+          bridge.position.setY(bridge.geometry.boundingBox.max.y / scale)
+          this.third.physics.add.existing(bridge)
+          bridge.body.setAngularFactor(0, 0, 0)
+          bridge.body.setLinearFactor(0, 0, 0)
+          bridge.body.setFriction(0.8)
+
+          /**
+           * Create Player
+           */
+          /**
+           * box_man.glb by Jan Bláha
+           * https://github.com/swift502/Sketchbook
+           * CC-0 license 2018
+           */
+          this.third.load.gltf('/assets/glb/catwithgun.glb').then(object => {
+            const man = object.scene.children[0]
+
+            this.man = new ExtendedObject3D()
+            this.man.name = 'man'
+            this.man.rotateY(Math.PI + 0.1) // a hack
+            this.man.add(man)
+            // add shadow
+            this.man.traverse(child => {
+              if (child.isMesh) {
+                child.shape = 'convex'
+                child.castShadow = child.receiveShadow = true
+                // https://discourse.threejs.org/t/cant-export-material-from-blender-gltf/12258
+                child.material.roughness = 1
+                child.material.metalness = 0
+              }
+            })
+
+            /**
+             * Animations
+             */
+            this.third.animationMixers.add(this.man.anims.mixer)
+            object.animations.forEach(animation => {
+              if (animation.name) {
+                /**
+                 * This is a hack, because I could not adjust the scale with this.man.scale.set()
+                 * This is not a bug from enable3d, this is how the assets a made :/
+                 */
+                animation.tracks.forEach(track => {
+                  if (/(scale|position)/.test(track.name)) {
+                    const newValues = track.values.map(v => v * 1)
+                    track.values = newValues
+                  }
+                })
+
+                this.man.anims.add(animation.name, animation)
+              }
+            })
+            this.man.anims.play('idle')
+            this.man.position.set(0, 2, 8)
+
+            /**
+             * Add the player to the scene with a body
+             */
+            this.third.add.existing(this.man)
+            this.third.physics.add.existing(this.man, {
+              shape: 'capsule',
+              radius: 0.2,
+              height: 0.6,
+              offset: { y: -0.55 }
+            })
+            this.man.body.setFriction(0.8)
+            this.man.body.setAngularFactor(0, 0, 0)
+
+            /**
+             * Add 3rd Person Controls
+             */
+            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+              offset: new THREE.Vector3(0, 1, 0),
+              targetRadius: 3
+            })
+          })
+
+          /**
+           * Add Keys
+           */
+          this.keys = {
+            a: this.input.keyboard.addKey('a'),
+            w: this.input.keyboard.addKey('w'),
+            d: this.input.keyboard.addKey('d'),
+            s: this.input.keyboard.addKey('s'),
+            space: this.input.keyboard.addKey(32)
+          }
+
+          /**
+           * PointerLock and PointerDrag
+           */
+          if (!isTouchDevice) {
+            const pointerLock = new PointerLock(this.game.canvas)
+            const pointerDrag = new PointerDrag(this.game.canvas)
+            pointerDrag.onMove(delta => {
+              if (!pointerLock.isLocked()) return
+              const { x, y } = delta
+              this.moveTop = -y
+              this.moveRight = x
+            })
+          }
+          /**
+           * Add joystick
+           */
+          if (isTouchDevice) {
+            const joystick = new JoyStick()
+            const axis = joystick.add.axis({
+              styles: { left: 35, bottom: 35, size: 100 }
+            })
+            axis.onMove(event => {
+              /**
+               * Update Camera
+               */
+              const { top, right } = event
+              this.moveTop = top * 3
+              this.moveRight = right * 3
+            })
+            const buttonA = joystick.add.button({
+              letter: 'A',
+              styles: { right: 35, bottom: 110, size: 80 }
+            })
+            buttonA.onClick(() => this.jump())
+            const buttonB = joystick.add.button({
+              letter: 'B',
+              styles: { right: 110, bottom: 35, size: 80 }
+            })
+            buttonB.onClick(() => (this.move = true))
+            buttonB.onRelease(() => (this.move = false))
+          }
+        }
+
+        jump() {
+          if (!this.man) return
+          this.canJump = false
+          this.isJumping = true
+          this.man.anims.play('jump_running')
+          this.time.addEvent({
+            delay: 500,
+            callback: () => (this.canJump = true)
+          })
+          this.time.addEvent({
+            delay: 500,
+            callback: () => {
+              this.man.anims.play('idle')
+              this.isJumping = false
+            }
+          })
+          this.man.body.applyForceY(4)
+        }
+
+        update(time, delta) {
+          if (this.man && this.man.body && this.controls && this.controls.update) {
+            /**
+             * Update Controls
+             */
+            this.controls.update(this.moveRight * 2, -this.moveTop * 2)
+            if (!isTouchDevice) this.moveRight = this.moveTop = 0
+            /**
+             * Player Turn
+             */
+            const speed = 3
+            const v3 = new THREE.Vector3()
+
+            const rotation = this.third.camera.getWorldDirection(v3)
+            const theta = Math.atan2(rotation.x, rotation.z)
+            const rotationMan = this.man.getWorldDirection(v3)
+            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
+            this.man.body.setAngularVelocityY(0)
+
+            const l = Math.abs(theta - thetaMan)
+            let rotationSpeed = isTouchDevice ? 2 : 4
+            let d = Math.PI / 24
+
+            if (l > d) {
+              if (l > Math.PI - d) rotationSpeed *= -1
+              if (theta < thetaMan) rotationSpeed *= -1
+              this.man.body.setAngularVelocityY(rotationSpeed)
+            }
+
+            /**
+             * Player Move
+             */
+            if (this.keys.w.isDown || this.move) {
+              if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run')
+
+              const x = Math.sin(theta) * speed,
+                y = this.man.body.velocity.y,
+                z = Math.cos(theta) * speed
+
+              this.man.body.setVelocity(x, y, z)
+            } else {
+              if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle')
+            }
+
+            /**
+             * Player Jump
+             */
+            if (this.keys.space.isDown && this.canJump) {
+              this.jump()
+            }
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth, // * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight // * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas({ antialias: true })
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
+      })
+    </script>
+  </body>
+</html>

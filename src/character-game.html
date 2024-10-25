@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Character Game</title>
+    <title>3rd Person Camera</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
@@ -15,203 +15,235 @@
   </head>
 
   <body>
-    <div id="info-text">
-      Use arrow keys to move, space to jump, 'L' for left punch, and 'R' for right punch.
-    </div>
+    <div id="info-text">Use W, SPACE, and Mouse to move. Press F to fire the pea shooter.</div>
     <script>
-      const { enable3d, Scene3D, Canvas, THREE, ExtendedObject3D, ThirdPersonControls } = ENABLE3D
+      const {
+        enable3d,
+        Scene3D,
+        Canvas,
+        ThirdDimension,
+        THREE,
+        JoyStick,
+        PointerLock,
+        PointerDrag,
+        ExtendedObject3D,
+        ThirdPersonControls
+      } = ENABLE3D;
 
-      class CharacterGameScene extends Scene3D {
+      const isTouchDevice = 'ontouchstart' in window;
+
+      class MainScene extends Scene3D {
         constructor() {
-          super({ key: 'CharacterGameScene' })
+          super({ key: 'MainScene' });
         }
 
         init() {
-          this.accessThirdDimension()
-          this.canJump = true
-          this.move = false
-          this.moveTop = 0
-          this.moveRight = 0
-        }
-
-        async preload() {
-          await this.third.load.preload('man', '/assets/glb/box_man.glb')
+          this.accessThirdDimension();
+          this.canJump = true;
+          this.isJumping = false;
+          this.move = false;
+          this.moveTop = 0;
+          this.moveRight = 0;
         }
 
         create() {
-          this.third.warpSpeed()
-          this.third.camera.position.set(0, 5, 10)
-          this.third.camera.lookAt(0, 1, 0)
+          this.third.warpSpeed('camera', 'sky', 'ground', 'light');
 
-          this.third.physics.debug.enable()
+          // Load the catwithgun.glb model
+          this.third.load.gltf('/assets/glb/catwithgun4.glb').then(object => {
+            const man = object.scene.children[0];
 
-          const addMan = async () => {
-            const object = await this.third.load.gltf('man')
-            const man = object.scene.children[0]
+            // Create the main character object
+            this.man = new ExtendedObject3D();
+            this.man.name = 'man';
+            this.man.add(man);
+            this.man.position.set(0, 2, 8);
+            this.man.rotation.set(0, Math.PI, 0); // Rotate the model
 
-            this.man = new ExtendedObject3D()
-            this.man.name = 'man'
-            this.man.add(man)
-            this.man.rotation.set(0, Math.PI * 1.5, 0)
-            this.man.position.set(0, 0, 0)
-
+            // Traverse the model to apply shadows and materials
             this.man.traverse(child => {
               if (child.isMesh) {
-                child.castShadow = child.receiveShadow = false
-                child.material.roughness = 1
-                child.material.metalness = 0
+                child.castShadow = true;
+                child.receiveShadow = true;
+                child.material.roughness = 1;
+                child.material.metalness = 0;
               }
-            })
+            });
 
-            this.third.animationMixers.add(this.man.animation.mixer)
-
+            // Set up animation mixers
+            this.third.animationMixers.add(this.man.anims.mixer);
             object.animations.forEach(animation => {
-              if (animation.name) {
-                this.man.animation.add(animation.name, animation)
-              }
-            })
-            this.man.animation.play('idle')
+              this.man.anims.add(animation.name, animation);
+            });
+            this.man.anims.play('idle');
 
-            this.third.add.existing(this.man)
+            // Add the character to the scene with physics
+            this.third.add.existing(this.man);
             this.third.physics.add.existing(this.man, {
-              shape: 'sphere',
-              radius: 0.25,
-              width: 0.5,
-              offset: { y: -0.25 }
-            })
-            this.man.body.setFriction(0.8)
-            this.man.body.setAngularFactor(0, 0, 0)
+              shape: 'capsule',
+              radius: 0.2,
+              height: 0.6,
+              offset: { y: -0.55 }
+            });
+            this.man.body.setFriction(0.8);
+            this.man.body.setAngularFactor(0, 0, 0);
 
+            // Set up third-person controls
             this.controls = new ThirdPersonControls(this.third.camera, this.man, {
               offset: new THREE.Vector3(0, 1, 0),
               targetRadius: 3
-            })
-            this.controls.theta = 90
+            });
+          });
 
-            this.keys = {
-              w: { isDown: false },
-              a: { isDown: false },
-              s: { isDown: false },
-              d: { isDown: false },
-              space: { isDown: false },
-              l: { isDown: false },
-              r: { isDown: false }
-            }
+          // Set up key inputs
+          this.keys = {
+            a: this.input.keyboard.addKey('a'),
+            w: this.input.keyboard.addKey('w'),
+            d: this.input.keyboard.addKey('d'),
+            s: this.input.keyboard.addKey('s'),
+            space: this.input.keyboard.addKey(32),
+            f: this.input.keyboard.addKey('f') // Fire button (F)
+          };
 
-            const press = (e, isDown) => {
-              e.preventDefault()
-              const { keyCode } = e
-              switch (keyCode) {
-                case 87: // w
-                case 38: // arrow up
-                  this.keys.w.isDown = isDown
-                  break
-                case 65: // a
-                case 37: // arrow left
-                  this.keys.a.isDown = isDown
-                  break
-                case 83: // s
-                case 40: // arrow down
-                  this.keys.s.isDown = isDown
-                  break
-                case 68: // d
-                case 39: // arrow right
-                  this.keys.d.isDown = isDown
-                  break
-                case 32: // space
-                  this.keys.space.isDown = isDown
-                  break
-                case 76: // l
-                  this.keys.l.isDown = isDown
-                  break
-                case 82: // r
-                  this.keys.r.isDown = isDown
-                  break
-              }
-            }
-
-            document.addEventListener('keydown', e => press(e, true))
-            document.addEventListener('keyup', e => press(e, false))
+          // Set up pointer lock for desktop devices
+          if (!isTouchDevice) {
+            const pointerLock = new PointerLock(this.game.canvas);
+            const pointerDrag = new PointerDrag(this.game.canvas);
+            pointerDrag.onMove(delta => {
+              if (!pointerLock.isLocked()) return;
+              const { x, y } = delta;
+              this.moveTop = -y;
+              this.moveRight = x;
+            });
           }
 
-          addMan()
+          // Set up joystick for mobile devices
+          if (isTouchDevice) {
+            const joystick = new JoyStick();
+            const axis = joystick.add.axis({
+              styles: { left: 35, bottom: 35, size: 100 }
+            });
+            axis.onMove(event => {
+              const { top, right } = event;
+              this.moveTop = top * 3;
+              this.moveRight = right * 3;
+            });
+            const buttonA = joystick.add.button({
+              letter: 'A',
+              styles: { right: 35, bottom: 110, size: 80 }
+            });
+            buttonA.onClick(() => this.jump());
+            const buttonB = joystick.add.button({
+              letter: 'B',
+              styles: { right: 110, bottom: 35, size: 80 }
+            });
+            buttonB.onClick(() => (this.move = true));
+            buttonB.onRelease(() => (this.move = false));
+          }
         }
 
-        update() {
-          if (this.man && this.man.body) {
-            this.controls.update(this.moveRight * 3, -this.moveTop * 3)
-            this.moveRight = this.moveTop = 0
+        // Jump function
+        jump() {
+          if (!this.man || this.isJumping) return;
+          this.canJump = false;
+          this.isJumping = true;
+          this.man.anims.play('jump_running');
+          this.man.body.applyForceY(5); // Apply upward force to jump
+          this.time.addEvent({
+            delay: 500,
+            callback: () => (this.canJump = true)
+          });
+          this.time.addEvent({
+            delay: 500,
+            callback: () => {
+              this.man.anims.play('idle');
+              this.isJumping = false;
+            }
+          });
+        }
 
-            const speed = 4
-            const v3 = new THREE.Vector3()
+        // Fire the pea shooter
+        firePeaShooter() {
+          if (!this.man) return;
 
-            const rotation = this.third.camera.getWorldDirection(v3)
-            const theta = Math.atan2(rotation.x, rotation.z)
-            const rotationMan = this.man.getWorldDirection(v3)
-            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
-            this.man.body.setAngularVelocityY(0)
+          // Animation logic for firing (rock back or play animation)
+          this.rockBack();
 
-            const l = Math.abs(theta - thetaMan)
-            let rotationSpeed = 4
-            let d = Math.PI / 24
+          // Create and shoot the pea (projectile)
+          const peaGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+          const peaMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+          const pea = new THREE.Mesh(peaGeometry, peaMaterial);
+
+          // Set the position of the pea in front of the gun
+          pea.position.copy(this.man.position);
+          pea.position.z += 1; // Adjust as needed
+
+          this.third.add.existing(pea);
+          this.third.physics.add.existing(pea);
+          pea.body.applyForce(new THREE.Vector3(0, 0, 10)); // Shoot forward
+          
+          // Remove the pea after a few seconds
+          setTimeout(() => {
+            this.third.scene.remove(pea);
+          }, 5000);
+        }
+
+        // Recoil animation
+        rockBack() {
+          this.tweens.add({
+            targets: this.man.rotation,
+            z: '-=0.2',
+            yoyo: true,
+            duration: 100
+          });
+        }
+
+        // Update function
+        update(time, delta) {
+          if (this.man && this.man.body && this.controls && this.controls.update) {
+            this.controls.update(this.moveRight * 2, -this.moveTop * 2);
+            if (!isTouchDevice) this.moveRight = this.moveTop = 0;
+
+            const speed = 3;
+            const v3 = new THREE.Vector3();
+
+            const rotation = this.third.camera.getWorldDirection(v3);
+            const theta = Math.atan2(rotation.x, rotation.z);
+            const rotationMan = this.man.getWorldDirection(v3);
+            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z);
+            this.man.body.setAngularVelocityY(0);
+
+            const l = Math.abs(theta - thetaMan);
+            let rotationSpeed = isTouchDevice ? 2 : 4;
+            let d = Math.PI / 24;
 
             if (l > d) {
-              if (l > Math.PI - d) rotationSpeed *= -1
-              if (theta < thetaMan) rotationSpeed *= -1
-              this.man.body.setAngularVelocityY(rotationSpeed)
+              if (l > Math.PI - d) rotationSpeed *= -1;
+              if (theta < thetaMan) rotationSpeed *= -1;
+              this.man.body.setAngularVelocityY(rotationSpeed);
             }
 
             if (this.keys.w.isDown || this.move) {
-              if (this.man.animation.current !== 'run' && this.canJump) this.man.animation.play('run')
+              if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run');
 
               const x = Math.sin(theta) * speed,
                 y = this.man.body.velocity.y,
-                z = Math.cos(theta) * speed
+                z = Math.cos(theta) * speed;
 
-              this.man.body.setVelocity(x, y, z)
+              this.man.body.setVelocity(x, y, z);
             } else {
-              if (this.man.animation.current !== 'idle' && this.canJump) this.man.animation.play('idle')
+              if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle');
             }
 
             if (this.keys.space.isDown && this.canJump) {
-              this.jump()
+              this.jump();
             }
 
-            if (this.keys.l.isDown) {
-              this.leftPunch()
-            }
-
-            if (this.keys.r.isDown) {
-              this.rightPunch()
+            // Trigger the pea shooter action
+            if (this.keys.f.isDown) {
+              this.firePeaShooter();
             }
           }
-        }
-
-        jump() {
-          if (!this.man || !this.canJump) return
-          this.canJump = false
-          this.man.animation.play('jump_running', 500, false)
-          setTimeout(() => {
-            this.canJump = true
-            this.man.animation.play('idle', 500)
-          }, 500)
-          this.man.body.applyForceY(6)
-        }
-
-        leftPunch() {
-          if (!this.man) return
-          this.man.animation.play('left_body_cross', 500, false)
-          setTimeout(() => {
-            this.man.animation.play('idle', 500)
-          }, 500)
-        }
-
-        rightPunch() {
-          if (!this.man) return
-          this.man.animation.play('right_body_cross', 500, false)
-          setTimeout(() => {
-            this.man.animation.play('idle', 500)
-          }, 500)
         }
       }
 
@@ -221,16 +253,16 @@
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+          width: window.innerWidth,
+          height: window.innerHeight
         },
-        scene: [CharacterGameScene],
-        ...Canvas()
+        scene: [MainScene],
+        ...Canvas({ antialias: true })
       }
 
       window.addEventListener('load', () => {
         enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
-      })
+      });
     </script>
   </body>
 </html>
