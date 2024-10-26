@@ -22,7 +22,7 @@
   <body>
     <div id="info-text">
       This heightmap has been created from
-      <a href="/assets/heightmap/newhm2.png"> this png file</a>.
+      <a href="/assets/heightmap/output.png"> this png file</a>.
     </div>
     <script>
       class MainScene extends Scene3D {
@@ -46,7 +46,7 @@
             this.third.haveSomeFun(1)
           })
           
-          const heightmap = await this.third.load.texture('/assets/heightmap/heightmap-island.png')
+          const heightmap = await this.third.load.texture('/assets/heightmap/output.png')
 
           // Powered by Chroma.js (https://github.com/gka/chroma.js/)
           const colorScale = chroma
