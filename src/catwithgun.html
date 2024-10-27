@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<![CDATA[<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
   </head>
 
   <body>
-    <div id="info-text">Use W, SPACE and your Mouse.<br />Works on mobile and desktop.</div>
+    <div id="info-text">Use W, SPACE, F to shoot, and your Mouse.<br />Works on mobile and desktop.</div>
     <script>
       const {
         enable3d,
@@ -30,14 +30,8 @@
         ThirdPersonControls
       } = ENABLE3D
 
-      /**
-       * Is touch device?
-       */
       const isTouchDevice = 'ontouchstart' in window
 
-      /**
-       * MainScene
-       */
       class MainScene extends Scene3D {
         constructor() {
           super({ key: 'MainScene' })
@@ -60,7 +54,6 @@
         create() {
           this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light');
 
-          // Load the GLTF model
           this.third.load.gltf('/assets/glb/catwithgun.glb').then(gltf => {
             const model = gltf.scene;
             this.third.add.existing(model);
@@ -69,37 +62,32 @@
             const mixer = new THREE.AnimationMixer(model);
 
             if (gltf.animations.length) {
-              const clip = gltf.animations[0]; // Assuming you want the first animation
+              const clip = gltf.animations[0];
               const action = mixer.clipAction(clip);
               action.play();
             }
 
             const clock = new THREE.Clock();
 
-            // Update the mixer on each frame
             this.events.on('update', (time, delta) => {
               const deltaSeconds = clock.getDelta();
               mixer.update(deltaSeconds);
             });
+
+            // Adjust camera position
+            this.third.camera.position.set(0, 5, 10);
+            this.third.camera.lookAt(model.position);
           });
 
-          // Existing code for player and controls setup
-          // ...
-
-          /**
-           * Add Keys
-           */
           this.keys = {
             a: this.input.keyboard.addKey('a'),
             w: this.input.keyboard.addKey('w'),
             d: this.input.keyboard.addKey('d'),
             s: this.input.keyboard.addKey('s'),
-            space: this.input.keyboard.addKey(32)
+            space: this.input.keyboard.addKey(32),
+            shoot: this.input.keyboard.addKey('f')
           }
 
-          /**
-           * PointerLock and PointerDrag
-           */
           if (!isTouchDevice) {
             const pointerLock = new PointerLock(this.game.canvas)
             const pointerDrag = new PointerDrag(this.game.canvas)
@@ -110,18 +98,13 @@
               this.moveRight = x
             })
           }
-          /**
-           * Add joystick
-           */
+
           if (isTouchDevice) {
             const joystick = new JoyStick()
             const axis = joystick.add.axis({
               styles: { left: 35, bottom: 35, size: 100 }
             })
             axis.onMove(event => {
-              /**
-               * Update Camera
-               */
               const { top, right } = event
               this.moveTop = top * 3
               this.moveRight = right * 3
@@ -159,16 +142,15 @@
           this.man.body.applyForceY(4)
         }
 
+        shoot() {
+          console.log('Shooting!');
+        }
+
         update(time, delta) {
           if (this.man && this.man.body && this.controls && this.controls.update) {
-            /**
-             * Update Controls
-             */
             this.controls.update(this.moveRight * 2, -this.moveTop * 2)
             if (!isTouchDevice) this.moveRight = this.moveTop = 0
-            /**
-             * Player Turn
-             */
+
             const speed = 3
             const v3 = new THREE.Vector3()
 
@@ -188,9 +170,6 @@
               this.man.body.setAngularVelocityY(rotationSpeed)
             }
 
-            /**
-             * Player Move
-             */
             if (this.keys.w.isDown || this.move) {
               if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run')
 
@@ -203,11 +182,12 @@
               if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle')
             }
 
-            /**
-             * Player Jump
-             */
             if (this.keys.space.isDown && this.canJump) {
               this.jump()
+            }
+
+            if (this.keys.shoot.isDown) {
+              this.shoot()
             }
           }
         }
@@ -219,8 +199,8 @@
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth, // * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight // * Math.max(1, window.devicePixelRatio / 2)
+          width: window.innerWidth,
+          height: window.innerHeight
         },
         scene: [MainScene],
         ...Canvas({ antialias: true })
@@ -231,4 +211,4 @@
       })
     </script>
   </body>
-</html>
+</html>]]>
