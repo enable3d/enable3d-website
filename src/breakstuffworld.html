@@ -2,14 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Enable3D and Phaser Game</title>
-    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
-    <script src="/js/examples.js?ver=1.1.1"></script>
+    <title>Cannon Scene with First-Person Controls</title>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
@@ -18,9 +13,9 @@
     <script>
       const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D;
 
-      class Enable3DScene extends Scene3D {
+      class CannonScene extends Scene3D {
         constructor() {
-          super({ key: 'Enable3DScene' });
+          super({ key: 'CannonScene' });
         }
 
         init() {
@@ -29,124 +24,72 @@
 
         async create() {
           try {
-            // Set up camera and lighting
-            this.third.camera.position.set(0, 10, 30);
-            this.third.camera.lookAt(0, 0, 0);
+            // Camera setup for first-person controls
+            this.third.camera.position.set(0, 2, 5);
+            this.third.camera.lookAt(0, 2, 0);
+            this.third.controls = new THREE.PointerLockControls(this.third.camera, this.third.renderer.domElement);
 
-            // Add basic lighting to make objects visible
+            // Click to enable first-person controls
+            this.input.on('pointerdown', () => {
+              this.third.controls.lock();
+            });
+
+            // Basic lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            this.third.add.existing(ambientLight);
-
             const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
             directionalLight.position.set(10, 20, 10);
+            this.third.add.existing(ambientLight);
             this.third.add.existing(directionalLight);
 
-            // Add ground
-            this.createGround();
-
-            // Create city of buildings
-            this.createBuildings();
-
-            // Add boxmen running towards the player
-            await this.createBoxmen();
-
-            // Set up shooting mechanism with raycasting
-            this.setupShootingMechanism();
-
+            // Load and add cannon model with shooting animation
+            await this.addCannon();
           } catch (error) {
-            console.error('Error creating 3D scene:', error);
+            console.error('Error creating scene:', error);
           }
         }
 
-        createGround() {
-          const ground = this.third.physics.add.box({
-            y: -0.5,
-            width: 100,
-            height: 1,
-            depth: 100,
-            mass: 0, // Static ground
-          });
-          ground.material.color.set(0x808080); // Gray color for the ground
-        }
-
-        createBuildings() {
-          const buildingSize = { width: 5, height: 20, depth: 5 };
-          for (let i = -30; i <= 30; i += 15) {
-            const building = this.third.physics.add.box({
-              x: i,
-              y: buildingSize.height / 2,
-              z: -50,
-              ...buildingSize,
-              mass: 0, // Static building
-            });
-            building.material.color.set(0x333333); // Dark gray color for buildings
-          }
-        }
-
-        async createBoxmen() {
-          // Load the boxman GLTF model for characters
+        async addCannon() {
           const loader = new THREE.GLTFLoader();
-          loader.load('/assets/glb/box_man.glb', (gltf) => {
-            for (let i = 0; i < 10; i++) {
-              const boxman = new ExtendedObject3D();
-              boxman.add(gltf.scene.clone()); // Clone for each character
-              this.third.add.existing(boxman);
+          loader.load('/src/assets/glb/cannon2.glb', (gltf) => {
+            const cannon = gltf.scene;
+            this.third.add.existing(cannon);
 
-              // Position the boxmen in front of the buildings
-              boxman.position.set(-30 + i * 6, 0, -20);
-              this.third.physics.add.existing(boxman, { shape: 'box', mass: 1 });
-              boxman.body.setFriction(0.8);
+            // Find and reference the cannon barrel (gunbbody8)
+            this.cannonBarrel = cannon.getObjectByName('gunbbody8');
 
-              // Make boxmen run towards the player (AI movement)
-              this.makeBoxmanRun(boxman);
-            }
+            // Add muzzle flash light to the barrel
+            this.muzzleFlash = new THREE.PointLight(0xffa500, 2, 10);
+            this.muzzleFlash.position.set(0, 0, 1); // Position it at the end of the barrel
+            this.muzzleFlash.visible = false; // Initially invisible
+            this.cannonBarrel.add(this.muzzleFlash);
+
+            // Add recoil and flash animation
+            this.shootAnimation();
           });
         }
 
-        makeBoxmanRun(boxman) {
-          // Move boxman towards the player
-          this.time.addEvent({
-            delay: 100, // Adjust movement interval
-            callback: () => {
-              const direction = new THREE.Vector3();
-              this.third.camera.getWorldPosition(direction);
-              direction.sub(boxman.position).normalize(); // Direction towards player
-              
-              const speed = 0.5; // Speed of the boxman running
-              boxman.body.setVelocity(direction.x * speed, boxman.body.velocity.y, direction.z * speed);
-            },
-            loop: true,
-          });
-        }
+        shootAnimation() {
+          this.input.on('pointerdown', () => {
+            if (!this.cannonBarrel) return;
 
-        setupShootingMechanism() {
-          const raycaster = new THREE.Raycaster();
-          const force = 60; // Force to apply to the sphere
+            // Muzzle flash effect
+            this.muzzleFlash.visible = true;
+            setTimeout(() => { this.muzzleFlash.visible = false; }, 100); // Flash visible for 100ms
 
-          this.input.on('pointerdown', (pointer) => {
-            const x = (pointer.x / this.cameras.main.width) * 2 - 1;
-            const y = -(pointer.y / this.cameras.main.height) * 2 + 1;
-            raycaster.setFromCamera({ x, y }, this.third.camera);
+            // Recoil animation for the cannon barrel
+            const startPosZ = this.cannonBarrel.position.z;
+            const recoilDistance = 0.5;
 
-            const position = new THREE.Vector3().copy(raycaster.ray.origin);
-            const direction = new THREE.Vector3().copy(raycaster.ray.direction).multiplyScalar(24);
-
-            const sphere = this.third.physics.add.sphere({
-              radius: 0.3,
-              x: position.x,
-              y: position.y,
-              z: position.z,
-              mass: 20,
-              bufferGeometry: true,
+            this.third.tweens.add({
+              targets: this.cannonBarrel.position,
+              z: startPosZ - recoilDistance, // Move backward
+              duration: 50, // Recoil back in 50ms
+              yoyo: true, // Return to original position
+              onComplete: () => {
+                this.cannonBarrel.position.z = startPosZ; // Reset position
+              }
             });
-
-            sphere.body.applyForce(direction.x * force, direction.y * force, direction.z * force);
-            sphere.body.setBounciness(0.2);
           });
-        }
-
-        update() {
-          // Real-time updates can go here
         }
       }
 
@@ -157,10 +100,10 @@
         scale: {
           mode: Phaser.Scale.FIT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
-          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
-          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2),
+          width: window.innerWidth,
+          height: window.innerHeight,
         },
-        scene: [Enable3DScene],
+        scene: [CannonScene],
         canvas: document.createElement('canvas'),
         ...Canvas(),
       };

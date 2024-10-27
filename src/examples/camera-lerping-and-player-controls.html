@@ -40,20 +40,86 @@
           // this.third.physics.debug.enable()
 
           // add player
-          this.player = new THREE.Group()
-          this.player.name = 'player' // <-- set a name if you haven't already
-          this.player.position.setY(2)
-          const body = this.third.add.box(
-            { height: 0.8, y: 1, width: 0.4, depth: 0.4 },
-            { lambert: { color: 0xffff00 } }
-          )
-          const head = this.third.add.sphere({ radius: 0.25, y: 1.7, z: 0.05 }, { lambert: { color: 0xffff00 } })
-          this.player.add(body, head)
-          this.player.position.setY(5)
-          this.third.add.existing(this.player)
-          this.third.physics.add.existing(this.player)
-          this.player.body.setAngularFactor(0, 0, 0)
-          this.player.body.setFriction(0.8)
+          this.player = new THREE.Group();
+this.player.name = 'player'; // <-- set a name if you haven't already
+this.player.position.setY(5);
+
+// Material for all body parts
+const mat = this.third.add.material({ lambert: { color: 0x8b4513 } });
+
+// Torso: Union of two slightly overlapping boxes for a rounded body shape
+const torsoBox1 = this.third.make.box({ height: 0.8, width: 0.3, depth: 0.4, y: 1 });
+const torsoBox2 = this.third.make.box({ height: 0.8, width: 0.3, depth: 0.3, y: 1, z: 0.15 });
+const torso = this.third.csg.union(torsoBox1, torsoBox2);
+torso.material = mat;
+torso.castShadow = torso.receiveShadow = true;
+
+// Head: Sphere with a small subtraction for neck connection
+const headSphere = this.third.make.sphere({ radius: 0.25, y: 1.7, z: 0.05 });
+const neckIndent = this.third.make.cylinder({ radiusTop: 0.1, radiusBottom: 0.1, height: 0.15, y: 1.55 });
+const head = this.third.csg.subtract(headSphere, neckIndent);
+head.material = this.third.add.material({ lambert: { color: 0xffdbac } });
+head.castShadow = head.receiveShadow = true;
+
+// Neck: Cylinder
+const neck = this.third.make.cylinder({ radiusTop: 0.1, radiusBottom: 0.1, height: 0.2, y: 1.55 });
+neck.material = this.third.add.material({ lambert: { color: 0xffdbac } });
+neck.castShadow = neck.receiveShadow = true;
+
+// Arms: Union of cylinder and sphere for rounded shoulder joints
+const leftShoulder = this.third.make.sphere({ radius: 0.15, x: -0.3, y: 1.4 });
+const leftArmCylinder = this.third.make.cylinder({ radiusTop: 0.1, radiusBottom: 0.1, height: 0.6, x: -0.3, y: 1.0 });
+const leftArm = this.third.csg.union(leftShoulder, leftArmCylinder);
+leftArm.material = mat;
+leftArm.castShadow = leftArm.receiveShadow = true;
+
+const rightShoulder = this.third.make.sphere({ radius: 0.15, x: 0.3, y: 1.4 });
+const rightArmCylinder = this.third.make.cylinder({ radiusTop: 0.1, radiusBottom: 0.1, height: 0.6, x: 0.3, y: 1.0 });
+const rightArm = this.third.csg.union(rightShoulder, rightArmCylinder);
+rightArm.material = mat;
+rightArm.castShadow = rightArm.receiveShadow = true;
+
+// Legs: Union of box and sphere for knee joints
+const leftLegTop = this.third.make.box({ height: 0.4, width: 0.15, depth: 0.15, x: -0.15, y: 0.5 });
+const leftKnee = this.third.make.sphere({ radius: 0.1, x: -0.15, y: 0.25 });
+const leftLegBottom = this.third.make.box({ height: 0.4, width: 0.15, depth: 0.15, x: -0.15, y: 0.0 });
+const leftLeg = this.third.csg.union(leftLegTop, this.third.csg.union(leftKnee, leftLegBottom));
+leftLeg.material = this.third.add.material({ lambert: { color: 0x0000ff } });
+leftLeg.castShadow = leftLeg.receiveShadow = true;
+
+const rightLegTop = this.third.make.box({ height: 0.4, width: 0.15, depth: 0.15, x: 0.15, y: 0.5 });
+const rightKnee = this.third.make.sphere({ radius: 0.1, x: 0.15, y: 0.25 });
+const rightLegBottom = this.third.make.box({ height: 0.4, width: 0.15, depth: 0.15, x: 0.15, y: 0.0 });
+const rightLeg = this.third.csg.union(rightLegTop, this.third.csg.union(rightKnee, rightLegBottom));
+rightLeg.material = this.third.add.material({ lambert: { color: 0x0000ff } });
+rightLeg.castShadow = rightLeg.receiveShadow = true;
+
+// Hands and Feet: Basic spheres and boxes
+const leftHand = this.third.make.sphere({ radius: 0.05, x: -0.3, y: 0.7 });
+leftHand.material = this.third.add.material({ lambert: { color: 0xffdbac } });
+leftHand.castShadow = leftHand.receiveShadow = true;
+
+const rightHand = this.third.make.sphere({ radius: 0.05, x: 0.3, y: 0.7 });
+rightHand.material = this.third.add.material({ lambert: { color: 0xffdbac } });
+rightHand.castShadow = rightHand.receiveShadow = true;
+
+const leftFoot = this.third.make.box({ height: 0.1, width: 0.2, depth: 0.1, x: -0.15, y: -0.3 });
+leftFoot.material = this.third.add.material({ lambert: { color: 0x000000 } });
+leftFoot.castShadow = leftFoot.receiveShadow = true;
+
+const rightFoot = this.third.make.box({ height: 0.1, width: 0.2, depth: 0.1, x: 0.15, y: -0.3 });
+rightFoot.material = this.third.add.material({ lambert: { color: 0x000000 } });
+rightFoot.castShadow = rightFoot.receiveShadow = true;
+
+// Adding body parts to player group
+this.player.add(torso, head, neck, leftArm, rightArm, leftLeg, rightLeg, leftHand, rightHand, leftFoot, rightFoot);
+
+// Position player and add to scene with physics
+this.third.add.existing(this.player);
+this.third.physics.add.existing(this.player);
+this.player.body.setAngularFactor(0, 0, 0);
+this.player.body.setFriction(0.8);
+
 
           // uncomment this, to destroy the body and create a new one (for testing)
           // setTimeout(() => {
