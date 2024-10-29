@@ -1,0 +1,71 @@
+.sprite {
+    background-image: url(spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+}
+
+.sprite-backward {
+    width: 7460px;
+    height: 713px;
+    background-position: -5px -5px;
+}
+
+.sprite-block {
+    width: 7460px;
+    height: 713px;
+    background-position: -5px -728px;
+}
+
+.sprite-dizzy {
+    width: 7460px;
+    height: 713px;
+    background-position: -5px -1451px;
+}
+
+.sprite-forward {
+    width: 7460px;
+    height: 713px;
+    background-position: -5px -2174px;
+}
+
+.sprite-gettinghit {
+    width: 5968px;
+    height: 713px;
+    background-position: -5px -2897px;
+}
+
+.sprite-gettinghitleftpunch {
+    width: 5968px;
+    height: 713px;
+    background-position: -5px -3620px;
+}
+
+.sprite-idle {
+    width: 7460px;
+    height: 713px;
+    background-position: -5px -4343px;
+}
+
+.sprite-ko {
+    width: 5968px;
+    height: 713px;
+    background-position: -5px -5066px;
+}
+
+.sprite-leftjab {
+    width: 5968px;
+    height: 713px;
+    background-position: -5px -5789px;
+}
+
+.sprite-rightjab {
+    width: 5968px;
+    height: 713px;
+    background-position: -5px -6512px;
+}
+
+.sprite-uppercut {
+    width: 5968px;
+    height: 713px;
+    background-position: -7475px -5px;
+}

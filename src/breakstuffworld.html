@@ -2,27 +2,73 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Cannon Scene with First-Person Controls</title>
-
-    <!-- Include Three.js and PointerLockControls -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
-
-    <!-- Phaser and Enable3D -->
+    <title>3rd Person Camera</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
     <script src="/lib/phaser.min.js?ver=3.52.0"></script>
     <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
   </head>
 
   <body>
     <script>
-      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D;
+      const { enable3d, Scene3D, Canvas, THREE, ExtendedObject3D, ExtendedMesh } = ENABLE3D;
 
-      import { THREE, ExtendedMesh, ExtendedObject3D } from 'enable3d'
+      class BreakStuffWorld extends Scene3D {
+        constructor() {
+          super({ key: 'BreakStuffWorld' });
+        }
 
-      const cube = new ExtendedMesh(geometry, material)
-      
+        init() {
+          this.accessThirdDimension();
+        }
+
+        create() {
+          this.third.warpSpeed('camera', 'light', 'ground');
+
+          // Add a cube
+          const geometry = new THREE.BoxGeometry(1, 1, 1);
+          const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+          const cube = new ExtendedMesh(geometry, material);
+          this.third.add.existing(cube);
+          cube.position.set(0, 1, -5);
+
+          // Add physics to the cube
+          this.third.physics.add.existing(cube);
+
+          // Set up PointerLockControls
+          const controls = new THREE.PointerLockControls(this.third.camera, this.renderer.domElement);
+          this.input.on('pointerdown', () => {
+            controls.lock();
+          });
+
+          // Update loop
+          this.events.on('update', () => {
+            controls.update();
+          });
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth,
+          height: window.innerHeight
+        },
+        scene: [BreakStuffWorld],
+        ...Canvas({ antialias: true })
+      };
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken');
+      });
     </script>
   </body>
 </html>

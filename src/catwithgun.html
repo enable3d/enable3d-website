@@ -1,4 +1,4 @@
-<![CDATA[<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -30,55 +30,54 @@
         ThirdPersonControls
       } = ENABLE3D
 
-      const isTouchDevice = 'ontouchstart' in window
+      const isTouchDevice = 'ontouchstart' in window;
 
       class MainScene extends Scene3D {
         constructor() {
-          super({ key: 'MainScene' })
+          super({ key: 'MainScene' });
         }
 
         preload() {
-          this.load.html('bridge', '/assets/svg/bridge.svg')
+          this.load.html('bridge', '/assets/svg/bridge.svg');
         }
 
         init() {
-          this.accessThirdDimension()
-          this.canJump = true
-          this.isJumping = false
-          this.move = false
+          this.accessThirdDimension();
+          this.canJump = true;
+          this.isJumping = false;
+          this.move = false;
 
-          this.moveTop = 0
-          this.moveRight = 0
+          this.moveTop = 0;
+          this.moveRight = 0;
         }
 
         create() {
-          this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light');
+          this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light', 'orbitControls');
 
+          // Load player model and set up controls
           this.third.load.gltf('/assets/glb/catwithgun.glb').then(gltf => {
             const model = gltf.scene;
-            this.third.add.existing(model);
 
-            const object_9 = model.getObjectByName('object_9');
-            const mixer = new THREE.AnimationMixer(model);
+            this.man = new ExtendedObject3D();
+            this.man.add(model);
+            this.third.add.existing(this.man);
 
-            if (gltf.animations.length) {
-              const clip = gltf.animations[0];
-              const action = mixer.clipAction(clip);
-              action.play();
-            }
+            // Add physics to the model
+            this.third.physics.add.existing(this.man, { shape: 'box', mass: 1 });
+            this.man.body.setFriction(0.8);
 
-            const clock = new THREE.Clock();
-
-            this.events.on('update', (time, delta) => {
-              const deltaSeconds = clock.getDelta();
-              mixer.update(deltaSeconds);
+            // Set up Third-Person Controls
+            this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+              offset: new THREE.Vector3(0, 1, 0),
+              targetRadius: 3
             });
 
             // Adjust camera position
             this.third.camera.position.set(0, 5, 10);
-            this.third.camera.lookAt(model.position);
+            this.third.camera.lookAt(this.man.position);
           });
 
+          // Set up keyboard controls
           this.keys = {
             a: this.input.keyboard.addKey('a'),
             w: this.input.keyboard.addKey('w'),
@@ -86,60 +85,62 @@
             s: this.input.keyboard.addKey('s'),
             space: this.input.keyboard.addKey(32),
             shoot: this.input.keyboard.addKey('f')
-          }
+          };
 
+          // Pointer Lock and Drag for non-touch devices
           if (!isTouchDevice) {
-            const pointerLock = new PointerLock(this.game.canvas)
-            const pointerDrag = new PointerDrag(this.game.canvas)
+            const pointerLock = new PointerLock(this.game.canvas);
+            const pointerDrag = new PointerDrag(this.game.canvas);
             pointerDrag.onMove(delta => {
-              if (!pointerLock.isLocked()) return
-              const { x, y } = delta
-              this.moveTop = -y
-              this.moveRight = x
-            })
+              if (!pointerLock.isLocked()) return;
+              const { x, y } = delta;
+              this.moveTop = -y;
+              this.moveRight = x;
+            });
           }
 
+          // Joystick controls for touch devices
           if (isTouchDevice) {
-            const joystick = new JoyStick()
+            const joystick = new JoyStick();
             const axis = joystick.add.axis({
               styles: { left: 35, bottom: 35, size: 100 }
-            })
+            });
             axis.onMove(event => {
-              const { top, right } = event
-              this.moveTop = top * 3
-              this.moveRight = right * 3
-            })
+              const { top, right } = event;
+              this.moveTop = top * 3;
+              this.moveRight = right * 3;
+            });
             const buttonA = joystick.add.button({
               letter: 'A',
               styles: { right: 35, bottom: 110, size: 80 }
-            })
-            buttonA.onClick(() => this.jump())
+            });
+            buttonA.onClick(() => this.jump());
             const buttonB = joystick.add.button({
               letter: 'B',
               styles: { right: 110, bottom: 35, size: 80 }
-            })
-            buttonB.onClick(() => (this.move = true))
-            buttonB.onRelease(() => (this.move = false))
+            });
+            buttonB.onClick(() => (this.move = true));
+            buttonB.onRelease(() => (this.move = false));
           }
         }
 
         jump() {
-          if (!this.man) return
-          this.canJump = false
-          this.isJumping = true
-          this.man.anims.play('jump_running')
+          if (!this.man) return;
+          this.canJump = false;
+          this.isJumping = true;
+          this.man.anims.play('jump_running');
           this.time.addEvent({
             delay: 500,
             callback: () => (this.canJump = true)
-          })
+          });
           this.time.addEvent({
             delay: 500,
             callback: () => {
-              this.man.anims.play('idle')
-              this.isJumping = false
+              this.man.anims.play('idle');
+              this.isJumping = false;
             }
-          })
-          this.man.body.applyForceY(4)
+          });
+          this.man.body.applyForceY(4);
         }
 
         shoot() {
@@ -148,46 +149,46 @@
 
         update(time, delta) {
           if (this.man && this.man.body && this.controls && this.controls.update) {
-            this.controls.update(this.moveRight * 2, -this.moveTop * 2)
-            if (!isTouchDevice) this.moveRight = this.moveTop = 0
+            this.controls.update(this.moveRight * 2, -this.moveTop * 2);
+            if (!isTouchDevice) this.moveRight = this.moveTop = 0;
 
-            const speed = 3
-            const v3 = new THREE.Vector3()
+            const speed = 3;
+            const v3 = new THREE.Vector3();
 
-            const rotation = this.third.camera.getWorldDirection(v3)
-            const theta = Math.atan2(rotation.x, rotation.z)
-            const rotationMan = this.man.getWorldDirection(v3)
-            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
-            this.man.body.setAngularVelocityY(0)
+            const rotation = this.third.camera.getWorldDirection(v3);
+            const theta = Math.atan2(rotation.x, rotation.z);
+            const rotationMan = this.man.getWorldDirection(v3);
+            const thetaMan = Math.atan2(rotationMan.x, rotationMan.z);
+            this.man.body.setAngularVelocityY(0);
 
-            const l = Math.abs(theta - thetaMan)
-            let rotationSpeed = isTouchDevice ? 2 : 4
-            let d = Math.PI / 24
+            const l = Math.abs(theta - thetaMan);
+            let rotationSpeed = isTouchDevice ? 2 : 4;
+            let d = Math.PI / 24;
 
             if (l > d) {
-              if (l > Math.PI - d) rotationSpeed *= -1
-              if (theta < thetaMan) rotationSpeed *= -1
-              this.man.body.setAngularVelocityY(rotationSpeed)
+              if (l > Math.PI - d) rotationSpeed *= -1;
+              if (theta < thetaMan) rotationSpeed *= -1;
+              this.man.body.setAngularVelocityY(rotationSpeed);
             }
 
             if (this.keys.w.isDown || this.move) {
-              if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run')
+              if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run');
 
               const x = Math.sin(theta) * speed,
                 y = this.man.body.velocity.y,
-                z = Math.cos(theta) * speed
+                z = Math.cos(theta) * speed;
 
-              this.man.body.setVelocity(x, y, z)
+              this.man.body.setVelocity(x, y, z);
             } else {
-              if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle')
+              if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle');
             }
 
             if (this.keys.space.isDown && this.canJump) {
-              this.jump()
+              this.jump();
             }
 
             if (this.keys.shoot.isDown) {
-              this.shoot()
+              this.shoot();
             }
           }
         }
@@ -204,11 +205,11 @@
         },
         scene: [MainScene],
         ...Canvas({ antialias: true })
-      }
+      };
 
       window.addEventListener('load', () => {
-        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken')
-      })
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken');
+      });
     </script>
   </body>
-</html>]]>
+</html>

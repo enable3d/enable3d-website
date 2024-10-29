@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Spell Casting Game</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Player 1: A/D to move, W to jump, F to cast. Player 2: J/L to move, I to jump, K to cast.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas, ExtendedObject3D, THREE } = ENABLE3D;
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' });
+        }
+
+        init() {
+          this.accessThirdDimension({ gravity: { x: 0, y: -20, z: 0 } });
+          this.throwCooldown1 = false; // Cooldown for player 1
+          this.throwCooldown2 = false; // Cooldown for player 2
+        }
+
+        preload() {
+          this.third.load.preload('sky', '/assets/img/sky.png');
+        }
+
+        async create() {
+          const { lights } = await this.third.warpSpeed('-ground', '-sky', '-orbitControls');
+
+          this.third.camera.position.set(0, 5, 20);
+          this.third.camera.lookAt(0, 0, 0);
+          this.third.load.texture('sky').then(sky => (this.third.scene.background = sky));
+
+          // Create a ground platform
+          const platformMaterial = { phong: { transparent: true, color: 0x215722 } };
+          this.third.physics.add.box({ name: 'platform-ground', y: -2, width: 30, depth: 5, height: 2, mass: 0 }, platformMaterial);
+
+          // Add the two player characters
+          this.addHumanoidCharacter(-5, 'player1');
+          this.addHumanoidCharacter(5, 'player2');
+
+          // Set up controls for both characters
+          this.keys = {
+            // Player 1 controls
+            a: this.input.keyboard.addKey('a'),
+            d: this.input.keyboard.addKey('d'),
+            w: this.input.keyboard.addKey('w'),
+            f: this.input.keyboard.addKey('f'), // Player 1 casts
+            // Player 2 controls
+            j: this.input.keyboard.addKey('j'),
+            l: this.input.keyboard.addKey('l'),
+            i: this.input.keyboard.addKey('i'),
+            k: this.input.keyboard.addKey('k'), // Player 2 casts
+          };
+        }
+
+        // Function to add a player character
+        addHumanoidCharacter(x, playerName) {
+          const player = new THREE.Group();
+          player.name = playerName;
+          player.position.set(x, 5, 0);
+          player.rotation.y = playerName === 'player1' ? Math.PI / 2 : -Math.PI / 2; // Players face each other
+
+          const mat = this.third.add.material({ lambert: { color: playerName === 'player1' ? 0x8b4513 : 0x3b5998 } });
+
+          const torso = this.third.make.box({ height: 0.8, width: 0.3, depth: 0.4, y: 1 });
+          torso.material = mat;
+          torso.castShadow = torso.receiveShadow = true;
+
+          const head = this.third.make.sphere({ radius: 0.25, y: 1.7 });
+          head.material = this.third.add.material({ lambert: { color: 0xffdbac } });
+          head.castShadow = head.receiveShadow = true;
+
+          player.add(torso, head);
+
+          this.third.add.existing(player);
+          this.third.physics.add.existing(player);
+          player.body.setAngularFactor(0, 0, 0);
+          player.body.setFriction(0.8);
+
+          // Assign each player object to a variable for easy reference
+          if (playerName === 'player1') this.player1 = player;
+          else this.player2 = player;
+        }
+
+        // Function to throw a spell object
+        throwObject(player, direction) {
+          const cooldownKey = player.name === 'player1' ? 'throwCooldown1' : 'throwCooldown2';
+          if (this[cooldownKey]) return;
+
+          this[cooldownKey] = true;
+
+          const spellGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+          const spellMaterial = new THREE.MeshBasicMaterial({ color: player.name === 'player1' ? 0xff0000 : 0x0000ff });
+          const spell = new THREE.Mesh(spellGeometry, spellMaterial);
+
+          spell.position.copy(player.position);
+          spell.position.x += direction === 'right' ? 1 : -1;
+
+          this.third.add.existing(spell);
+          this.third.physics.add.existing(spell);
+
+          // Set velocity to throw spell toward opponent
+          const velocity = direction === 'right' ? 10 : -10;
+          spell.body.applyForce(new THREE.Vector3(velocity, 0, 0));
+
+          setTimeout(() => this.third.scene.remove(spell), 5000);
+
+          setTimeout(() => (this[cooldownKey] = false), 1000); // Reset cooldown
+        }
+
+        update() {
+          if (this.player1 && this.player2) {
+            // Player 1 controls
+            if (this.keys.a.isDown) {
+              this.player1.body.setVelocityX(-5);
+            } else if (this.keys.d.isDown) {
+              this.player1.body.setVelocityX(5);
+            } else {
+              this.player1.body.setVelocityX(0);
+            }
+
+            if (this.keys.w.isDown && this.player1.userData.onGround) {
+              this.player1.body.applyForceY(10);
+            }
+
+            if (this.keys.f.isDown) {
+              this.throwObject(this.player1, 'right');
+            }
+
+            // Player 2 controls
+            if (this.keys.j.isDown) {
+              this.player2.body.setVelocityX(-5);
+            } else if (this.keys.l.isDown) {
+              this.player2.body.setVelocityX(5);
+            } else {
+              this.player2.body.setVelocityX(0);
+            }
+
+            if (this.keys.i.isDown && this.player2.userData.onGround) {
+              this.player2.body.applyForceY(10);
+            }
+
+            if (this.keys.k.isDown) {
+              this.throwObject(this.player2, 'left');
+            }
+          }
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2),
+        },
+        scene: [MainScene],
+        ...Canvas(),
+      };
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken');
+      });
+    </script>
+  </body>
+</html>
