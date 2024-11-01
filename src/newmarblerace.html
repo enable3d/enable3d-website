@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marble Cannon</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+
+        // Enable physics
+        scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), new BABYLON.CannonJSPlugin());
+
+        // Create camera
+        const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 100, new BABYLON.Vector3(0, 20, 30), scene);
+        camera.attachControl(canvas, true);
+
+        // Add lights
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+        const ambientLight = new BABYLON.PointLight("ambientLight", new BABYLON.Vector3(0, 50, 50), scene);
+        ambientLight.intensity = 0.3;
+
+        // Materials
+        const trackMaterial = new BABYLON.StandardMaterial("trackMaterial", scene);
+        trackMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
+        const platformMaterial = new BABYLON.StandardMaterial("platformMaterial", scene);
+        platformMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.4, 0.8);
+
+        const marbleMaterial = new BABYLON.StandardMaterial("marbleMaterial", scene);
+        marbleMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 1);
+
+        // Create ground
+        const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, scene);
+        const groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+        groundMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.2);
+        ground.material = groundMaterial;
+        ground.position.y = -1;
+        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+
+        // Make funnel bigger with a small opening at the bottom
+        const funnelProfile = [
+            new BABYLON.Vector3(1, 0, 0),
+            new BABYLON.Vector3(5, 6, 0),
+            new BABYLON.Vector3(9, 9, 3)
+        ];
+        const startingFunnel = BABYLON.MeshBuilder.CreateLathe("funnel", {
+            shape: funnelProfile,
+            tessellation: 64,
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        }, scene);
+        startingFunnel.position = new BABYLON.Vector3(0, 30, 0);
+        startingFunnel.material = platformMaterial;
+        startingFunnel.physicsImpostor = new BABYLON.PhysicsImpostor(startingFunnel, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0 }, scene);
+
+        // Create a larger box with a carved-out interior below the funnel
+        // Create a larger box with a carved-out interior below the funnel
+const boxOuter = BABYLON.MeshBuilder.CreateBox("boxOuter", { height: 5, width: 6, depth: 6 }, scene);
+boxOuter.position = new BABYLON.Vector3(0, 27, 0);
+
+// Create a slightly smaller box inside the outer box to hollow it out
+const boxInner = BABYLON.MeshBuilder.CreateBox("boxInner", { height: 4.5, width: 5.5, depth: 5.5 }, scene);
+boxInner.position = boxOuter.position;
+
+// Remove the top part using a "lid" shape
+const boxLid = BABYLON.MeshBuilder.CreateBox("boxLid", { height: 1, width: 6, depth: 6 }, scene);
+boxLid.position = new BABYLON.Vector3(0, 29.5, 0);  // Position at the top of the box
+
+// Use CSG to subtract both the inner box (to hollow) and the lid (to open the top)
+const boxCSG = BABYLON.CSG.FromMesh(boxOuter)
+    .subtract(BABYLON.CSG.FromMesh(boxInner))
+    .subtract(BABYLON.CSG.FromMesh(boxLid));
+
+const carvedBox = boxCSG.toMesh("carvedBox", null, scene);
+carvedBox.material = platformMaterial;
+carvedBox.physicsImpostor = new BABYLON.PhysicsImpostor(carvedBox, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0 }, scene);
+
+// Dispose of the temporary shapes
+boxOuter.dispose();
+boxInner.dispose();
+boxLid.dispose();
+
+const mainBox = BABYLON.MeshBuilder.CreateBox("mainBox", { height: 5, width: 6, depth: 6 }, scene);
+mainBox.position = new BABYLON.Vector3(0, 50, 0); // Position of the main box
+
+// Create a flat rectangular plane to be positioned next to the main box
+const adjacentPlane = BABYLON.MeshBuilder.CreatePlane("adjacentPlane", { width: 6, height: 5 }, scene);
+adjacentPlane.material = new BABYLON.StandardMaterial("planeMaterial", scene);
+adjacentPlane.material.diffuseColor = new BABYLON.Color3(0.7, 0.5, 0.3);  // Optional color
+
+// Rotate the plane if needed to make it vertical (facing the box)
+adjacentPlane.rotation.y = Math.PI / 2;  // Rotate 90 degrees to make it stand upright
+
+// Position the adjacent plane directly next to the main box
+adjacentPlane.position = new BABYLON.Vector3(
+    mainBox.position.x + mainBox.scaling.x * 3, // Offset along the x-axis to sit next to the box
+    mainBox.position.y,
+    mainBox.position.z
+);
+
+
+
+        // Add a spiral ramp to continue the track from the box
+        const spiralPath = [];
+        const numPoints = 100;
+        const radius = 2;
+        const heightDecrease = 0.5;
+        for (let i = 0; i < numPoints; i++) {
+            const angle = i * Math.PI / 5;
+            const x = radius * Math.cos(angle);
+            const y = 22 - i * heightDecrease;
+            const z = radius * Math.sin(angle);
+            spiralPath.push(new BABYLON.Vector3(x, y, z));
+        }
+        
+        const spiralTrack = BABYLON.MeshBuilder.CreateTube("spiralTrack", { path: spiralPath, radius: 0.3, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
+        spiralTrack.material = trackMaterial;
+        spiralTrack.physicsImpostor = new BABYLON.PhysicsImpostor(spiralTrack, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0 }, scene);
+
+        // Create marbles
+        const marbles = [];
+        for (let i = 0; i < 4; i++) {
+            const marble = BABYLON.MeshBuilder.CreateSphere("marble" + i, { diameter: 1 }, scene);
+            marble.position = new BABYLON.Vector3(-3 + i * 2, 35, 0);
+            marble.material = marbleMaterial.clone("marbleMaterial" + i);
+            marble.physicsImpostor = new BABYLON.PhysicsImpostor(marble, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, friction: 0.1, restitution: 0.7 }, scene);
+            marbles.push(marble);
+        }
+
+        // Run the render loop
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        // Handle browser resize
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>

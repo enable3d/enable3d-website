@@ -1,64 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skeeball Game</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-    </style>
-</head>
-<body>
-    <!-- Add Ammo.js for physics simulation -->
-    <script src="https://cdn.jsdelivr.net/gh/kripken/ammo.js/builds/ammo.wasm.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>3rd Person Camera with Gun Pickup</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+</head>
+
+<body>
+    <div id="info-text">Use W, SPACE, and your Mouse. Works on mobile and desktop.</div>
     <script>
-        // Initialize Ammo.js first
-        Ammo().then(() => {
-            // Initialize scene, camera, and renderer
-            const config = { scenes: [MainScene], antialias: true };
-            const game = new Enable3D.Scene3D(config);
+        const { enable3d, Scene3D, Canvas, THREE, ThirdPersonControls, ExtendedObject3D, PointerLock, PointerDrag, JoyStick } = ENABLE3D;
 
-            class MainScene extends Enable3D.Scene3D {
-                constructor() {
-                    super({ key: 'MainScene' });
-                }
+        const isTouchDevice = 'ontouchstart' in window;
 
-                init() {
-                    this.renderer.setSize(window.innerWidth, window.innerHeight);
-                }
+        class MainScene extends Scene3D {
+            constructor() {
+                super({ key: 'MainScene' });
+            }
 
-                create() {
-                    // Add lighting
-                    this.warpSpeed();
+            preload() {
+                this.load.html('bridge', '/assets/svg/bridge.svg');
+            }
 
-                    // Create skeeball track
-                    const track = this.add.box({ width: 10, height: 0.5, depth: 30, y: 0, z: -15, collisionFlags: 1 });
-                    track.material.color.setHex(0x8B4513);
+            init() {
+                this.accessThirdDimension();
+                this.canJump = true;
+                this.isJumping = false;
+                this.move = false;
 
-                    // Create ramp
-                    const ramp = this.add.box({ width: 10, height: 0.5, depth: 5, y: 0.25, z: -30, collisionFlags: 1 });
-                    ramp.rotation.x = -Math.PI / 12;
-                    ramp.material.color.setHex(0x8B4513);
+                this.moveTop = 0;
+                this.moveRight = 0;
+            }
 
-                    // Create rings
-                    for (let i = 0; i < 3; i++) {
-                        const ring = this.add.torus({ radius: 1, tube: 0.1, y: 1, z: -35 - i * 2, collisionFlags: 1 });
-                        ring.rotation.x = Math.PI / 2;
-                        ring.material.color.setHex(0xFFFFFF);
-                    }
+            create() {
+                this.third.warpSpeed('camera', 'sky', 'grid', 'ground', 'light');
 
-                    // Add ball mechanics
-                    const ball = this.add.sphere({ radius: 0.5, y: 0.5, z: 0, mass: 1 });
+                const svg = this.cache.html.get('bridge');
+                const bridgeShape = this.third.transform.fromSVGtoShape(svg);
+                const scale = 35;
+                const bridge = this.third.add.extrude({
+                    shape: bridgeShape[0],
+                    depth: 120
+                });
+                bridge.scale.set(1 / scale, 1 / -scale, 1 / scale);
+                bridge.shape = 'concave';
+                bridge.position.setY(bridge.geometry.boundingBox.max.y / scale);
+                this.third.physics.add.existing(bridge);
+                bridge.body.setFriction(0.8);
 
-                    // Mouse controls
-                    this.input.on('pointerdown', () => {
-                        ball.body.applyForceY(10);
+                // Load box_man model
+                this.third.load.gltf('/assets/glb/box_man.glb').then(object => {
+                    const man = object.scene.children[0];
+                    this.man = new ExtendedObject3D();
+                    this.man.name = 'man';
+                    this.man.add(man);
+                    this.man.position.set(0, 2, 8);
+
+                    this.third.add.existing(this.man);
+                    this.third.physics.add.existing(this.man, {
+                        shape: 'capsule',
+                        radius: 0.2,
+                        height: 0.6,
+                        offset: { y: -0.55 }
+                    });
+                    this.man.body.setFriction(0.8);
+                    this.man.body.setAngularFactor(0, 0, 0);
+
+                    this.third.animationMixers.add(this.man.anims.mixer);
+                    object.animations.forEach(animation => {
+                        this.man.anims.add(animation.name, animation);
+                    });
+                    this.man.anims.play('idle');
+
+                    this.controls = new ThirdPersonControls(this.third.camera, this.man, {
+                        offset: new THREE.Vector3(0, 1, 0),
+                        targetRadius: 3
+                    });
+                });
+
+                // Load M4A1 model
+                this.third.load.gltf('/assets/glb/M4A1.glb').then(object => {
+                    this.gun = object.scene;
+                    this.gun.position.set(2, 1, 8); // Position near box_man
+                    this.third.add.existing(this.gun);
+                    this.third.physics.add.existing(this.gun, { shape: 'convex', mass: 0 });
+                });
+
+                // Add keyboard controls
+                this.keys = {
+                    a: this.input.keyboard.addKey('a'),
+                    w: this.input.keyboard.addKey('w'),
+                    d: this.input.keyboard.addKey('d'),
+                    s: this.input.keyboard.addKey('s'),
+                    space: this.input.keyboard.addKey(32)
+                };
+
+                if (!isTouchDevice) {
+                    const pointerLock = new PointerLock(this.game.canvas);
+                    const pointerDrag = new PointerDrag(this.game.canvas);
+                    pointerDrag.onMove(delta => {
+                        if (!pointerLock.isLocked()) return;
+                        const { x, y } = delta;
+                        this.moveTop = -y;
+                        this.moveRight = x;
                     });
                 }
             }
+
+            update(time, delta) {
+                if (this.man && this.man.body && this.controls && this.controls.update) {
+                    this.controls.update(this.moveRight * 3, -this.moveTop * 3);
+                    if (!isTouchDevice) this.moveRight = this.moveTop = 0;
+
+                    const speed = 4;
+                    const v3 = new THREE.Vector3();
+                    const rotation = this.third.camera.getWorldDirection(v3);
+                    const theta = Math.atan2(rotation.x, rotation.z);
+                    const rotationMan = this.man.getWorldDirection(v3);
+                    const thetaMan = Math.atan2(rotationMan.x, rotationMan.z);
+                    this.man.body.setAngularVelocityY(0);
+
+                    if (this.keys.w.isDown || this.move) {
+                        if (this.man.anims.current === 'idle' && !this.isJumping) this.man.anims.play('run');
+                        const x = Math.sin(theta) * speed, y = this.man.body.velocity.y, z = Math.cos(theta) * speed;
+                        this.man.body.setVelocity(x, y, z);
+                    } else {
+                        if (this.man.anims.current === 'run' && !this.isJumping) this.man.anims.play('idle');
+                    }
+
+                    // Jump action
+                    if (this.keys.space.isDown && this.canJump) this.jump();
+
+                    // Check distance to gun and pick it up if close
+                    if (this.gun && this.man.position.distanceTo(this.gun.position) < 1.5) {
+                        this.pickUpGun();
+                    }
+                }
+            }
+
+            jump() {
+                if (!this.man) return;
+                this.canJump = false;
+                this.isJumping = true;
+                this.man.anims.play('jump_running');
+                this.time.addEvent({
+                    delay: 750,
+                    callback: () => (this.canJump = true)
+                });
+                this.time.addEvent({
+                    delay: 750,
+                    callback: () => {
+                        this.man.anims.play('idle');
+                        this.isJumping = false;
+                    }
+                });
+                this.man.body.applyForceY(4);
+            }
+
+            pickUpGun() {
+                if (this.gun && this.man) {
+                    this.gun.position.copy(this.man.position).add(new THREE.Vector3(0, 1, 0)); // Adjust gun position
+                    this.man.add(this.gun); // Attach gun to box_man
+                }
+            }
+        }
+
+        const config = {
+            type: Phaser.WEBGL,
+            transparent: true,
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
+            scene: [MainScene],
+            ...Canvas({ antialias: true })
+        };
+
+        window.addEventListener('load', () => {
+            enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo/kripken');
         });
     </script>
 </body>
