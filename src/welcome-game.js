@@ -135,10 +135,10 @@ class MainScene extends Scene3D {
        */
       this.add.existing(this.man)
       this.physics.add.existing(this.man, {
-        shape: 'sphere',
-        radius: 0.25,
-        width: 0.5,
-        offset: { y: -0.25 }
+        shape: 'cylinder',
+        radius: 0.3,
+        height: 1,
+        offset: { y: -.5 }
       })
       this.man.body.setFriction(0.8)
       this.man.body.setAngularFactor(0, 0, 0)
@@ -193,6 +193,15 @@ class MainScene extends Scene3D {
         case 87: // w
           this.keys.w.isDown = isDown
           break
+        case 65: // a
+          this.keys.a.isDown = isDown
+          break
+        case 83: // s
+          this.keys.s.isDown = isDown
+          break
+        case 68: // d
+          this.keys.d.isDown = isDown
+          break
         case 38: // arrow up
           this.keys.w.isDown = isDown
           break
@@ -243,11 +252,11 @@ class MainScene extends Scene3D {
   jump() {
     if (!this.man || !this.canJump) return
     this.canJump = false
-    this.man.animation.play('jump_running', 500, false)
+    this.man.animation.play('jump_running', 800, false)
     setTimeout(() => {
       this.canJump = true
       this.man.animation.play('idle', 500)
-    }, 500)
+    }, 800)
     this.man.body.applyForceY(6)
   }
 
@@ -261,11 +270,11 @@ class MainScene extends Scene3D {
       /**
        * Player Turn
        */
-      const speed = 4
+      let speed = 4
       const v3 = new THREE.Vector3()
 
       const rotation = this.camera.getWorldDirection(v3)
-      const theta = Math.atan2(rotation.x, rotation.z)
+      let theta = Math.atan2(rotation.x, rotation.z)
       const rotationMan = this.man.getWorldDirection(v3)
       const thetaMan = Math.atan2(rotationMan.x, rotationMan.z)
       this.man.body.setAngularVelocityY(0)
@@ -283,16 +292,41 @@ class MainScene extends Scene3D {
       /**
        * Player Move
        */
-      if (this.keys.w.isDown || this.move) {
+      if (this.keys.w.isDown || this.keys.a.isDown || this.keys.s.isDown || this.keys.d.isDown || this.move) { // Run Forwards or backwards
         if (this.man.animation.current === 'idle' && this.canJump) this.man.animation.play('run')
+
+        if(this.keys.s.isDown) { //Backwards/diagonal movement
+          speed *= -1
+          this.man.animation.mixer.timeScale = -1
+          if(this.keys.a.isDown) {
+            theta -= Math.PI/4
+          } else if(this.keys.d.isDown) {
+            theta += Math.PI/4
+          }
+        } else if (this.keys.w.isDown) { // Forwards / Diagonal movement
+          this.man.animation.mixer.timeScale = 1
+          if(this.keys.a.isDown) {
+            theta += Math.PI/4
+          } else if(this.keys.d.isDown) {
+            theta -= Math.PI/4
+          }
+        } else if(this.keys.a.isDown) {
+          theta += Math.PI/2
+        } else if(this.keys.d.isDown) {
+          theta -= Math.PI/2
+        }
 
         const x = Math.sin(theta) * speed,
           y = this.man.body.velocity.y,
           z = Math.cos(theta) * speed
 
         this.man.body.setVelocity(x, y, z)
-      } else {
-        if (this.man.animation.current === 'run' && this.canJump) this.man.animation.play('idle')
+      }
+      else {
+        if (this.man.animation.current === 'run' && this.canJump) {
+            this.man.animation.play('idle')
+            this.man.animation.mixer.timeScale = 1
+          }
       }
 
       /**
