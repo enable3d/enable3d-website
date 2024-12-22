@@ -57,7 +57,7 @@ const main = function () {
 // first of all, load Nano JSX, then execute all the rest
 window.addEventListener('load', function () {
   const script = document.createElement('script')
-  script.src = 'https://unpkg.com/nano-jsx@0.0.15/bundles/nano.slim.min.js'
+  script.src = '/lib/nano.slim.0.0.15.min.js'
   script.type = 'text/javascript'
   script.addEventListener('load', main)
   document.getElementsByTagName('head')[0].appendChild(script)
