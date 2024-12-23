@@ -13,6 +13,10 @@ div#floating-action-button {
   -webkit-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
   -moz-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
   box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
 div#floating-action-button div {

@@ -5,6 +5,17 @@
     'Droid Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+* {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+	-webkit-tap-highlight-color: transparent;
+}
+
 body {
   color: #1b1b1b;
   overflow: hidden;
