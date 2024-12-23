@@ -58,6 +58,7 @@
             if (fruit === 'background') continue
 
             const sprite = new FLAT.TextureAtlas(this.atlas, fruit)
+            sprite.texture.colorSpace = THREE.SRGBColorSpace
             this.ui.scene.add(sprite)
 
             let x = width / 2 + (Math.random() - 0.5) * Math.min(600, width)

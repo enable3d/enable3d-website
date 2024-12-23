@@ -52,6 +52,7 @@
 
           // prepare the atlas
           const atlas = await this.load.textureAtlas('ninja.png', 'ninja.json')
+          atlas.texture.colorSpace = THREE.SRGBColorSpace
 
           // add the atlas to the internal cache if you want
           // this.cache.add('myAtlas', atlas)

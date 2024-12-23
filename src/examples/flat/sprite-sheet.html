@@ -59,7 +59,7 @@
 
           // add hero on a plane
           const heroPlane = await this.createHero()
-          const geometry = new THREE.PlaneBufferGeometry(heroPlane.textureWidth / 100, heroPlane.textureHeight / 100)
+          const geometry = new THREE.PlaneGeometry(heroPlane.textureWidth / 100, heroPlane.textureHeight / 100)
           const material = new THREE.MeshLambertMaterial({
             map: heroPlane.texture,
             transparent: false,
@@ -76,6 +76,7 @@
         async createHero() {
           // add hero
           const texture = await this.load.texture('hero')
+          texture.colorSpace = THREE.SRGBColorSpace
 
           // for pixel art use NearestFilter (also see https://stackoverflow.com/a/16709631)
           texture.magFilter = THREE.NearestFilter
