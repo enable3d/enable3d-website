@@ -19,7 +19,7 @@
 
       class MainScene extends Scene3D {
         createSpotlight(color) {
-          var spot = this.lights.spotLight({ color, intensity: 2, distance: 40, angle: 0.3, penumbra: 0.2, decay: 2 })
+          const spot = this.lights.spotLight({ color, intensity: 40, distance: 0, angle:Math.PI /12, penumbra: 0.1, decay: 1 })
           // castShadow is true by default
           // spot.castShadow = true
           return spot
@@ -28,7 +28,7 @@
         create() {
           this.warpSpeed('-sky', '-light', '-ground')
 
-          this.camera.position.set(20, 20, 20)
+          this.camera.position.set(15,15,15)
           this.camera.lookAt(0, 0, 0)
 
           this.box = this.add.box({ y: 2 }, { phong: {} })
