@@ -82,16 +82,16 @@ this.physics.add.existing(cube)
 
 ### Extended Three.js Objects
 
-To have more functionalities and a better compatibility, use `new ExtendedMesh()` and `new ExtendedObject3D()` instead of `new THREE.Mesh()` and `new THREE.Object3D()`
+To have more functionalities and a better compatibility, use `new ExtendedMesh()` and `new ExtendedGroup()` instead of `new THREE.Mesh()` and `new THREE.Group()`
 
 ```ts
-import { THREE, ExtendedMesh, ExtendedObject3D } from 'enable3d'
+import { THREE, ExtendedMesh, ExtendedGroup } from 'enable3d'
 
 const cube = new ExtendedMesh(geometry, material)
 // instead of
 const cube = new THREE.Mesh(geometry, material)
 
-const object = new ExtendedObject3D()
+const object = new ExtendedGroup()
 // instead of
-const object = new THREE.Object3D()
+const object = new THREE.Group()
 ```
