@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,15 +10,23 @@
     <title>Native three.js with Physics</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/three.min.js?ver=r130"></script>
-    <script src="/lib/enable3d/enable3d.ammoPhysics.0.25.4.min.js"></script>
-    <script src="/lib/OrbitControls.js"></script>
   </head>
 
   <body>
     <div id="info-text">Using enable3d as Physics Plugin for three.js</div>
-    <script>
-      const { AmmoPhysics, PhysicsLoader } = ENABLE3D
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/threejs/r171/three.module.min.js",
+          "orbit-controls": "/lib/threejs/r171/OrbitControls.module.min.js",
+          "enable3d": "/lib/enable3d/enable3d.ammoPhysics.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from 'three'
+      import { AmmoPhysics, PhysicsLoader } from 'enable3d'
+      import { OrbitControls } from 'orbit-controls'
 
       const MainScene = () => {
         // scene
@@ -28,6 +36,7 @@
         // camera
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
         camera.position.set(10, 10, 20)
+        camera.lookAt(0, 1, 0)
 
         // renderer
         const renderer = new THREE.WebGLRenderer()
@@ -39,7 +48,9 @@
         renderer.setPixelRatio(Math.min(2, DPR))
 
         // orbit controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement)
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.target.set(0, 1, 0)
+        controls.update()
 
         // light
         scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1))
@@ -67,7 +78,7 @@
         // first parameter is the config for the geometry
         // second parameter is for the material
         // you could also add a custom material like so { custom: new THREE.MeshLambertMaterial({ color: 0x00ff00 }) }
-        let greenSphere = factory.addSphere({ y: 2, z: 5 }, { lambert: { color: 0x00ff00 } })
+        let greenSphere = factory.addSphere({ y: 2, z: 5 }, { lambert: { color: 'red' } })
         // once the object is created, you can add physics to it
         physics.add.existing(greenSphere)
 
