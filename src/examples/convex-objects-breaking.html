@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,16 +10,24 @@
     <title>Convex Objects Breaking</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/three.min.js?ver=r130"></script>
-    <script src="/lib/ConvexHull.js"></script>
-    <script src="/lib/ConvexGeometry.js"></script>
-    <script src="/lib/OrbitControls.js"></script>
-    <script src="/lib/enable3d/enable3d.ammoPhysics.0.25.4.min.js"></script>
   </head>
 
   <body>
-    <script>
-      const { AmmoPhysics, PhysicsLoader } = ENABLE3D
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/threejs/r171/three.module.min.js",
+          "orbit-controls": "/lib/threejs/r171/OrbitControls.module.min.js",
+          "convex-geometry": "/lib/threejs/r171/ConvexGeometry.module.min.js",
+          "enable3d": "/lib/enable3d/enable3d.ammoPhysics.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from 'three'
+      import { AmmoPhysics, PhysicsLoader } from 'enable3d'
+      import { ConvexGeometry, ConvexHull } from 'convex-geometry'
+      import { OrbitControls } from 'orbit-controls'
 
       const MainScene = () => {
         // scene
@@ -29,6 +37,7 @@
         // camera
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
         camera.position.set(10, 10, 20)
+        camera.lookAt(0, 2, 2)
 
         // renderer
         const renderer = new THREE.WebGLRenderer()
@@ -40,12 +49,14 @@
         renderer.setPixelRatio(Math.min(2, DPR))
 
         // orbit controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement)
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.target.set(0, 2, 2)
+        controls.update()
 
         // light
-        scene.add(new THREE.HemisphereLight(0xffffbb, 0x080820, 1))
-        scene.add(new THREE.AmbientLight(0x666666))
-        const light = new THREE.DirectionalLight(0xdfebff, 1)
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1))
+        scene.add(new THREE.AmbientLight(0xffffff, 1))
+        const light = new THREE.DirectionalLight(0xffffff, 1)
         light.position.set(50, 200, 100)
         light.position.multiplyScalar(1.3)
 
