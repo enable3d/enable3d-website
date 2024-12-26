@@ -135,10 +135,10 @@ class MainScene extends Scene3D {
        */
       this.add.existing(this.man)
       this.physics.add.existing(this.man, {
-        shape: 'cylinder',
+        shape: 'capsule',
         radius: 0.3,
-        height: 1,
-        offset: { y: -.5 }
+        height: 0.4,
+        offset: { y: -0.5 }
       })
       this.man.body.setFriction(0.8)
       this.man.body.setAngularFactor(0, 0, 0)
@@ -292,28 +292,31 @@ class MainScene extends Scene3D {
       /**
        * Player Move
        */
-      if (this.keys.w.isDown || this.keys.a.isDown || this.keys.s.isDown || this.keys.d.isDown || this.move) { // Run Forwards or backwards
+      if (this.keys.w.isDown || this.keys.a.isDown || this.keys.s.isDown || this.keys.d.isDown || this.move) {
+        // Run Forwards or backwards
         if (this.man.animation.current === 'idle' && this.canJump) this.man.animation.play('run')
 
-        if(this.keys.s.isDown) { //Backwards/diagonal movement
+        if (this.keys.s.isDown) {
+          //Backwards/diagonal movement
           speed *= -1
           this.man.animation.mixer.timeScale = -1
-          if(this.keys.a.isDown) {
-            theta -= Math.PI/4
-          } else if(this.keys.d.isDown) {
-            theta += Math.PI/4
+          if (this.keys.a.isDown) {
+            theta -= Math.PI / 4
+          } else if (this.keys.d.isDown) {
+            theta += Math.PI / 4
           }
-        } else if (this.keys.w.isDown) { // Forwards / Diagonal movement
+        } else if (this.keys.w.isDown) {
+          // Forwards / Diagonal movement
           this.man.animation.mixer.timeScale = 1
-          if(this.keys.a.isDown) {
-            theta += Math.PI/4
-          } else if(this.keys.d.isDown) {
-            theta -= Math.PI/4
+          if (this.keys.a.isDown) {
+            theta += Math.PI / 4
+          } else if (this.keys.d.isDown) {
+            theta -= Math.PI / 4
           }
-        } else if(this.keys.a.isDown) {
-          theta += Math.PI/2
-        } else if(this.keys.d.isDown) {
-          theta -= Math.PI/2
+        } else if (this.keys.a.isDown) {
+          theta += Math.PI / 2
+        } else if (this.keys.d.isDown) {
+          theta -= Math.PI / 2
         }
 
         const x = Math.sin(theta) * speed,
@@ -321,12 +324,11 @@ class MainScene extends Scene3D {
           z = Math.cos(theta) * speed
 
         this.man.body.setVelocity(x, y, z)
-      }
-      else {
+      } else {
         if (this.man.animation.current === 'run' && this.canJump) {
-            this.man.animation.play('idle')
-            this.man.animation.mixer.timeScale = 1
-          }
+          this.man.animation.play('idle')
+          this.man.animation.mixer.timeScale = 1
+        }
       }
 
       /**
