@@ -1,4 +1,4 @@
-const {
+import {
   Project,
   PhysicsLoader,
   Scene3D,
@@ -8,7 +8,7 @@ const {
   ThirdPersonControls,
   PointerLock,
   PointerDrag
-} = ENABLE3D
+} from '/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js'
 
 /**
  * Is touch device?
@@ -280,7 +280,7 @@ class MainScene extends Scene3D {
       this.man.body.setAngularVelocityY(0)
 
       const l = Math.abs(theta - thetaMan)
-      let rotationSpeed = isTouchDevice ? 2 : 4
+      let rotationSpeed = isTouchDevice ? 2 : 6
       let d = Math.PI / 24
 
       if (l > d) {
