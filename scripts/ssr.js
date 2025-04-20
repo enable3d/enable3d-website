@@ -6,16 +6,23 @@ const express = require('express')
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 const path = require('path')
+const { argv } = require('process')
 
 const app = express()
 const port = 8989
+
+const args = argv.slice(2).join(' ')
+const noSandbox = args.includes('--no-sandbox')
 
 app.use(express.static('src'))
 
 const server = app.listen(port, () => console.log('Server started. Press Ctrl+C to quit'))
 
 const ssr = async url => {
-  const browser = await puppeteer.launch({ headless: true })
+  const args = []
+  if (noSandbox) args.push('--no-sandbox', '--disable-setuid-sandbox')
+
+  const browser = await puppeteer.launch({ headless: true, noSandbox: noSandbox, args })
   const page = await browser.newPage()
 
   await page.setRequestInterception(true)
