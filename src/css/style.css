@@ -34,6 +34,18 @@
   }
 }
 
+/* logo based on color theme */
+@media not (prefers-color-scheme: dark) {
+  .logo.dark {
+    display: none;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .logo.light {
+    display: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   background-color: var(--bg-color);
