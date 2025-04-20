@@ -1,14 +1,14 @@
 :root {
-  --color-link: #363636;
-  --color-action-btn: #464646;
-  --color-loader: #dcdcdc;
-  --color-link-blue: #0366d6;
+  --color-link: hsl(0, 0%, 21%);
+  --color-action-btn: hsl(0, 0%, 27%);
+  --color-loader: hsl(0, 0%, 86%);
+  --color-link-blue: hsl(212, 97%, 43%);
 
-  --bg-color-code: #f0f0f0;
-  --bg-color-footer: #f4f4f4;
+  --bg-color-code: hsl(0, 0%, 94%);
+  --bg-color-footer: hsl(0, 0%, 96%);
 
-  --sponsor-bg: #fafbfc;
-  --sponsor-color: #6a6a6a;
+  --sponsor-bg: hsl(210, 25%, 98%);
+  --sponsor-color: hsl(0, 0%, 42%);
 }
 
 html {
