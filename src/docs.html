@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -20,7 +20,14 @@
 
     <script SSROnly src="//cdn.jsdelivr.net/npm/marked@3/lib/marked.min.js"></script>
 
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/github.min.css" />
+    <script>
+      const darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const highlightTheme = darkMode ? 'github-dark.min.css' : 'github.min.css'
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = '//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/' + highlightTheme
+      document.head.appendChild(link)
+    </script>
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
   </head>
 

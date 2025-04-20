@@ -12,7 +12,8 @@ blueBox.body.on.collision((otherObject, event) => {
 ```
 
 ```javascript
-// collision between blueBox and redBox (will set body.checkCollisions = true, on the blueBox and the redBox)
+// collision between blueBox and redBox//
+// (will set body.checkCollisions = true, on the blueBox and the redBox)
 physics.add.collider(blueBox, redBox, event => {
   console.log(`blueBox and redBox: ${event}`)
 })

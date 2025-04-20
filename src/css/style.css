@@ -1,8 +1,10 @@
 :root {
   --color-link: hsl(0, 0%, 21%);
-  --color-action-btn: hsl(0, 0%, 27%);
   --color-loader: hsl(0, 0%, 86%);
   --color-link-blue: hsl(212, 97%, 43%);
+
+  --color-gray80: hsl(0, 0%, 80%);
+  --color-gray50: hsl(0, 0%, 50%);
 
   --bg-color: hsl(0, 0%, 100%);
   --bg-color-code: hsl(0, 0%, 94%);
@@ -14,11 +16,13 @@
   --header-shadow: hsl(0, 0%, 92%);
 
   @media (prefers-color-scheme: dark) {
-    /* --bg-color: hsl(0, 0%, 0%);
+    --bg-color: hsl(0, 0%, 0%);
     --color-link: hsl(0, 0%, 79%);
-    --color-action-btn: hsl(0, 0%, 63%);
     --color-loader: hsl(0, 0%, 14%);
     --color-link-blue: hsl(212, 97%, 67%);
+
+    --color-gray80: hsl(0, 0%, 20%);
+    --color-gray50: hsl(0, 0%, 50%);
 
     --bg-color-code: hsl(0, 0%, 6%);
     --bg-color-footer: hsl(0, 0%, 4%);
@@ -26,7 +30,7 @@
     --sponsor-bg: hsl(210, 25%, 2%);
     --sponsor-color: hsl(0, 0%, 58%);
 
-    --header-shadow: hsl(0, 0%, 8%); */
+    --header-shadow: hsl(0, 0%, 8%);
   }
 }
 
@@ -175,7 +179,12 @@ ul {
 code {
   background-color: var(--bg-color-code);
   font-size: 16px;
-  padding: 2px 4px;
+  padding: 2px 4px !important;
+}
+code.hljs {
+  border: 1px var(--color-gray80) solid;
+  border-radius: 4px;
+  padding: 16px !important;
 }
 
 a {
