@@ -7,14 +7,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: npm install
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12'
+          node-version: 20
       - run: npm install --only=dev
       - run: node scripts/ssr.js
       - run: BUCKET=${{secrets.BUCKET}} AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} DISTRIBUTION_ID=${{secrets.DISTRIBUTION_ID}} node scripts/deploy.js
