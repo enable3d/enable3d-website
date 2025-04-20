@@ -4,15 +4,35 @@
   --color-loader: hsl(0, 0%, 86%);
   --color-link-blue: hsl(212, 97%, 43%);
 
+  --bg-color: hsl(0, 0%, 100%);
   --bg-color-code: hsl(0, 0%, 94%);
   --bg-color-footer: hsl(0, 0%, 96%);
 
   --sponsor-bg: hsl(210, 25%, 98%);
   --sponsor-color: hsl(0, 0%, 42%);
+
+  --header-shadow: hsl(0, 0%, 92%);
+
+  @media (prefers-color-scheme: dark) {
+    /* --bg-color: hsl(0, 0%, 0%);
+    --color-link: hsl(0, 0%, 79%);
+    --color-action-btn: hsl(0, 0%, 63%);
+    --color-loader: hsl(0, 0%, 14%);
+    --color-link-blue: hsl(212, 97%, 67%);
+
+    --bg-color-code: hsl(0, 0%, 6%);
+    --bg-color-footer: hsl(0, 0%, 4%);
+
+    --sponsor-bg: hsl(210, 25%, 2%);
+    --sponsor-color: hsl(0, 0%, 58%);
+
+    --header-shadow: hsl(0, 0%, 8%); */
+  }
 }
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--bg-color);
 }
 
 html,
@@ -49,9 +69,9 @@ footer {
 
 header {
   padding: 0em 1em;
-  -webkit-box-shadow: 0px 10px 10px 0px rgba(235, 235, 235, 1);
-  -moz-box-shadow: 0px 10px 10px 0px rgba(235, 235, 235, 1);
-  box-shadow: 0px 10px 10px 0px rgba(235, 235, 235, 1);
+  -webkit-box-shadow: 0px 10px 10px 0px var(--header-shadow);
+  -moz-box-shadow: 0px 10px 10px 0px var(--header-shadow);
+  box-shadow: 0px 10px 10px 0px var(--header-shadow);
 }
 
 section {
