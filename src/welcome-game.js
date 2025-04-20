@@ -36,7 +36,7 @@ class MainScene extends Scene3D {
      * https://sketchfab.com/3d-models/medieval-fantasy-book-06d5a80a04fc4c5ab552759e9a97d91a
      * Attribution 4.0 International (CC BY 4.0)
      */
-    const book = this.load.preload('book', '/assets/glb/book.glb')
+    const book = this.load.preload('book', '/assets/glb/book_mod.glb')
 
     /**
      * box_man.glb by Jan Bláha
