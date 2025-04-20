@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Texture Cube</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">(scene restarts every 5 seconds)</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        init() {
+          this.load.preload('side', '/assets/img/box-side.png')
+          this.load.preload('top', '/assets/img/box-top.png')
+          this.load.preload('bottom', '/assets/img/box-bottom.png')
+        }
+
+        async create() {
+          this.warpSpeed('-ground')
+
+          // create the texture cube
+          const leftRight = await this.load.texture('side')
+          leftRight.encoding = THREE.sRGBEncoding
+          leftRight.needUpdate = true
+          // if we clone a texture, we have to manually set needsUpdate to true
+          const backFront = leftRight.clone()
+          backFront.needsUpdate = true
+          const top = await this.load.texture('top')
+          top.encoding = THREE.sRGBEncoding
+          top.needUpdate = true
+          const bottom = await this.load.texture('bottom')
+          bottom.encoding = THREE.sRGBEncoding
+          bottom.needUpdate = true
+
+          const textureCube = this.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])
+
+          textureCube.texture.front.repeat.set(4, 1)
+          textureCube.texture.back.repeat.set(4, 1)
+
+          textureCube.texture.left.repeat.set(1, 1)
+          textureCube.texture.right.repeat.set(1, 1)
+
+          // add the texture cube's materials as a custom material
+          this.add.box({ width: 4 }, { custom: textureCube.materials })
+
+          setTimeout(() => {
+            this.restart()
+          }, 5000)
+        }
+      }
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>

@@ -2,5 +2,6 @@ module.exports = {
   root: 'src',
   port: 8081,
   highlight: false,
-  injectBody: false
+  injectBody: false,
+  navigate: false
 }
