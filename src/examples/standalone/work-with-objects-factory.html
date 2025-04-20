@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Work with Objects Factory</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/nano.slim.0.0.15.min.js"></script>
+  </head>
+
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader, THREE, VERSION, FLAT } from 'enable3d'
+      const { jsx, render } = nanoJSX
+
+      class MainScene extends Scene3D {
+        create() {
+          // remove orbitControls from warp speed features
+          this.warpSpeed('-orbitControls')
+
+          // adjust the camera
+          this.camera.position.set(10, 10, 25)
+          this.camera.lookAt(0, 5, 0)
+
+          // enable physics debugging
+          this.physics.debug.enable()
+          this.physics.debug.mode(1)
+
+          /**
+           * Boxes
+           */
+          const cube0 = this.make.box({ x: 2.5, y: 5 }) // make
+          this.add.existing(cube0) // add to scene
+          this.physics.add.existing(cube0) // add physics
+
+          const cube1 = this.add.box({ x: 2.5, y: 10 }) // make and add to scene
+          this.physics.add.existing(cube1) // add physics
+
+          const cube2 = this.physics.add.box({ x: 2.5, y: 15 }) // make, add to scene and add physics
+
+          /**
+           * Spheres
+           */
+          const sphere0 = this.make.sphere({ x: -2.5, y: 5 })
+          this.add.existing(sphere0)
+          this.physics.add.existing(sphere0)
+
+          const sphere1 = this.add.sphere({ x: -2.5, y: 10 })
+          this.physics.add.existing(sphere1)
+
+          const sphere2 = this.physics.add.sphere({ x: -2.5, y: 15 })
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene], antialias: true }))
+    </script>
+  </body>
+</html>
