@@ -1,3 +1,16 @@
+:root {
+  --color-link: #363636;
+  --color-action-btn: #464646;
+  --color-loader: #dcdcdc;
+  --color-link-blue: #0366d6;
+
+  --bg-color-code: #f0f0f0;
+  --bg-color-footer: #f4f4f4;
+
+  --sponsor-bg: #fafbfc;
+  --sponsor-color: #6a6a6a;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -8,9 +21,21 @@ footer,
 a {
   margin: 0;
   padding: 0;
-  font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans',
-    'Droid Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #363636;
+  font-family:
+    BlinkMacSystemFont,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    Helvetica,
+    Arial,
+    sans-serif;
+  color: var(--color-link);
 }
 
 body {
@@ -34,7 +59,7 @@ section {
 }
 
 footer {
-  background-color: #f4f4f4;
+  background-color: var(--bg-color-footer);
   min-height: 5em;
   text-align: center;
 }
@@ -106,7 +131,7 @@ footer {
 }
 
 .navbar-item:hover {
-  color: #0366d6;
+  color: var(--color-link-blue);
 }
 
 @media only screen and (max-width: 640px) {
@@ -128,14 +153,14 @@ ul {
 }
 
 code {
-  background-color: #f0f0f0;
+  background-color: var(--bg-color-code);
   font-size: 16px;
   padding: 2px 4px;
 }
 
 a {
   text-decoration: none;
-  color: #0366d6;
+  color: var(--color-link-blue);
 }
 a:hover {
   text-decoration: underline;
@@ -215,7 +240,7 @@ ul.examples-list li a {
 .loader:before,
 .loader:after {
   z-index: 1;
-  background: #dcdcdc;
+  background: var(--color-loader);
   -webkit-animation: load1 1s infinite ease-in-out;
   animation: load1 1s infinite ease-in-out;
   width: 1em;
@@ -223,7 +248,7 @@ ul.examples-list li a {
 }
 .loader {
   filter: blur(1px);
-  color: #dcdcdc;
+  color: var(--color-loader);
   text-indent: -9999em;
   /* margin: 88px auto; */
   margin: 150px auto;
@@ -276,14 +301,14 @@ ul.examples-list li a {
 
 /** sponsor section */
 #sponsor-section {
-  background-color: #fafbfc;
+  background-color: var(--sponsor-bg);
   text-align: center;
   padding: 16px;
-  color: #6a6a6a;
+  color: var(--sponsor-color);
 }
 
 #sponsor-section a {
-  color: #6a6a6a;
+  color: var(--sponsor-color);
   text-decoration: underline;
 }
 
