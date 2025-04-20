@@ -113,10 +113,6 @@ footer {
   margin: 4px 8px;
 }
 
-.footer-padding {
-  min-height: 96px;
-}
-
 .container {
   max-width: 1024px;
   margin: 0 auto;
@@ -175,6 +171,10 @@ footer {
     padding: 8px 4px;
     font-size: 16px;
   }
+}
+
+h1 {
+  font-size: 32px;
 }
 
 h1,
@@ -342,7 +342,6 @@ ul.examples-list li a {
 
 /** sponsor section */
 #sponsor-section {
-  background-color: var(--sponsor-bg);
   text-align: center;
   padding: 16px;
   color: var(--sponsor-color);
