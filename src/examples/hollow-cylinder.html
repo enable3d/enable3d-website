@@ -84,6 +84,7 @@
         const mesh = new THREE.Mesh(geo, mat)
         geo.translate(0, 0, -1) // somehow this has an offset as well :/
         mesh.rotateX(Math.PI / 2)
+        mesh.rotateY(Math.PI / 4)
         mesh.position.y = 15
         scene.add(mesh)
         physics.add.existing(mesh, { shape: 'hacd' })
