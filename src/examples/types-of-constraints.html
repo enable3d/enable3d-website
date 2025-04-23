@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -152,10 +152,14 @@
         }
 
         update() {
-          this.box.rotation.x += 0.01
-          this.box.body.needUpdate = true
-          this.box2.rotation.x += 0.01
-          this.box2.body.needUpdate = true
+          if (this.box) {
+            this.box.rotation.x += 0.01
+            this.box.body.needUpdate = true
+          }
+          if (this.box2) {
+            this.box2.rotation.x += 0.01
+            this.box2.body.needUpdate = true
+          }
         }
       }
       PhysicsLoader('/lib/ammo/kripken', () => new Project({ scenes: [MainScene] }))
