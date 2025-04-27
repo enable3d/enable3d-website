@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Compound HACD Shape</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">This Tank consists of 4 HACD Shapes.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          this.physics.debug?.enable()
+
+          const { orbitControls } = await this.warpSpeed()
+          this.camera.position.set(3, 3, 6)
+          orbitControls?.target.set(0, 1, 0)
+          this.camera.lookAt(0, 1, 0)
+
+          this.load.gltf('/assets/glb/Tank.glb').then(gltf => {
+            const parts = []
+            gltf.scene.traverse(child => {
+              if (child.isMesh) {
+                parts.push(child)
+              }
+            })
+
+            const tank = new THREE.Group()
+            parts.forEach(p => {
+              tank.add(p)
+            })
+
+            tank.scale.set(100, 100, 100)
+            tank.rotateX(-Math.PI / 2)
+            tank.position.set(0, 2, 0)
+
+            const compoundShape = new Ammo.btCompoundShape()
+            parts.forEach((part, i) => {
+              // get the center of the shape, to set its offset
+              part.geometry.computeBoundingBox()
+              const bb = part.geometry.boundingBox
+              const center = bb.getCenter(new THREE.Vector3())
+
+              let collisionShape = this.physics.createCollisionShape('hacd', {}, part)
+
+              // adjust center of shape
+              const transform = new Ammo.btTransform()
+              transform.setIdentity()
+              transform.setOrigin(new Ammo.btVector3(center.x, center.y, center.z))
+
+              compoundShape.addChildShape(transform, collisionShape)
+            })
+
+            {
+              const pos = new THREE.Vector3()
+              const quat = new THREE.Quaternion()
+              const scale = new THREE.Vector3()
+              tank.getWorldPosition(pos)
+              tank.getWorldQuaternion(quat)
+              tank.getWorldScale(scale)
+
+              const localTransform = this.physics.applyPosQuatScaleMargin(compoundShape, pos, quat, scale, 0.01)
+              const rigidBody = this.physics.collisionShapeToRigidBody(compoundShape, localTransform, 1, false)
+
+              this.add.existing(tank)
+              this.physics.addRigidBodyToWorld(tank, rigidBody, 0, 1, -1)
+            }
+          })
+        }
+      }
+
+      PhysicsLoader('/lib/ammo/moz', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>
