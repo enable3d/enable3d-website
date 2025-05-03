@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>GLTFLoader with Physics</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Left: V-HACD body with low resolution.<br />Right: V-HACD body with high resolution.</div>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/lib/threejs/r171/three.module.min.js",
+          "orbit-controls": "/lib/threejs/r171/OrbitControls.module.min.js",
+          "enable3d": "/lib/enable3d/enable3d.ammoPhysics.0.26.0_dev0.module.min.js",
+          "buffer-geometry-utils": "/lib/threejs/r171/BufferGeometryUtils.module.min.js",
+          "gltf-loader": "/lib/threejs/r171/GLTFLoader.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from 'three'
+      import { AmmoPhysics, PhysicsLoader } from 'enable3d'
+      import { OrbitControls } from 'orbit-controls'
+      import { GLTFLoader } from 'gltf-loader'
+      import { init as initVHACDWasm } from '/lib/vhacd-wasm/index.js'
+      import * as BufferGeometryUtils from 'buffer-geometry-utils'
+
+      const colors = [
+        '#D24C9B',
+        '#6FC6B5',
+        '#FCEB07',
+        '#EE336A',
+        '#91479C',
+        '#AFD037',
+        '#EE3F22',
+        '#6952A2',
+        '#F68C1E',
+        '#60BA46'
+      ]
+
+      const addShip = async (x, y, scene, physics, resolution) => {
+        const loader = new GLTFLoader()
+
+        // https://poly.pizza/m/cIzO4MBPqI
+        const gltf = await loader.loadAsync('/assets/glb/Sail_Ship_mod.glb')
+        const ship = gltf.scene.children[0]
+        ship.position.setX(x)
+        ship.position.setY(y)
+
+        // array of geometries
+        const geos = []
+
+        ship.traverse(child => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = child.receiveShadow = false
+            child.material.metalness = 0
+            child.material.roughness = 1
+
+            const geo = child.geometry.clone()
+            geo.applyMatrix4(child.matrixWorld)
+            geos.push(geo)
+          }
+        })
+
+        // combine geometries
+        let geometries = BufferGeometryUtils.mergeGeometries(geos)
+        const combined_geometry = BufferGeometryUtils.mergeVertices(geometries)
+
+        // get vertices and indices from geometry
+        const data = getDataFromGeometry(combined_geometry)
+
+        const shapes = []
+
+        // load vhacd-wasm
+        const worker = new Worker('/lib/vhacd-wasm/worker.js')
+        const vhacd_wasm = await initVHACDWasm(worker)
+
+        // compute the vhacd shapes
+        const computed_data = await vhacd_wasm.compute_vhacd(data.vertices, data.indices, resolution)
+
+        for (const [index, data] of computed_data.entries()) {
+          const mesh = createMeshFromData([data], index)
+          mesh.position.setX(x)
+          mesh.position.setY(y)
+          scene.add(mesh)
+          const collisionShape = create_hull_shape(data.vertices, ship.scale)
+          shapes.push(collisionShape)
+        }
+
+        worker.terminate()
+
+        const compoundShape = physics.mergeCollisionShapesToCompoundShape(shapes)
+        const localTransform = physics.applyPosQuatScaleMargin(
+          compoundShape,
+          ship.position.clone(),
+          ship.quaternion.clone(),
+          ship.scale
+        )
+        const rigidBody = physics.collisionShapeToRigidBody(compoundShape, localTransform, 1, false)
+        physics.addRigidBodyToWorld(ship, rigidBody)
+        scene.add(ship)
+      }
+
+      const MainScene = async () => {
+        const scene = new THREE.Scene()
+        scene.background = new THREE.Color(0xf0f0f0)
+
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
+        camera.position.set(4, 8, 8)
+        camera.lookAt(0, 5, 0)
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true })
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setPixelRatio(Math.min(2, window.devicePixelRatio))
+
+        document.body.appendChild(renderer.domElement)
+
+        const controls = new OrbitControls(camera, renderer.domElement)
+        controls.target.set(0, 5, 0)
+        controls.update()
+
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 1))
+        scene.add(new THREE.AmbientLight(0xffffff))
+        const light = new THREE.DirectionalLight(0xffffff, 1)
+        light.position.set(50, 200, 100)
+        light.position.multiplyScalar(1.3)
+
+        // initialize physics
+        const physics = new AmmoPhysics(scene)
+        physics.debug.enable(true)
+
+        // add a ground
+        physics.add.ground({ width: 20, height: 20 })
+
+        addShip(-2, 5, scene, physics, 32)
+        addShip(2, 5, scene, physics, 128)
+
+        const clock = new THREE.Clock()
+
+        const animate = () => {
+          physics.update(clock.getDelta() * 1000)
+          physics.updateDebugger()
+          renderer.render(scene, camera)
+          requestAnimationFrame(animate)
+        }
+        requestAnimationFrame(animate)
+      }
+      PhysicsLoader('/lib/ammo/kripken', () => MainScene())
+
+      console.log(`three.js version "${THREE.REVISION}"`)
+
+      function createMeshFromData(data, colorIndex) {
+        const group = new THREE.Group()
+        data.forEach((v, i) => {
+          const geometry = new THREE.BufferGeometry()
+
+          const points = []
+          for (let i = 0; i < v.vertices.length; i += 3) {
+            points.push(new THREE.Vector3(v.vertices[i + 0], v.vertices[i + 1], v.vertices[i + 2]))
+          }
+
+          geometry.setFromPoints(points)
+          geometry.setIndex(v.indices)
+
+          const object = new THREE.Mesh(
+            geometry,
+            new THREE.MeshBasicMaterial({ color: colors[(i + colorIndex) % 6], side: THREE.DoubleSide })
+          )
+
+          const edges = new THREE.EdgesGeometry(geometry)
+          const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: '#36454F' }))
+
+          group.add(object)
+          group.add(line)
+        })
+
+        return group
+      }
+
+      function getDataFromGeometry(geometry) {
+        const position = geometry.getAttribute('position')
+        const vertices = []
+        for (let i = 0; i < position.count; i += 3) {
+          const vertex = new THREE.Vector3()
+          vertex.fromBufferAttribute(position, i) // read vertex
+          vertices.push(vertex)
+        }
+
+        let indices = []
+        if (geometry.index) {
+          indices = Array.from(geometry.index.array)
+        } else if (geometry.attributes.index) {
+          indices = Array.from(geometry.attributes.index.array)
+        } else if (geometry.index === null) {
+          for (let i = 0; i < vertices.length; i++) {
+            indices.push(i)
+          }
+        }
+        return { vertices: Array.from(position.array), indices }
+      }
+
+      function create_hull_shape(vertices, localScale = new THREE.Vector3(1, 1, 1), margin = 0.04) {
+        const btVertex = new Ammo.btVector3()
+
+        const originalHull = new Ammo.btConvexHullShape()
+        originalHull.setMargin(margin)
+
+        for (let i = 0; i < vertices.length; i += 3) {
+          btVertex.setValue(vertices[i + 0], vertices[i + 1], vertices[i + 2])
+          originalHull.addPoint(btVertex)
+        }
+
+        originalHull.recalcLocalAabb()
+
+        let collisionShape = originalHull
+
+        // Bullet documentation says don't use convexHulls with 100 verts or more
+        if (originalHull.getNumVertices() >= 100) {
+          const shapeHull = new Ammo.btShapeHull(originalHull)
+          shapeHull.buildHull(margin)
+          Ammo.destroy(originalHull)
+          collisionShape = new Ammo.btConvexHullShape(
+            Ammo.getPointer(shapeHull.getVertexPointer()),
+            shapeHull.numVertices()
+          )
+          Ammo.destroy(shapeHull) // btConvexHullShape makes a copy
+        }
+
+        const scale = new Ammo.btVector3(localScale.x, localScale.y, localScale.z)
+        collisionShape.setLocalScaling(scale)
+        Ammo.destroy(scale)
+
+        // https://github.com/bulletphysics/bullet3/issues/1970
+        collisionShape.initializePolyhedralFeatures(0)
+        // this.physics.physicsWorld.getDispatchInfo().m_enableSatConvex = true
+
+        Ammo.destroy(btVertex)
+
+        return collisionShape
+      }
+    </script>
+  </body>
+</html>
