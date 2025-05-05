@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,8 +15,15 @@
 
   <body>
     <div id="info-text">Use your Arrow Keys to move</div>
-    <script>
-      const { Project, Scene3D, PhysicsLoader } = ENABLE3D
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader } from 'enable3d'
 
       class MainScene extends Scene3D {
         player

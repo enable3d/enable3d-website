@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,20 +10,29 @@
     <title>Per Body Gravity</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">The Right Box uses a different Gravity.</div>
-    <script>
-      const { Project, Scene3D, PhysicsLoader } = ENABLE3D
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader } from 'enable3d'
 
       class MainScene extends Scene3D {
-        create() {
-          this.warpSpeed()
+        async create() {
+          const { camera, orbitControls } = await this.warpSpeed()
+          orbitControls.target.set(0, 3, 0)
+          camera.position.set(4, 4, 8)
+          camera.lookAt(0, 3, 0)
 
-          const leftBox = this.physics.add.box({ x: -2, y: 5 })
-          const rightBox = this.physics.add.box({ x: 2, y: 5 })
+          const leftBox = this.physics.add.box({ x: -1, y: 5 })
+          const rightBox = this.physics.add.box({ x: 1, y: 5 })
 
           rightBox.body.setGravity(0, -1, 0)
         }
