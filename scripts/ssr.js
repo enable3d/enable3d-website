@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * Pre Render JavaScript
  */
@@ -36,6 +38,9 @@ const ssr = async url => {
     req.continue()
   })
 
+  await page.evaluateOnNewDocument(() => {
+    window.isPuppeteer = true
+  })
   await page.goto(url, { waitUntil: 'networkidle2' })
 
   // https://github.com/lichtquelle/generate-static-site/blob/main/src/crawl.ts
