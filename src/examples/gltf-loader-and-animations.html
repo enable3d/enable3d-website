@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,12 +10,18 @@
     <title>GLTF Loader and Animations</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
   </head>
 
   <body>
-    <script>
-      const { Project, Scene3D, PhysicsLoader, ExtendedObject3D, THREE } = ENABLE3D
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader, ExtendedObject3D } from 'enable3d'
 
       class MainScene extends Scene3D {
         async create() {

@@ -10,13 +10,19 @@
     <title>Medieval Fantasy Book</title>
     <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
     <script src="/js/examples.js?ver=1.1.1"></script>
-    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
   </head>
 
   <body>
     <div id="info-text">Use WASD, SPACE and your Mouse.<br />Try to play it on your mobile device :)</div>
-    <script>
-      const {
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import {
         Project,
         PhysicsLoader,
         Scene3D,
@@ -26,7 +32,7 @@
         ThirdPersonControls,
         PointerLock,
         PointerDrag
-      } = ENABLE3D
+      } from 'enable3d'
 
       /**
        * Is touch device?
