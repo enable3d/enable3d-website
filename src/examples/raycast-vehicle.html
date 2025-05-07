@@ -192,16 +192,17 @@
           // this.physics.debug?.enable()
 
           const grass = await this.load.texture('/assets/img/grass.jpg')
+          grass.colorSpace = THREE.SRGBColorSpace
           const grassGround = grass.clone()
           grassGround.needsUpdate = true
           grassGround.wrapS = grassGround.wrapT = 1000 // RepeatWrapping
           grassGround.offset.set(0, 0)
           grassGround.repeat.set(10, 10)
 
-          this.physics.add.ground({ y: -1, width: 100, height: 100 }, { lambert: { map: grassGround } })
+          this.physics.add.ground({ y: -1, width: 120, height: 120 }, { lambert: { map: grassGround } })
 
-          const ramp = this.add.box({ width: 5, height: 10, z: -20 }, { lambert: { map: grass } })
-          ramp.rotateX(-Math.PI / 3)
+          const ramp = this.add.box({ width: 8, height: 10, z: 20 })
+          ramp.rotateX(Math.PI / 3)
           this.physics.add.existing(ramp, { collisionFlags: 1, mass: 0 })
 
           const gltf = await this.load.gltf('/assets/glb/car.glb')

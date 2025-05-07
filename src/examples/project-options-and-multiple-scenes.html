@@ -61,6 +61,7 @@
 
           // add grass
           const grass = await this.load.texture('grass')
+          grass.colorSpace = THREE.SRGBColorSpace
           grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
           grass.offset.set(0, 0)
           grass.repeat.set(2, 2)
@@ -72,12 +73,14 @@
           robot.name = 'robot'
           robot.add(gltf.scene.children[0])
           robot.traverse(child => {
-            if (child.isMesh) child.castShadow = child.receiveShadow = true
+            if (child instanceof THREE.Mesh) {
+              child.castShadow = child.receiveShadow = true
+            }
           })
           robot.position.set(0, 5, 0)
           robot.scale.set(0.5, 0.5, 0.5)
           this.add.existing(robot)
-          this.physics.add.existing(robot, { shape: 'box', offset: { y: -0.5 } })
+          this.physics.add.existing(robot, { shape: 'box', offset: { y: -0.3 } })
 
           // load the next level after 3 seconds
           setTimeout(() => {

@@ -30,16 +30,16 @@
 
           // create the texture cube
           const leftRight = await this.load.texture('side')
-          leftRight.encoding = THREE.sRGBEncoding
+          leftRight.colorSpace = THREE.SRGBColorSpace
           leftRight.needUpdate = true
           // if we clone a texture, we have to manually set needsUpdate to true
           const backFront = leftRight.clone()
           backFront.needsUpdate = true
           const top = await this.load.texture('top')
-          top.encoding = THREE.sRGBEncoding
+          top.colorSpace = THREE.SRGBColorSpace
           top.needUpdate = true
           const bottom = await this.load.texture('bottom')
-          bottom.encoding = THREE.sRGBEncoding
+          bottom.colorSpace = THREE.SRGBColorSpace
           bottom.needUpdate = true
 
           const textureCube = this.misc.textureCube([leftRight, leftRight, top, bottom, backFront, backFront])

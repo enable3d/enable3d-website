@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -47,7 +47,10 @@
           this.third.physics.debug.enable()
 
           // add background image
-          this.third.load.texture('sky').then(sky => (this.third.scene.background = sky))
+          this.third.load.texture('sky').then(sky => {
+            sky.colorSpace = THREE.SRGBColorSpace
+            this.third.scene.background = sky
+          })
 
           // add score text
           this.scoreText = this.add.text(32, this.cameras.main.height - 32, 'score: 0', {

@@ -95,6 +95,7 @@
           this.warpSpeed('-ground')
 
           const grass = await this.load.texture('grass')
+          grass.colorSpace = THREE.SRGBColorSpace
           grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
           grass.offset.set(0, 0)
           grass.repeat.set(50, 50)

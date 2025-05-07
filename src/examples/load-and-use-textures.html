@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,7 +17,7 @@
   <body>
     <div id="info-text">(scene restarts every 5 seconds)</div>
     <script>
-      const { enable3d, Scene3D, Canvas } = ENABLE3D
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
 
       class MainScene extends Scene3D {
         constructor() {
@@ -42,6 +42,7 @@
           // get the texture and add the ground
 
           this.third.load.texture('grass').then(grass => {
+            grass.colorSpace = THREE.SRGBColorSpace
             grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
             grass.offset.set(0, 0)
             grass.repeat.set(2, 2)

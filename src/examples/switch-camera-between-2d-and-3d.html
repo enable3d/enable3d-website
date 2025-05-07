@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -101,7 +101,7 @@
 
           // add background image
           this.third.load.texture('sky').then(sky => {
-            sky.encoding = THREE.sRGBEncoding
+            sky.colorSpace = THREE.SRGBColorSpace
             sky.needUpdate = true
             this.third.scene.background = sky
           })

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -42,6 +42,7 @@
 
           // load grass texture
           const grass = await this.third.load.texture('/assets/img/grass.jpg')
+          grass.colorSpace = THREE.SRGBColorSpace
           grass.wrapS = THREE.RepeatWrapping
           grass.wrapT = THREE.RepeatWrapping
           grass.repeat.set(4, 4)

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -28,6 +28,7 @@
           this.physics.debug.enable()
 
           const texture = await this.load.texture('grass')
+          texture.colorSpace = THREE.SRGBColorSpace
           texture.wrapS = THREE.RepeatWrapping
           texture.wrapT = THREE.RepeatWrapping
           texture.repeat.set(2, 2)
