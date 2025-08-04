@@ -13,7 +13,7 @@
   </head>
 
   <body>
-    <div id="info-text">Teleports the box after 2 seconds to a new position</div>
+    <div id="info-text">Teleports the box after 2 seconds to a new position and rotation</div>
     <script type="importmap">
       {
         "imports": {
@@ -42,6 +42,7 @@
 
             // set the new position
             blueBox.position.set(2, 4, 2)
+            blueBox.rotation.set(1, 2, 3)
             blueBox.body.needUpdate = true
 
             // this will run only on the next update if body.needUpdate = true
