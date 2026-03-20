@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Water</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        async create() {
+          await this.third.warpSpeed()
+
+          this.third.camera.position.set(0, 3, 2)
+
+          const textures = await Promise.all([
+            this.third.load.texture('/assets/water/Water_1_M_Normal.jpg'),
+            this.third.load.texture('/assets/water/Water_2_M_Normal.jpg')
+          ])
+
+          textures[0].needsUpdate = true
+          textures[1].needsUpdate = true
+
+          this.third.misc.water({
+            y: 1,
+            normalMap0: textures[0],
+            normalMap1: textures[1]
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

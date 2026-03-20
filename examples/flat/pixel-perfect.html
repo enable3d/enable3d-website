@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pixel Prfect</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Click and hover over the text to see the effect.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE, FLAT } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        async create() {
+          const { orbitControls } = await this.warpSpeed()
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          // Initialize the flat elements
+          this.ui = FLAT.init(this.renderer)
+
+          // Use this if you need events on the 2D elements.
+          // If you are using orbitControls, pass it to initEvents().
+          // This makes sure orbitControls is not messing with the mouse move.
+          FLAT.initEvents({ canvas: this.renderer.domElement, orbitControls })
+
+          // Call Flat.destroy() on scene restart or stop
+          // or simply add FLAT to the deconstructor
+          this.deconstructor.add(FLAT /* same effect as FLAT.destroy */, orbitControls)
+
+          // add text sprite
+          const styles = { fontWeight: 'bold', fontSize: 72, fillStyle: '#c4c4c4' }
+          const text = 'this is\na very\nlong\ntext'
+
+          const texture = new FLAT.TextTexture(text, styles)
+          const sprite = new FLAT.TextSprite(texture)
+
+          sprite.setPosition(width / 2, height / 2)
+          sprite.setDepth(1)
+          sprite.setScale(1)
+          sprite.setInteractive({ pixelPerfect: true })
+
+          this.ui.scene.add(sprite)
+
+          sprite.onInputOver = () => {
+            sprite.setStyles({ ...styles, fillStyle: '#ff00ff' })
+          }
+          sprite.onInputOut = () => {
+            sprite.setStyles({ ...styles, fillStyle: '#c4c4c4' })
+          }
+          sprite.onInputDown = () => {
+            sprite.setText('this is\na long\ntext')
+            sprite.setStyles({ ...styles, fillStyle: '#000000' })
+          }
+        }
+
+        preRender() {
+          FLAT.preRender(this.renderer)
+        }
+
+        postRender() {
+          FLAT.postRender(this.renderer, this.ui)
+        }
+      }
+
+      PhysicsLoader('/lib/ammo', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

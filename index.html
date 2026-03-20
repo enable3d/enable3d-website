@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" sizes="16x16" type="image/png" href="/img/icon/logo-16x16.png" />
+    <link rel="icon" sizes="32x32" type="image/png" href="/img/icon/logo-32x32.png" />
+    <link rel="icon" sizes="96x96" type="image/png" href="/img/icon/logo-96x96.png" />
+    <title>enable3d • 3D for Web, Mobile and PC</title>
+    <meta
+      name="description"
+      content="Cross-Platform 3D Game Framework using HTML5 and WebGL wrapping Three.js and ammo.js (bullet3). Includes Headless Physics mode for your Node.js Server and a Phaser 3D Extension."
+    />
+    <link rel="stylesheet" href="/css/style.css?ver=1.3.0" />
+  </head>
+
+  <body>
+    <header>
+      <div class="container navbar">
+        <a href="/">
+          <div id="logo">
+            <div class="logo light"><img src="/img/enable3d-logo.png" /></div>
+            <div class="logo dark"><img src="/img/enable3d-logo-dark.png" /></div>
+          </div>
+        </a>
+        <ul class="navbar-items">
+          <a href="/examples.html">
+            <li class="navbar-item">Examples</li>
+          </a>
+          <a href="/docs.html">
+            <li class="navbar-item">Docs</li>
+          </a>
+          <a href="https://github.com/enable3d/enable3d/discussions" target="_blank" rel="noopener">
+            <li class="navbar-item">Discussions</li>
+          </a>
+          <a href="https://github.com/enable3d/enable3d" target="_blank" rel="noopener">
+            <li class="navbar-item">Github</li>
+          </a>
+        </ul>
+      </div>
+    </header>
+
+    <style>
+      #welcome-game {
+        overflow: hidden;
+      }
+      #welcome-game-placeholder {
+        width: 100%;
+        height: 100%;
+      }
+      #welcome-game-placeholder-loader {
+        position: absolute;
+        left: 50%;
+      }
+      #welcome-game-placeholder-image {
+        width: 100%;
+        height: 100%;
+        background-image: url('/img/welcome-game-screenshot.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        filter: blur(4px);
+        cursor: pointer;
+      }
+    </style>
+
+    <div id="welcome-game">
+      <div id="welcome-game-placeholder">
+        <div id="welcome-game-placeholder-loader"><div class="loader"></div></div>
+        <div id="welcome-game-placeholder-image"></div>
+      </div>
+    </div>
+    <script>
+      const WIDTH = window.innerWidth
+      const HEIGHT = !('ontouchstart' in window) ? (window.innerHeight / 5) * 3 : window.innerHeight - 200
+      document.getElementById('welcome-game').style.height = `${HEIGHT}px`
+    </script>
+
+    <section class="content">
+      <div class="container">
+        <h1 style="text-align: center; margin-top: 0; margin-bottom: 1em">3D for Web, Mobile and PC</h1>
+
+        <p style="text-align: center">
+          <a href="https://www.npmjs.com/search?q=enable3d"
+            ><img
+              class="lazy"
+              src="/img/placeholder/badge-orange.png"
+              data-src="https://img.shields.io/npm/v/@enable3d/phaser-extension?style=flat-square"
+              alt="NPM version"
+          /></a>
+          <a href="https://github.com/enable3d/enable3d/actions?query=workflow%3ACI"
+            ><img
+              class="lazy"
+              src="/img/placeholder/badge-green.png"
+              data-src="https://img.shields.io/github/actions/workflow/status/yandeu/enable3d/main.yml?branch=master&label=github%20build&logo=github&style=flat-square"
+          /></a>
+          <a href="https://github.com/enable3d/enable3d/commits/master"
+            ><img
+              class="lazy"
+              src="/img/placeholder/badge-green.png"
+              data-src="https://img.shields.io/github/last-commit/enable3d/enable3d.svg?style=flat-square"
+              alt="GitHub last commit"
+          /></a>
+          <a href="https://github.com/prettier/prettier" alt="code style: prettier"
+            ><img
+              class="lazy"
+              src="/img/placeholder/badge-pink.png"
+              data-src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"
+          /></a>
+          <a href="https://www.typescriptlang.org/">
+            <img
+              class="lazy"
+              src="/img/placeholder/badge-blue.png"
+              data-src="https://img.shields.io/badge/built%20with-TypeScript-blue?style=flat-square"
+            />
+          </a>
+        </p>
+
+        <div class="benefits">
+          <div class="benefit">
+            <h3>Physics for Three.js</h3>
+            <p>
+              Easily add Physics (ammo.js) to your Three.js scene. Including Dynamic, Static and Kinematic Bodies,
+              Compound Shapes, Constraints, CCD Motion Clamping and more.
+            </p>
+          </div>
+          <div class="benefit">
+            <h3>Ammo Physics on Node.js</h3>
+            <p>
+              Run enable3d's Headless Physics Module on your Node.js Server without the use of additional packages like
+              electron, node-canvas, jsdom or puppeteer.
+            </p>
+          </div>
+          <div class="benefit">
+            <h3>Standalone 3D Framework</h3>
+            <p>
+              Use enable3d to easily get your first 3D HTML5 WebGL Game up and running in minutes. It uses the popular
+              Three.js Engine and ammo.js (bullet3) Physics.
+            </p>
+          </div>
+          <div class="benefit">
+            <h3>Phaser 3D Extension</h3>
+            <p>
+              Integrate 3D Objects and Physics with few lines of code to your Phaser Games. Use all cool Phaser features
+              you are used to, to create an amazing 3D game.
+            </p>
+          </div>
+          <div class="benefit">
+            <h3>Open Source and Free</h3>
+            <p>
+              Yep, enable3d is open source and free. You'll find everything on
+              <a href="https://github.com/enable3d">github</a>. Staring the project helps a lot! It shows people like it
+              and will thus motivate me to develop it further :)
+            </p>
+          </div>
+          <div class="benefit">
+            <h3>Web, Mobile and PC</h3>
+            <p>
+              Written in JavaScript (TypeScript), allows you to easily deploy it to any http server. Use
+              <a href="https://capacitor.ionicframework.com/">capacitor</a> to deploy your game to Android and iOS and
+              <a href="https://www.electronjs.org/">electron</a> to deploy it to Windows and OSX.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" style="display: flex; text-align: center; justify-content: center; flex-direction: column">
+        <style>
+          .youtube-thumbnail {
+            transition: all 0.4s;
+          }
+          .youtube-thumbnail:hover {
+            filter: grayscale(100%);
+          }
+        </style>
+        <div>
+          <h2>Introduction Video</h2>
+          <p>Watch a great introduction video on <a target="_blank" href="https://youtu.be/j6nv3JIAFLk">YouTube</a>.</p>
+          <a target="_blank" href="https://youtu.be/j6nv3JIAFLk">
+            <img
+              class="youtube-thumbnail"
+              src="/img/youtube-thumbnail.jpg"
+              alt="Enable3D Introduction Video"
+              width="320"
+              height="179"
+            />
+          </a>
+        </div>
+      </div>
+
+      <div class="container">
+        <style>
+          .button-bw {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 16px;
+            color: white;
+            border: 1px #363636 solid;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+            background: #363636;
+          }
+          .button-bw:hover {
+            color: #363636;
+            background: white;
+          }
+        </style>
+
+        <div>
+          <h2 style="text-align: center; margin-bottom: 8px">Get Started</h2>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 0px">
+            <a href="/examples.html" class="button-bw">Examples</a>
+            <a href="/docs.html" class="button-bw">Documentation</a>
+            <a href="#templates" class="button-bw">Templates</a>
+          </div>
+        </div>
+
+        <div>
+          <h2 style="text-align: center; margin-bottom: 8px">Download</h2>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-top: 0px">
+            <a href="https://www.npmjs.com/search?q=enable3d" class="button-bw">Packages from npm</a>
+            <a href="https://github.com/enable3d/enable3d/tree/master/bundles" class="button-bw">Bundles from github</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <h2 id="projects">Projects built using Enable3D</h2>
+        <ul>
+          <li>
+            <a href="https://github.com/enable3d/enable3d/discussions/337" target="_blank" rel="noopener"
+              >Pirate ship journey</a
+            >
+          </li>
+          <li>
+            <a href="https://toonks.vercel.app/" target="_blank" rel="noopener">Toonks, a multiplayer tank battle.</a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/enable3d/enable3d-website/blob/master/src/index.html"
+              target="_blank"
+              rel="noopener"
+              >Add your project to this list!</a
+            >
+          </li>
+        </ul>
+
+        <h2 id="templates">Templates</h2>
+        <ul>
+          <li>
+            <a href="https://github.com/enable3d/threejs-ammojs-webpack-example" target="_blank" rel="noopener"
+              >Standalone Enable3d Framework</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/enable3d/threejs-ammojs-webpack-example" target="_blank" rel="noopener"
+              >Three.js + 3D Physics</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/enable3d/enable3d-phaser-project-template" target="_blank" rel="noopener"
+              >Phaser 3 + 3D Elements/Physics</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/vitalspace/enable3d-ammojs-astro-example" target="_blank" rel="noopener"
+              >Enable3d Ammojs Astro Example</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/vitalspace/enable3d-ammojs-svelte-example" target="_blank" rel="noopener"
+              >Enable3d Ammojs Svelte Example</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/vitalspace/enable3d-ammojs-vite-example" target="_blank" rel="noopener"
+              >Enable3d Ammojs Vite Example</a
+            >
+          </li>
+        </ul>
+
+        <h2>Discussions</h2>
+        <p>
+          Connect with the community on
+          <a href="https://github.com/enable3d/enable3d/discussions" target="_blank" rel="noopener"
+            >GitHub Discussions</a
+          >.
+        </p>
+
+        <h2>Convert to Mobile App</h2>
+        <p>
+          Easily convert your enable3d project to a native Android or iOS app using
+          <a href="https://html2app.dev/" target="_blank">this awesome tool</a>
+          I wrote!
+        </p>
+
+        <h2>Multiplayer Games</h2>
+        <p>
+          Want to make a multiplayer game? You can run enable3d on the client and the server (in headless mode; with
+          physics). Also check out
+          <a href="https://github.com/geckosio/geckos.io#readme">geckos.io</a>.
+        </p>
+
+        <h2>More</h2>
+        <p>
+          Initially I only wanted to make a 3D extension for Phaser 3. That is where the name enable3d is coming from.
+          But now, this project can do much more. I have extracted the main project into separate modules. So, you can
+          now use enable3d as a <b>Physics Plugin for Three.js</b>, as a <b>Standalone 3D Framework</b>, as an
+          <b>3D Extension for Phaser</b> or on your <b>Node.js Server</b>.
+        </p>
+      </div>
+    </section>
+    <footer>
+      <a href="https://github.com/enable3d/enable3d#readme"> github.com/enable3d/enable3d </a>
+      <div class="footer-buttons">
+        <a href="https://github.com/enable3d/enable3d">
+          <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/enable3d/enable3d?style=social" />
+        </a>
+
+        <a href="https://github.com/sponsors/yandeu">
+          <img
+            alt="GitHub Sponsors"
+            src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-lightgrey?style=social&logo=GitHub"
+          />
+        </a>
+
+        <a
+          href="https://github.com/sponsors/yandeu?frequency=one-time&sponsor=yandeu#sponsors:~:text=%241%20one%20time"
+        >
+          <img
+            alt="One-Time Donation"
+            src="https://img.shields.io/badge/One--Time%20Donation-$1-lightgrey?style=social&logo=GitHub"
+          />
+        </a>
+      </div>
+      <div id="sponsor-section">
+        <span>
+          Enable3d is maintained and provided for free, please consider supporting it on
+          <a href="https://github.com/sponsors/yandeu"> GitHub Sponsors </a>
+          ❤️
+        </span>
+      </div>
+    </footer>
+
+    <script src="/js/load-images.js?ver=2.0.0"></script>
+    <script type="module" src="/welcome-game.js?ver=1.0.3"></script>
+  </body>
+</html>

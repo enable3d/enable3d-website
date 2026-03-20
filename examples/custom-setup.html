@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Custom Setup</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+    <script>
+      // this is a temporary fix for 0.22.0-dev.x
+      const { enable3d, Scene3D, Cameras, Third, Canvas, THREE } = ENABLE3D
+    </script>
+    <script src="/lib/OrbitControls.js"></script>
+  </head>
+
+  <body>
+    <script>
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.camera.position.set(10, 15, 20)
+
+          this.third.scene.background = new THREE.Color(0xbfd1e5)
+
+          this.third.lights.ambientLight({ color: 0x707070 })
+          const light = this.third.lights.directionalLight({
+            skyColor: 0xffffff,
+            intensity: 0.8,
+            x: -10,
+            y: 18,
+            z: 5
+          })
+          const d = 50
+          light.shadow.camera.top = d
+          light.shadow.camera.bottom = -d
+          light.shadow.camera.left = -d
+          light.shadow.camera.right = d
+          light.shadow.mapSize.set(1024, 1024)
+
+          this.third.camera.lookAt(this.third.scene.position)
+
+          // grid (texture)
+          const gridData =
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOnAAADusBZ+q87AAAAJtJREFUeJzt0EENwDAAxLDbNP6UOxh+NEYQ5dl2drFv286598GrA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAa4AO0BqgA7QG6ACtATpAu37AD8eaBH5JQdVbAAAAAElFTkSuQmCC'
+
+          this.third.load.texture(gridData).then(texture => {
+            console.log(texture)
+            texture.wrapS = texture.wrapT = 1000 // RepeatWrapping
+            texture.repeat.set(25, 25)
+
+            // ground
+            const ground = this.third.physics.add.ground(
+              {
+                name: 'ground',
+                width: 50,
+                height: 50,
+                depth: 1,
+                y: 0
+              },
+              {
+                phong: {
+                  map: texture,
+                  transparent: true,
+                  opacity: 0.8,
+                  color: 0xffffff
+                }
+              }
+            )
+            ground.body.setRestitution(1)
+          })
+
+          new THREE.OrbitControls(this.third.camera, this.scale.parent)
+
+          this.third.physics.add.box({ width: 1, height: 2, depth: 2.5, y: 10 }, { lambert: { color: 0xff00ff } })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

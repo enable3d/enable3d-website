@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Shape Showcase</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Cameras, Canvas } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed('light', 'orbitControls', 'sky')
+
+          this.objects = [
+            this.third.add.box({ x: -4, y: 0, z: 0 }),
+            this.third.add.sphere({ x: -2, y: 0, z: 0, radius: 0.5 }),
+            this.third.add.sphere({
+              x: 0,
+              y: 0,
+              z: 0,
+              radius: 0.5,
+              widthSegments: 6,
+              heightSegments: 4
+            }),
+            this.third.add.sphere({ x: 2, y: 0, z: 0, radius: 0.5, phiLength: Math.PI }, { lambert: { side: 2 } }),
+            this.third.add.cylinder({
+              x: 4,
+              y: 0,
+              z: 0,
+              radiusTop: 0.5,
+              radiusBottom: 0.5,
+              height: 1
+            })
+          ]
+        }
+
+        update() {
+          this.objects.forEach(obj => {
+            obj.rotation.x += 0.01
+            obj.rotation.y += 0.01
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: 1280,
+          height: 720
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

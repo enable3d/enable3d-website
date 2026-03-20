@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Create and Destroy Objects and Physics</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+  </head>
+
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader, THREE } from 'enable3d'
+
+      class MainScene extends Scene3D {
+        async create() {
+          const { ground } = await this.warpSpeed()
+
+          this.physics.debug.enable()
+
+          const newBox = (y, color) => {
+            const geometry = new THREE.BoxGeometry(1, 1, 1)
+            const material = new THREE.MeshLambertMaterial({ color })
+            const mesh = new THREE.Mesh(geometry, material)
+            mesh.position.set(0, y, 0)
+
+            this.add.existing(mesh)
+            return mesh
+          }
+
+          const blueBox = newBox(3, 'cornflowerblue')
+          const redBox = newBox(4.5, 'tomato')
+
+          const hasBody = () => {
+            console.log('blueBox:', typeof blueBox.body, blueBox.hasBody)
+            console.log('redBox:', typeof blueBox.body, blueBox.hasBody)
+          }
+
+          hasBody()
+
+          setTimeout(() => this.physics.add.existing(redBox), 1000) // add physics body to redBox
+
+          setTimeout(() => this.physics.add.existing(blueBox), 2000) // add physics body to blueBox
+
+          setTimeout(() => hasBody(), 3000)
+
+          setTimeout(() => this.destroy(redBox), 4000) // destroy object and its physics body
+
+          setTimeout(() => this.physics.destroy(blueBox), 5000) // destroy only the physics body
+
+          setTimeout(() => this.destroy(ground), 6000) // destroy object and its physics body
+
+          setTimeout(() => this.physics.add.existing(blueBox), 7000) // add physics body to blueBox
+        }
+      }
+
+      PhysicsLoader('/lib/ammo', () => new Project({ scenes: [MainScene] }))
+    </script>
+  </body>
+</html>

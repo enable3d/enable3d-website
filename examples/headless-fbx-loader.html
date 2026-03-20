@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Headless FBXLoader</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/github.min.css" />
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+  </head>
+
+  <body>
+    <style>
+      .hljs-comment {
+        color: gray !important;
+      }
+    </style>
+    <style>
+      body {
+        overflow: unset;
+        background-color: #f8f8f8;
+      }
+      h1 {
+        margin-left: 10%;
+        margin-top: 32px;
+        margin-bottom: 32px;
+      }
+      #code {
+        margin-left: 10%;
+        margin-bottom: 32px;
+      }
+      #loading {
+        margin-left: 10%;
+      }
+      @media only screen and (max-width: 640px) {
+        #code {
+          margin-left: 0;
+        }
+        h1 {
+          margin-left: unset;
+          text-align: center;
+        }
+      }
+    </style>
+    <h1>Headless FBXLoader <small>(Node.js)</small></h1>
+    <div id="loading">loading...</div>
+    <pre><code id="code"></code></pre>
+
+    <script>
+      const jsFile = window.location.href.replace(/\.html$/, '.js')
+
+      fetch(jsFile)
+        .then(res => {
+          if (res.status === 200) {
+            res.text().then(function (data) {
+              document.getElementById('loading').remove()
+
+              const node = document.getElementById('code')
+              const textNode = document.createTextNode(data)
+              node.appendChild(textNode)
+
+              document.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightBlock(block)
+              })
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Resize Window</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Resize your window to see how the scene resizes its width and height.</div>
+    <script>
+      const { Project, Scene3D } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        create() {
+          this.warpSpeed()
+
+          const resize = () => {
+            const newWidth = window.innerWidth
+            const newHeight = window.innerHeight
+
+            this.renderer.setSize(newWidth, newHeight)
+            this.camera.aspect = newWidth / newHeight
+            this.camera.updateProjectionMatrix()
+          }
+
+          window.onresize = resize
+          resize()
+        }
+      }
+
+      // We do not need Physics for this example,
+      // so we do not use the Physics Loader.
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>

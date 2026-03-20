@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Button (spritesheet)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+  </head>
+
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader, THREE, VERSION, FLAT } from 'enable3d'
+
+      class MainScene extends Scene3D {
+        async preload() {
+          await this.load.preload('button', '/assets/button/button_sprite_sheet.png')
+        }
+
+        async create() {
+          const { orbitControls } = await this.warpSpeed()
+
+          // Initialize the flat elements
+          this.ui = FLAT.init(this.renderer)
+
+          // Use this if you need events on the 2D elements.
+          // If you are using orbitControls, pass it to initEvents().
+          // This makes sure orbitControls is not messing with the mouse move.
+          FLAT.initEvents({ canvas: this.renderer.domElement, orbitControls })
+
+          // Call Flat.destroy() on scene restart or stop
+          // or simply add FLAT to the deconstructor
+          this.deconstructor.add(FLAT /* same effect as FLAT.destroy */, orbitControls)
+
+          // add button
+          const texture = await this.load.texture('button')
+          texture.name = 'button'
+          texture.colorSpace = THREE.SRGBColorSpace
+
+          const width = window.innerWidth
+          const height = window.innerHeight
+
+          const button = new FLAT.Button(texture, { width: 193, height: 71 }, 2, 1, 0)
+          button.setInteractive()
+          button.setPosition(width / 2, height / 2)
+          button.setDepth(1)
+          button.setScale(1)
+
+          button.onInputOut = () => {
+            console.log('Button: onInputOut')
+          }
+          button.onInputDown = () => {
+            console.log('Button: onInputDown')
+          }
+          button.onInputOver = () => {
+            console.log('Button: onInputOver')
+          }
+          this.ui.scene.add(button)
+        }
+
+        preRender() {
+          FLAT.preRender(this.renderer)
+        }
+
+        postRender() {
+          FLAT.postRender(this.renderer, this.ui)
+        }
+      }
+
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Teleport a Dynamic Body</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Teleports the box after 2 seconds to a new position and rotation</div>
+    <script type="importmap">
+      {
+        "imports": {
+          "enable3d": "/lib/enable3d/enable3d.framework.0.26.0_dev0.module.min.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { Project, Scene3D, PhysicsLoader } from 'enable3d'
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        create() {
+          this.warpSpeed()
+
+          this.physics.debug.enable()
+
+          const blueBox = this.physics.add.box({ y: 4 }, { lambert: { color: 'cornflowerblue' } })
+
+          const teleport = () => {
+            // set body to be kinematic
+            blueBox.body.setCollisionFlags(2)
+
+            // set the new position
+            blueBox.position.set(2, 4, 2)
+            blueBox.rotation.set(1, 2, 3)
+            blueBox.body.needUpdate = true
+
+            // this will run only on the next update if body.needUpdate = true
+            blueBox.body.once.update(() => {
+              // set body back to dynamic
+              blueBox.body.setCollisionFlags(0)
+
+              // if you do not reset the velocity and angularVelocity, the object will keep it
+              blueBox.body.setVelocity(0, 0, 0)
+              blueBox.body.setAngularVelocity(0, 0, 0)
+            })
+          }
+
+          // teleport after 2 seconds
+          setTimeout(teleport, 2000)
+        }
+      }
+
+      PhysicsLoader('/lib/ammo', () => {
+        new Project({ scenes: [MainScene] })
+      })
+    </script>
+  </body>
+</html>

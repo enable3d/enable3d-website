@@ -1,0 +1,29 @@
+/** FAB */
+div#floating-action-button {
+  z-index: 1;
+  position: fixed;
+  background: white;
+  bottom: 36px;
+  right: 36px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+
+  -webkit-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+  -moz-box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+  box-shadow: 5px 5px 5px 0px rgb(0, 0, 0, 0.1);
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+div#floating-action-button div {
+  color: black;
+  font-size: 24px;
+  width: 60px;
+  height: 60px;
+  line-height: 56px;
+  text-align: center;
+}

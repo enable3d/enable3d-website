@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" sizes="16x16" type="image/png" href="/img/icon/logo-16x16.png" />
+    <link rel="icon" sizes="32x32" type="image/png" href="/img/icon/logo-32x32.png" />
+    <link rel="icon" sizes="96x96" type="image/png" href="/img/icon/logo-96x96.png" />
+    <title>enable3d • 3D extension for Phaser 3</title>
+    <meta
+      name="description"
+      content="3D game framework on top of Three.js and Ammo.js (bullet3) which integrates perfectly with Phaser 3."
+    />
+    <link rel="stylesheet" href="/css/style.css?ver=1.3.0" />
+  </head>
+
+  <body>
+    <header>
+      <div class="container navbar">
+        <a href="/">
+          <div id="logo">
+            <div class="logo light"><img src="/img/enable3d-logo.png" /></div>
+            <div class="logo dark"><img src="/img/enable3d-logo-dark.png" /></div>
+          </div>
+        </a>
+        <ul class="navbar-items">
+          <a href="/examples.html">
+            <li class="navbar-item">Examples</li>
+          </a>
+          <a href="/docs.html">
+            <li class="navbar-item">Docs</li>
+          </a>
+          <a href="https://github.com/enable3d/enable3d/discussions" target="_blank" rel="noopener">
+            <li class="navbar-item">Discussions</li>
+          </a>
+          <a href="https://github.com/enable3d/enable3d" target="_blank" rel="noopener">
+            <li class="navbar-item">Github</li>
+          </a>
+        </ul>
+      </div>
+    </header>
+    <section class="content">
+      <div class="container">
+        <h2>Examples</h2>
+
+        <h3>Headless Mode (Ammo Physics on Node.js Server)</h3>
+        <ul class="examples-list">
+          <li><a href="./examples/headless-mode.html">Headless Mode</a></li>
+          <li><a href="./examples/headless-gltf-loader.html">Headless GLTFLoader</a></li>
+          <li><a href="./examples/headless-fbx-loader.html">Headless FBXLoader</a></li>
+        </ul>
+
+        <h3>As Physics Extension for three.js</h3>
+        <ul class="examples-list">
+          <li><a href="./examples/native-three-with-physics.html">Native three.js with Physics</a></li>
+          <li><a href="./examples/compare-physics-body-shapes.html">Compare Physics Body Shapes</a></li>
+          <li><a href="./examples/gltf-loader-with-physics.html">GLTFLoader with Physics</a></li>
+          <li><a href="./examples/threejs/vhacd-shape-webworker.html">VHACD Shape with WebWorker NEW</a></li>
+          <li><a href="./examples/point-to-point-constraint.html">Point to Point Constraint</a></li>
+          <li><a href="./examples/hollow-cylinder.html">Hollow Cylinder</a></li>
+          <li><a href="./examples/convex-objects-breaking.html">Convex Objects Breaking</a></li>
+          <li><a href="./examples/carousel.html">Carousel</a></li>
+          <li>
+            <a href="./examples/create-and-destroy-objects-and-physics.html">Create and Destroy Objects and Physics</a>
+          </li>
+        </ul>
+
+        <h3>Standalone Mode</h3>
+        <ul class="examples-list">
+          <li><a href="./examples/standalone-mode.html">Standalone Mode</a></li>
+          <li><a href="./examples/resize-window.html">Resize Window</a></li>
+          <li><a href="./examples/texture-on-a-plane.html">Texture on a Plane</a></li>
+          <li><a href="./examples/standalone/texture-cube.html">Texture Cube</a></li>
+          <li><a href="./examples/standalone/work-with-objects-factory.html">Work with Objects Factory</a></li>
+          <li><a href="./examples/objects-recycling.html">Objects Recycling</a></li>
+          <li><a href="./examples/use-tweenjs.html">Use tween.js</a></li>
+          <li><a href="./examples/project-options-and-multiple-scenes.html">Project Options and Multiple Scenes</a></li>
+          <li><a href="./examples/gltf-loader-and-animations.html">GLTF Loader and Animations</a></li>
+          <li><a href="./examples/simplify-physics-mesh.html">Simplify Physics Mesh</a></li>
+          <li><a href="./examples/standalone/compound-hacd-shape.html">Compound HACD Shape (Tank) NEW</a></li>
+          <li><a href="./examples/types-of-constraints.html">Types of Constraints</a></li>
+          <li><a href="./examples/slider-constraints.html">Slider Constraints</a></li>
+          <li><a href="./examples/play-with-physics-bodies.html">Play with Physics Bodies</a></li>
+          <li><a href="./examples/teleport-a-dynamic-body.html">Teleport a Dynamic Body</a></li>
+          <li><a href="./examples/per-body-gravity.html">Per Body Gravity</a></li>
+          <li><a href="./examples/physics-raycaster.html">Physics Raycaster</a></li>
+          <li><a href="./examples/medieval-fantasy-book-standalone.html">Medieval Fantasy Book</a></li>
+          <li><a href="./examples/lights.html">Lights</a></li>
+          <li><a href="./examples/spotlight.html">Spotlight</a></li>
+          <li><a href="./examples/slope-angle-and-moving-platform.html">Slope Angle and Moving Platform</a></li>
+          <li><a href="./examples/virtual-reality.html">Virtual Reality</a></li>
+          <li><a href="./examples/railway-with-csg.html">Railway (with CSG and HACD Body)</a></li>
+          <li><a href="./examples/railway-with-constraints.html">Railway (with Constraints and Convex Body)</a></li>
+          <li><a href="./examples/railway-with-compound-body.html">Railway (with Compound Body)</a></li>
+          <li><a href="./examples/post-processing.html">Post-Processing</a></li>
+          <li><a href="./examples/collisiongroup-and-collisionmask.html">CollisionGroup and CollisionMask</a></li>
+          <li><a href="./examples/softbody-cloth.html">SoftBody Cloth</a></li>
+          <li><a href="./examples/raycast-vehicle.html">Car (Raycast Vehicle)</a></li>
+          <li><a href="./examples/car-using-physics-constraints.html">Car (Physics Constraints)</a></li>
+          <li><a href="./examples/standalone/pick-up-objects.html">Pick up Objects (with Robot Hand)</a></li>
+
+          <h3 id="2d-elements" style="font-style: italic; line-height: 0; padding-top: 24px">
+            2D Elements (Experimental)
+          </h3>
+          <p>
+            These 2D elements are and still in development.<br />
+            They are rendered by three.js and<br />
+            do not need any other 3rd party framework<br />
+            like Phaser, PixiJS or Two.js.
+          </p>
+          <ul>
+            <li><a href="./examples/flat/button-spritesheet.html">Button</a></li>
+            <li><a href="./examples/flat/matter-physics.html">2D Physics (matter.js)</a></li>
+            <li>
+              <a href="./examples/flat/matter-physics-advanced-shapes.html">Matter Physics (Advanced Shapes)</a>
+            </li>
+            <li><a href="./examples/flat/text-sprite.html">Text Sprite</a></li>
+            <li><a href="./examples/flat/texture-atlas.html">Texture Atlas</a></li>
+            <li><a href="./examples/flat/pixel-perfect.html">Pixel Perfect</a></li>
+            <li><a href="./examples/flat/draw-sprite.html">Draw Sprite</a></li>
+            <li><a href="./examples/flat/sprite-sheet.html">Sprite Sheet</a></li>
+          </ul>
+        </ul>
+
+        <h3>As 3D Extension for Phaser</h3>
+        <ul class="examples-list">
+          <li><a href="./examples/simple-setup.html">Simple Setup</a></li>
+          <li><a href="./examples/custom-setup.html">Custom Setup</a></li>
+          <li><a href="./examples/sync-2d-to-3d.html">Sync 2D to 3D</a></li>
+          <li><a href="./examples/sync-3d-to-2d.html">Sync 3D to 2D</a></li>
+          <li>
+            <a href="./examples/isometric-game-orthographic-camera.html">Isometric Game / Orthographic Camera</a>
+          </li>
+          <li><a href="./examples/jenga-game.html">Jenga Game</a></li>
+          <li><a href="./examples/collision-detection.html">Collision Detection</a></li>
+          <li><a href="./examples/load-and-use-textures.html">Load and Use Textures</a></li>
+          <li>
+            <a href="./examples/phaser-gltf-loader-with-animation-speed.html"
+              >GLTF Loader and Animations with Timescale (Drone)</a
+            >
+          </li>
+          <li><a href="./examples/fbx-loader-and-animations.html">FBX Loader and Animations</a></li>
+          <li>
+            <a href="./examples/fbx-loader-and-animations-hitbox.html">FBX Loader and Animations (with Hitbox)</a>
+          </li>
+          <li><a href="./examples/shape-showcase.html">Shape Showcase</a></li>
+          <li><a href="./examples/material-showcase.html">Material Showcase</a></li>
+          <li><a href="./examples/enemy-patrols-on-platform.html">Enemy Patrols on Platform</a></li>
+          <li><a href="./examples/constructive-solid-geometry.html">Constructive Solid Geometry (CSG)</a></li>
+          <li>
+            <a href="./examples/constructive-solid-geometry-physics.html"
+              >Constructive Solid Geometry (CSG) with Physics</a
+            >
+          </li>
+          <li>
+            <a href="./examples/constructive-solid-geometry-physics-and-breakable.html"
+              >Constructive Solid Geometry (CSG) with Physics & Breakable</a
+            >
+          </li>
+          <li><a href="./examples/debug-bodies.html">Debug Bodies</a></li>
+          <li><a href="./examples/dash-and-blast-prototype.html">Dash and Blast Prototype</a></li>
+          <li><a href="./examples/kinematic-body-orbiting-around-sun.html">Kinematic Body Orbiting around Sun</a></li>
+          <li><a href="./examples/create-3d-geometry-from-2d-path.html">Create 3D Geometry from 2D Path</a></li>
+          <li><a href="./examples/create-3d-geometry-from-svg-file.html">Create 3D Geometry from SVG file</a></li>
+          <li>
+            <a href="./examples/create-3d-geometry-from-png-file.html">Create 3D Geometry from PNG file (heightmap)</a>
+          </li>
+          <li><a href="./examples/camera-lerping-and-player-controls.html">Camera Lerping and Player Controls</a></li>
+          <li><a href="./examples/3rd-person-camera.html">3rd Person Camera</a></li>
+          <li><a href="./examples/virtual-reality-phaser.html">Virtual Reality (with Phaser)</a></li>
+          <li><a href="./examples/convex-objects-breaking-phaser.html">Convex Objects Breaking</a></li>
+          <li><a href="./examples/use-native-three-code.html">Use "native" three.js code</a></li>
+          <li><a href="./examples/heightmap-with-color-scale.html">Heightmap with Color Scale</a></li>
+          <li><a href="./examples/water.html">Water</a></li>
+          <li><a href="./examples/medieval-fantasy-book.html">Medieval Fantasy Book</a></li>
+          <li><a href="./examples/first-person-shooter.html">First Person Shooter</a></li>
+          <li><a href="./examples/first-phaser-game-3d-version.html">First Phaser Game (3d version)</a></li>
+          <li><a href="./examples/wrecking-ball-with-metal-chain.html">Wrecking Ball with Metal Chain</a></li>
+          <li>
+            <a href="./examples/adjust-gamma-factor-and-shadows.html">Adjust GammaFactor and Shadows at Runtime</a>
+          </li>
+          <li><a href="./examples/change-material-of-3d-model.html">Change Material of 3d Model</a></li>
+          <li><a href="./examples/tween-manager.html">Tween Manager</a></li>
+          <li><a href="./examples/switch-camera-between-2d-and-3d.html">Switch Camera between 2d and 3d</a></li>
+        </ul>
+      </div>
+      <script>
+        // highlight all examples
+        const links = document.querySelectorAll('a')
+        const makeBadge = (tag, color, background) => {
+          return `<b style="background-color: ${background}; color:${color}; border-radius: 4px; padding: 2px 8px; font-size: 10px; position: relative; top: -2px;">${tag}</b>`
+        }
+
+        links.forEach(link => {
+          link.innerHTML = link.innerHTML.replace(/NEW$/, makeBadge('NEW', 'white', '#607d8b'))
+          link.innerHTML = link.innerHTML.replace(/EXP$/, makeBadge('EXPERIMENTAL', 'white', '#f44336'))
+          link.innerHTML = link.innerHTML.replace(/SOON$/, makeBadge('AVAILABLE SOON', 'black', '#cddc39'))
+        })
+      </script>
+    </section>
+    <footer>
+      <a href="https://github.com/enable3d/enable3d#readme"> github.com/enable3d/enable3d </a>
+      <div class="footer-buttons">
+        <a href="https://github.com/enable3d/enable3d">
+          <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/enable3d/enable3d?style=social" />
+        </a>
+
+        <a href="https://github.com/sponsors/yandeu">
+          <img
+            alt="GitHub Sponsors"
+            src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-lightgrey?style=social&logo=GitHub"
+          />
+        </a>
+
+        <a
+          href="https://github.com/sponsors/yandeu?frequency=one-time&sponsor=yandeu#sponsors:~:text=%241%20one%20time"
+        >
+          <img
+            alt="One-Time Donation"
+            src="https://img.shields.io/badge/One--Time%20Donation-$1-lightgrey?style=social&logo=GitHub"
+          />
+        </a>
+      </div>
+      <div id="sponsor-section">
+        <span>
+          Enable3d is maintained and provided for free, please consider supporting it on
+          <a href="https://github.com/sponsors/yandeu"> GitHub Sponsors </a>
+          ❤️
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>

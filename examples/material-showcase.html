@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Material Showcase</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { enable3d, Scene3D, Cameras, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        create() {
+          this.third.warpSpeed('light', 'orbitControls', 'sky')
+
+          const color = new THREE.Color('#E86219') // orange
+
+          this.objects = [
+            this.third.add.box({ x: -2, y: 3 }),
+            this.third.add.box({ x: 0, y: 3 }, { standard: { color } }),
+            this.third.add.box({ x: 2, y: 3 }, { standard: { color, wireframe: true } }),
+            this.third.add.box({ x: -2, y: 1 }, { standard: { color, metalness: 1 } }),
+            this.third.add.box({ x: 0, y: 1 }, { standard: { color, metalness: 0.5 } }),
+            this.third.add.box({ x: 2, y: 1 }, { standard: { color, metalness: 0 } }),
+            this.third.add.box({ x: -2, y: -1 }, { basic: { color } }),
+            this.third.add.box({ x: 0, y: -1 }, { line: { color } }),
+            this.third.add.box({ x: 2, y: -1 }, { normal: {} }),
+            this.third.add.box({ x: -2, y: -3 }, { lambert: { color } }),
+            this.third.add.box({ x: 0, y: -3 }, { phong: { color } }),
+            this.third.add.box({ x: 2, y: -3 }, { points: { color } })
+          ]
+        }
+
+        update() {
+          this.objects.forEach(obj => {
+            obj.rotation.x += 0.01
+            obj.rotation.y += 0.01
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

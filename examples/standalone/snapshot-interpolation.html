@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Snapshot Interpolation</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+    <script src="https://unpkg.com/@geckos.io/snapshot-interpolation/bundle/snapshot-interpolation.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">The red cube is interpolated with a delay of 250ms and @ 10FPS.</div>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+      const { SnapshotInterpolation, Vault } = Snap
+
+      const FPS = 10
+      const SI_Server = new SnapshotInterpolation()
+      const SI_Client = new SnapshotInterpolation(FPS)
+
+      class MainScene extends Scene3D {
+        tick = 0
+        ghost
+        cube
+        async create() {
+          this.warpSpeed('-ground')
+
+          this.ghost = this.make.box({ x: -1, y: 1 }, { lambert: { color: 'gray' } })
+          this.cube = this.add.box({ x: 1, y: 1 }, { lambert: { color: 'red' } })
+
+          this.add.existing(this.ghost)
+        }
+
+        // create a snapshot on the server @ 60FPS
+        serverSide(time) {
+          this.ghost.rotation.x += 0.01
+          this.ghost.rotation.y += 0.01
+          this.ghost.position.x = Math.sin(time) - 1
+          this.ghost.position.y = Math.cos(time)
+
+          const quaternion = new THREE.Quaternion().setFromEuler(this.ghost.rotation)
+          const pos = this.ghost.position
+
+          const { _x: x, _y: y, _z: z, _w: w } = quaternion
+
+          const state = [
+            {
+              id: 'cube',
+              x: pos.x,
+              y: pos.y,
+              z: pos.z,
+              q: { x, y, z, w }
+            }
+          ]
+
+          const snapshot = SI_Server.snapshot.create(state)
+
+          return snapshot
+        }
+
+        // later (over the wire) receives a new snapshot @10FPS
+        clientSide(snap) {
+          if (snap) SI_Client.addSnapshot(snap)
+
+          const snapshot = SI_Client.calcInterpolation('x y z q(quat)')
+          if (!snapshot) return
+
+          const { state } = snapshot
+          const { id, q, x, y, z } = state[0]
+
+          if (id === 'cube') {
+            this.cube.position.set(x + 2, y, z)
+            this.cube.quaternion.set(q.x, q.y, q.z, q.w)
+          }
+        }
+
+        update(time) {
+          this.tick++
+
+          const snapshot = this.serverSide(time)
+
+          // send only at every 6th frame (10 FPS)
+          setTimeout(() => {
+            if (this.tick % (60 / FPS) === 0) this.clientSide(snapshot)
+            else this.clientSide()
+          }, 250)
+        }
+      }
+
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>

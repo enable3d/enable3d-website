@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Create 3D Geometry from PNG file (heightmap)</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">
+      This heightmap has been created from
+      <a href="/assets/heightmap/heightmap-simple.png"> this png file</a>.
+    </div>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension({ maxSubSteps: 10, fixedTimeStep: 1 / 180 })
+        }
+
+        async create() {
+          this.third.warpSpeed('-ground')
+          this.third.camera.position.set(20, 20, 40)
+          this.third.camera.lookAt(0, 0, 0)
+
+          this.input.on('pointerdown', () => {
+            this.third.haveSomeFun(1)
+          })
+
+          // load grass texture
+          const grass = await this.third.load.texture('/assets/img/grass.jpg')
+          grass.colorSpace = THREE.SRGBColorSpace
+          grass.wrapS = THREE.RepeatWrapping
+          grass.wrapT = THREE.RepeatWrapping
+          grass.repeat.set(4, 4)
+
+          // height map from http://danni-three.blogspot.com/2013/09/threejs-heightmaps.html
+          this.third.load.texture('/assets/heightmap/heightmap-simple.png').then(heightmap => {
+            const mesh = this.third.heightMap.add(heightmap)
+            if (mesh) {
+              // add custom material or a texture
+              mesh.material = new THREE.MeshPhongMaterial({ map: grass })
+
+              // we position, scale, rotate etc. the mesh before adding physics to it
+              mesh.scale.set(2, 2, 2)
+
+              // @ts-ignore
+              this.third.physics.add.existing(mesh, { mass: 0, collisionFlags: 1 })
+            }
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

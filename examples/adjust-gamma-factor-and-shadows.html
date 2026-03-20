@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Adjust GammaFactor and Shadows at Runtime</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/phaser.min.js?ver=3.52.0"></script>
+    <script src="/lib/enable3d/enable3d.phaserExtension.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <div id="info-text">Adjusts randomly the gammaFactor and disables the shadows.</div>
+    <script>
+      const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        constructor() {
+          super({ key: 'MainScene' })
+        }
+
+        init() {
+          this.accessThirdDimension()
+        }
+
+        async create() {
+          // set outputEncoding to THREE.GammaEncoding (default is THREE.LinearEncoding)
+          this.third.renderer.outputEncoding = THREE.GammaEncoding
+
+          const { lights } = await this.third.warpSpeed()
+
+          this.third.add.box({ x: -4, y: 2, height: 4 }, { lambert: { color: 0xff0000 } })
+          this.third.add.box({ x: 0, y: 2, height: 4 }, { lambert: { color: 0x00ff00 } })
+          this.third.add.box({ x: 4, y: 2, height: 4 }, { lambert: { color: 0x0000ff } })
+
+          // update gamma factor
+          this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () => {
+              this.third.renderer.gammaFactor = Math.random() * 2
+              this.third.scene.traverse(child => {
+                if (child.material) {
+                  child.material.needsUpdate = true
+                }
+              })
+            }
+          })
+
+          // update shadows
+          let enabled = true
+          this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () => {
+              enabled = !enabled
+              this.third.renderer.shadowMap.enabled = enabled
+              this.third.renderer.shadowMap.autoUpdate = enabled
+              lights.directionalLight.castShadow = enabled
+            }
+          })
+        }
+      }
+
+      const config = {
+        type: Phaser.WEBGL,
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: window.innerWidth * Math.max(1, window.devicePixelRatio / 2),
+          height: window.innerHeight * Math.max(1, window.devicePixelRatio / 2)
+        },
+        scene: [MainScene],
+        ...Canvas()
+      }
+
+      window.addEventListener('load', () => {
+        enable3d(() => new Phaser.Game(config)).withPhysics('/lib/ammo')
+      })
+    </script>
+  </body>
+</html>

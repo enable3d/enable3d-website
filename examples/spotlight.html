@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Spotlight</title>
+    <link rel="stylesheet" href="/css/examples.css?ver=1.0.0" />
+    <script src="/js/examples.js?ver=1.1.1"></script>
+    <script src="/lib/enable3d/enable3d.framework.0.25.4.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const { Project, Scene3D, PhysicsLoader, THREE } = ENABLE3D
+
+      class MainScene extends Scene3D {
+        createSpotlight(color) {
+          const spot = this.lights.spotLight({ color, intensity: 40, distance: 0, angle:Math.PI /12, penumbra: 0.1, decay: 1 })
+          // castShadow is true by default
+          // spot.castShadow = true
+          return spot
+        }
+
+        create() {
+          this.warpSpeed('-sky', '-light', '-ground')
+
+          this.camera.position.set(15,15,15)
+          this.camera.lookAt(0, 0, 0)
+
+          this.box = this.add.box({ y: 2 }, { phong: {} })
+          this.add.ground({ width: 50, height: 50 }, { phong: { color: 0xaaaaaa } })
+
+          // makes the shadows sharper
+          const adjustShadowSize = light => {
+            light.shadow.mapSize.width = 1024
+            light.shadow.mapSize.height = 1024
+          }
+
+          const ambient = this.lights.ambientLight({ color: 0x444444 })
+
+          const spotLight1 = this.createSpotlight(0xff7f00)
+          const spotLight2 = this.createSpotlight(0x00ff7f)
+          const spotLight3 = this.createSpotlight(0x7f00ff)
+
+          adjustShadowSize(spotLight1)
+          adjustShadowSize(spotLight2)
+          adjustShadowSize(spotLight3)
+
+          spotLight1.position.set(5, 20, 22)
+          spotLight2.position.set(0, 20, -15)
+          spotLight3.position.set(-8, 20, 2)
+
+          // the target is where the spot light should shine to
+          spotLight1.target.position.set(2, 0, 5)
+          spotLight1.target.updateMatrixWorld()
+
+          this.lights.helper.spotLightHelper(spotLight1)
+          this.lights.helper.spotLightHelper(spotLight2)
+          this.lights.helper.spotLightHelper(spotLight3)
+        }
+
+        update(time, delta) {
+          this.box.rotation.x += 0.01
+          this.box.rotation.y += 0.01
+          this.box.position.y += Math.sin(time) / 50
+        }
+      }
+      new Project({ scenes: [MainScene] })
+    </script>
+  </body>
+</html>
