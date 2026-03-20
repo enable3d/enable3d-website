@@ -1,4 +1,4 @@
-name: Deploy-to-AWS
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -12,10 +12,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: npm install
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install --only=dev
-      - run: node scripts/ssr.js --no-sandbox
-      - run: BUCKET=${{secrets.BUCKET}} AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} DISTRIBUTION_ID=${{secrets.DISTRIBUTION_ID}} node scripts/deploy.js
+
+      - name: Install dependencies
+        run: npm install --only=dev
+
+      - name: Build
+        run: node scripts/ssr.js --no-sandbox
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./src
